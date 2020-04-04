@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <AssemblyName>Jeopardy</AssemblyName>
+    <RootNamespace>Jeopardy</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
+  </ItemGroup>
+
+  <Target Name="NPM / WebPack Build" AfterTargets="Build">
+    <Exec Condition="$(Configuration) == 'Debug'" Command="npm i &amp;&amp; npm run build" />
+    <Exec Condition="$(Configuration) == 'Release'" Command="npm i &amp;&amp; npm run buildProd" />
+  </Target>
+
+</Project>

@@ -1,0 +1,408 @@
+/* Font Families */
+@font-face
+{
+    font-family: "Segoe UI Web Light";
+    font-style: normal;
+    font-weight: 100;
+    src: local("Segoe UI Light"),local("Segoe UI"),local("HelveticaNeue-Light");
+    unicode-range: U+0-FF,U+300-36F;
+}
+
+@font-face
+{
+    font-family: "Segoe UI Web Regular";
+    font-style: normal;
+    font-weight: normal;
+    src: local("Segoe UI"),local("Helvetica Neue");
+    unicode-range: U+0-FF,U+300-36F;
+}
+
+@font-face
+{
+    font-family: "Segoe UI Web Semibold";
+    font-style: normal;
+    font-weight: bold;
+    src: local("Segoe UI Semibold"),local("Segoe UI Bold"),local("Segoe UI"),local("HelveticaNeue-Medium");
+    unicode-range: U+0-FF,U+300-36F;
+}
+
+/* Core CSS */
+html
+{
+    background-color: #fff;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+body {
+    font-size: 14px;
+    font-family: "Segoe UI","Segoe UI Web Regular","Segoe UI Symbol","Helvetica Neue","BBAlpha Sans","S60 Sans",Arial,"sans-serif";
+    background-color: #fff;
+    color: #000;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+
+div#jeopardyBoardFrame {
+    width:100%;
+    height:100%;
+    background-color:grey;
+    padding:20px;
+    box-sizing: border-box;
+}
+
+div#jeopardyBoardInnerFrame {
+    width:100%;
+    height:100%;
+    background-color:darkgrey;
+    padding:5px;
+    box-sizing: inherit;
+    min-width: 1100px;
+}
+
+div#jeopardyBoard {
+    width:100%;
+    height:100%;
+    background-color:black;
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    padding:10px;
+    box-sizing: inherit;
+
+}
+
+div#jeopardyBoard div.jeopardyCategory {
+    flex: 1 1 0px;
+    flex-grow: 1;
+}
+
+div#jeopardyBoard div.jeopardyCategory .categoryName
+{
+    height: 15%;
+    background-color:#060CE9;
+    color:white;
+    text-transform: uppercase;
+    text-shadow: 2px 2px black;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 2em;
+    font-weight: bold;
+    font-stretch: ultra-condensed;
+    text-align: center;
+    margin:2px;
+    padding:10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+div#jeopardyBoard div.jeopardyCategory .clues
+{
+    display:flex;
+    flex-direction: column;
+    height: 80%;
+
+}
+
+div#jeopardyBoard div.jeopardyCategory .clues .clue
+{
+    display:flex;
+    flex-grow: 1;
+    box-sizing: inherit;
+    align-items: center;
+    justify-content: center;
+    margin:2px;
+    position: relative;
+    text-shadow: 2px 2px black;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 3.5em;
+    font-stretch: ultra-condensed;
+    box-sizing: inherit;
+}
+
+
+div#jeopardyBoard div.jeopardyCategory .clues .clue a
+{
+    background-color:#060CE9;
+    color:yellow;
+    text-decoration: none;
+    display: flex;
+    position: relative;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    padding:10px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+}
+
+div#jeopardyBoard div.jeopardyCategory .clues .clue a:hover
+{
+    background-color:darkblue;
+}
+
+div#jeopardyBoard div.jeopardyActiveClue
+{
+    background-color:#060CE9;
+    color: white;
+    font-size:4em;
+    display: flex;
+    position: relative;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    padding:10px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+}
+
+button#buzzer {
+    display:block;
+    height: 100px;
+    width: 100px;
+    font-size:2em;
+    color:white;
+    border-radius: 50%;
+    box-shadow: 0px 0px 20px rgb(50, 50, 50);
+}
+
+button#buzzer.active {
+    border: 1px solid green;
+    background-color: green;
+}
+
+button#buzzer.inactive {
+    border: 1px solid grey;
+    background-color: grey;
+}
+
+button#buzzer.buzzed {
+    border: 1px solid blue;
+    background-color: blue;
+}
+
+button#buzzer.lockedout {
+    border: 1px solid orangered;
+    background-color: orangered;
+}
+
+
+/* main layout
+----------------------------------------------------------*/
+div#header {
+    height: 40px;
+    background-color: rgb(9, 74, 178);
+}
+
+
+#logoButton {
+    font-family: 'Segoe UI Light', 'Segoe UI SemiLight', 'Segoe UI', 'Segoe UI Symbol', HelveticaNeue-Light, 'Helvetica Neue', Arial;
+    font-size:24px;
+    padding-left:45px;
+    height: 45px;
+    padding-bottom:2px;
+    padding-left: 10px;
+    padding-right: 20px;
+    margin-right: 0;
+    width:100% !important;
+}
+
+#logoButton.ms-Button.ms-Button--primary {
+    background-color: rgb(9, 74, 178);
+}
+
+#logoButton.ms-Button.ms-Button--primary:hover {
+    background-color: rgb(8, 65, 156);
+}
+
+#logoButton span.ms-Button-label {
+    font-weight: normal !important;
+}
+
+#logoButton div.ms-Button-flexContainer {
+    padding-left:0px;
+}
+
+#logoButton {
+    background-image: url("./content/images/YodaLogo.png") !important;
+    background-repeat: no-repeat;
+    height:40px;
+}
+
+.pageTitle {
+    margin-left: 20px;
+}
+
+/* model dialog */
+.modalWaiting {
+    cursor: wait;
+}
+
+.modalNormal {
+    cursor: auto;
+}
+
+/*page layout*/
+.topPageNormal {
+    cursor: auto;
+}
+
+.topPageWaiting {
+    cursor: wait;
+}
+
+/* Bread Crumb */
+.ms-Breadcrumb.root_9aa06c8f {
+    margin-top: 0;
+}
+
+#pageContent > div > div > div.ms-ResizeGroup > div > div > ol {
+    max-width: 100%;
+    overflow: inherit;
+}
+
+/*   topSection container ===========================  */
+.topSection {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px
+}
+
+/* Home section */
+.topSection .home {
+    width: 180px;
+}
+
+.spinnerVisible {
+    position: fixed;
+    top: 6px;
+    left: 136px;
+    display:block
+}
+
+.spinnerHidden {
+    display:none
+}
+
+.appTitleBarPane {
+    position: fixed;
+    top: 0;
+    left: 180px;
+    height: 40px;
+    background-color: black;
+    padding-left: 5px;
+}
+
+
+/*   AppTitleBar  =========================  */
+
+
+/*   middleSection container =========================  */
+.middleSection {
+
+}
+
+.pageContent {
+    position: relative;
+    top:40px;
+    overflow-x: hidden;
+    height: calc(100vh - 80px);
+    width: calc(100vw);
+}
+
+/*   bottomSection Start =========================  */
+
+.bottomSection {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+}
+
+
+.DataFieldName  {
+    font-weight: bold;
+}
+
+/*   footer Start =========================  */
+
+#footerTable
+{
+    background-color: #fff;
+    border-top: 1px solid #ccc;
+    clear: both;
+    color: rgb(0, 0, 0);
+    font-size: 86%;
+    width: 100%;
+}
+
+#footerTable td
+{
+    padding: 0;
+    vertical-align: top;
+    float: right;
+}
+
+#footerTable ul
+{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    padding-left: 10px;
+}
+
+#footerTable ul li
+{
+    float: left;
+    padding: 5px 10px;
+}
+
+#footerTable ul li a
+{
+    white-space: nowrap;
+}
+
+#footerTable ul li span
+{
+    color: #666;
+    white-space: nowrap;
+}
+
+#footerTable ul li span#confidential
+{
+    color: red;
+}
+
+.footerCell a
+{
+    color: #666!important;
+}
+.footerCell a:hover
+{
+    color: rgba(102,102,102,.8)!important;
+}
+.footerCell a:focus
+{
+    color: rgba(102,102,102,.6)!important;
+}
+
+td.details-control {
+    background: url('/content/images/details_open.png') no-repeat center center;
+    cursor: pointer;
+}
+tr.shown td.details-control {
+    background: url('/content/images/details_close.png') no-repeat center center;
+}
