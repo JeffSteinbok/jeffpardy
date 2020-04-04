@@ -2,6 +2,7 @@
 import * as ReactDOM from "react-dom";
 import * as signalR from "@microsoft/signalr";
 import { Logger } from "./utilities/Logger";
+import { BuzzerUserList } from "./components/buzzerUserList/BuzzerUserList";
 
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub/buzzer")
@@ -17,9 +18,16 @@ connection.on("messageReceived", (username: string, message: string) => {
 
 connection.start().catch(err => document.write(err));
 
+export interface IBuzzerUser {
+    team: string;
+    name: string;
+    connectionId: string;
+}
+
 export interface IBuzzerState {
     message: string;
-    users: string[];
+    users: IBuzzerUser[];
+    teams: { [key: string]: IBuzzerUser[] };
     logMessages: string[];
     hubConnection: signalR.HubConnection;
     name: string;
@@ -43,6 +51,7 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
         this.state = {
             message: '',
             users: [],
+            teams: {},
             logMessages: [],
             hubConnection: null,
             name: '',
@@ -69,9 +78,24 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
                 })
                 .catch(err => console.log('Error while establishing connection :('));
 
-            this.state.hubConnection.on('updateUsers', (users) => {
+            this.state.hubConnection.on('updateUsers', (users: IBuzzerUser[]) => {
                 Logger.debug(JSON.stringify(users));
                 this.setState({ "users": users });
+
+
+                if (this.state.users.length > 0) {
+                    let r = this.state.users.reduce((acc, obj) => {
+                        let k = obj.team;
+                        if (!acc[k]) {
+                            acc[k] = []
+                        }
+                        acc[k].push(obj);
+                        return acc
+                    },
+                        {});
+
+                    this.setState({ teams: r });
+                }
             });
 
             this.state.hubConnection.on('assignWinner', (nick, receivedMessage) => {
@@ -108,7 +132,7 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
 
     registerPlayer = () => {
         this.state.hubConnection
-            .invoke('connect', (this.state.name))
+            .invoke('connect', this.state.team, this.state.name)
             .then(() => this.setState({ connected: true }))
             .catch(err => console.error(err));
     }
@@ -183,6 +207,7 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
             buzzerClassName = "inactive";
         }
 
+
         return (
 
 
@@ -213,18 +238,15 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
                         Players:
                         <br />
                         <div>
-                            { this.state.users.map((message, index) => (
-                                <span style={ { display: 'block' } } key={ index }> { JSON.stringify(message) } </span>
-                            )) }
+                            {
+                                this.state.users.map((message, index) => (
+                                    <span style={ { display: 'block' } } key={ index }> { JSON.stringify(message) } </span>
+                                )) }
                         </div>
 
-                        { this.state.buzzerActive == true &&
-                            <button onClick={ this.resetBuzzer }>Reset</button>
-                        }
-
-                        { this.state.buzzerActive == false &&
-                            <button onClick={ this.activateBuzzer }>Activate</button>
-                        }
+                        <div>
+                            <BuzzerUserList teams={ this.state.teams } />
+                        </div>
 
                         <br />
                         <button id="buzzer" className={ buzzerClassName } onClick={ this.buzzIn }>Buzz</button>
@@ -237,6 +259,20 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
 
                     </div>
                 }
+
+                <hr />
+                <h1>Host Settings</h1>
+                Ingore the below if you are the player.  This will all move to a different
+                page in the future.
+                <p />
+                { this.state.buzzerActive == true &&
+                    <button onClick={ this.resetBuzzer }>Reset</button>
+                }
+
+                { this.state.buzzerActive == false &&
+                    <button onClick={ this.activateBuzzer }>Activate</button>
+                }
+
             </div>
 
         );

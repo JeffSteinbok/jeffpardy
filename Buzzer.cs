@@ -7,16 +7,25 @@ using System.Threading.Tasks;
 using System.Timers;
 
 namespace Jeopardy
-{
+{ 
+    public class BuzzerUser
+    {
+        public string Team { get; set; }
+        public string Name { get; set; }
+        public string ConnectionId { get; set; }
+    }
+
+
     public class Buzzer
     {
         // Singleton instance
         private IHubContext<BuzzerHub> BuzzerHubContext;
 
-
         Timer buzzerWindowTimer;
 
         SortedList<int, BuzzerUser> buzzerActivations = new SortedList<int, BuzzerUser>();
+        
+        Dictionary<string, BuzzerUser> buzzerUsers = new Dictionary<string, BuzzerUser>();
 
         public Buzzer(IHubContext<BuzzerHub> buzzerHubContext)
         {
@@ -27,6 +36,43 @@ namespace Jeopardy
             {
                 this.AssignWinner();
             };
+
+        }
+
+        public async void AddUser(string connectionId, string team, string name)
+        {
+            this.buzzerUsers.Add(connectionId, new BuzzerUser()
+            {
+                ConnectionId = connectionId,
+                Team = team,
+                Name = name
+            });
+
+            var buzzerTeams = this.buzzerUsers.Values
+                                                        .GroupBy(x => x.Team)
+                                                        .OrderBy(p => p.Key.ToString())
+                                                        .ToDictionary(x => x.Key, x => x.ToList().OrderBy(o => o.Name));
+
+            await BuzzerHubContext.Clients.All.SendAsync("updateUsers", this.buzzerUsers.Values.ToList());
+        }
+
+        public async void RemoveUser(string connectionId)
+        {
+            if (this.buzzerUsers.ContainsKey(connectionId))
+            {
+                var item = this.buzzerUsers[connectionId];
+
+                this.buzzerUsers.Remove(item.ConnectionId);
+
+                var buzzerTeams = this.buzzerUsers.Values
+                                                            .GroupBy(x => x.Team)
+                                                            .OrderBy(p => p.Key.ToString())
+                                                            .ToDictionary(x => x.Key, x => x.ToList().OrderBy(o => o.Name));
+
+                await BuzzerHubContext.Clients.All.SendAsync("updateUsers", this.buzzerUsers.Values.ToList());
+
+            }
+
 
         }
 
