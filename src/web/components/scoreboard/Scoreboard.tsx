@@ -160,6 +160,10 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                     { this.state.buzzerActive == false &&
                         <button onClick={ this.activateBuzzer }>Activate</button>
                     }
+
+                    <button></button>
+                    <button>Correct Response</button>
+                    <button>Incorrect Response</button>
                 </div>
 
                 <div className="scoreEntries">

@@ -147,8 +147,21 @@ div#jeopardyBoard div.jeopardyCategory .clues .clue a:hover
     background-color:darkblue;
 }
 
-div#jeopardyBoard div.jeopardyActiveClue
+div#jeopardyBoard div.jeopardyActiveClue {
+    display:flex;
+    flex-direction:column;
+    height:100%;
+    width:100%;
+}
+
+div#jeopardyBoard div.jeopardyActiveClue .header {
+    background-color: darkblue;
+    flex-grow:0;
+}
+
+div#jeopardyBoard div.jeopardyActiveClue .clue
 {
+    flex-grow: 1;
     background-color:#060CE9;
     color: white;
     font-size:4em;
@@ -157,7 +170,24 @@ div#jeopardyBoard div.jeopardyActiveClue
     top:0;
     left:0;
     width:100%;
-    height:100%;
+    padding:10px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+div#jeopardyBoard div.jeopardyActiveClue .question
+{
+    flex-grow: 1;
+    background-color:#060CE9;
+    color: white;
+    font-size:3em;
+    display: flex;
+    position: relative;
+    top:0;
+    left:0;
+    width:100%;
     padding:10px;
     box-sizing: border-box;
     align-items: center;

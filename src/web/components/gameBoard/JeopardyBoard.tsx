@@ -7,10 +7,13 @@ import { Logger } from "../../utilities/Logger";
 export interface IJeopardyBoardState {
     categories: ICategory[];
     activeClue: IQuestion;
+    activeCategory: ICategory;
+    activeClueValue: number;
+    showQuestion: boolean;
 }
 
 export interface IJeopardyBoard {
-    showClue(clue: IQuestion);
+    showClue(category: ICategory, value: number, clue: IQuestion);
 }
 
 export class JeopardyBoard extends React.Component<any, IJeopardyBoardState> implements IJeopardyBoard {
@@ -22,7 +25,10 @@ export class JeopardyBoard extends React.Component<any, IJeopardyBoardState> imp
         super(props);
         this.state = {
             activeClue: null,
-            categories: null
+            activeCategory: null,
+            activeClueValue: 0,
+            categories: null,
+            showQuestion: false
         }
     }
 
@@ -42,11 +48,27 @@ export class JeopardyBoard extends React.Component<any, IJeopardyBoardState> imp
         wsam.executeApi(context);
     }
 
-    public showClue(clue: IQuestion) {
+    public showClue(category: ICategory, value: number, clue: IQuestion) {
         this.setState({
-            "activeClue": clue
+            "activeClue": clue,
+            activeClueValue: value,
+            activeCategory: category
         })
     }
+
+    hideClue = () => {
+        this.setState({
+            "activeClue": null,
+            activeClueValue: null,
+            activeCategory: null
+        })
+    };
+
+    showQuestion = () => {
+        this.setState({
+            showQuestion: true,
+        })
+    };
 
     public componentDidMount() {
         this.loadGameBoard();
@@ -64,7 +86,17 @@ export class JeopardyBoard extends React.Component<any, IJeopardyBoardState> imp
                                     return <JeopardyCategory key={ index } category={ value } jeopardyBoard={ this } />
                                 }) }
                             { this.state.activeClue != null &&
-                                <div className="jeopardyActiveClue">{ this.state.activeClue.clue }</div>
+                                <div className="jeopardyActiveClue">
+                                    <div className="header">
+                                        <div><button onClick={ this.hideClue }>Back</button></div>
+                                        <div>{ this.state.activeCategory.title } for { this.state.activeClueValue }</div>
+                                        <div><button onClick={ this.showQuestion }>Show Question</button></div>
+                                    </div>
+                                    <div className="clue">{ this.state.activeClue.clue }</div>
+                                    { this.state.showQuestion == true &&
+                                        <div className="question">{ this.state.activeClue.question }</div>
+                                    }
+                                </div>
                             }
                         </div>
                     }

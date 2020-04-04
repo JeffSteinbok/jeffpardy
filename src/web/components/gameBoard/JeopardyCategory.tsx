@@ -31,6 +31,7 @@ export class JeopardyCategory extends React.Component<IJeopardyCategoryProps, IJ
                     { this.props.category.questions.map((value, index) => {
                         return <JeopardyClue
                             jeopardyBoard={ this.props.jeopardyBoard }
+                            category={ this.props.category }
                             key={ index }
                             value={ (index + 1) * 100 }
                             question={ value } />
