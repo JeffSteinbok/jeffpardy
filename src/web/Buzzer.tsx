@@ -36,6 +36,7 @@ export interface IBuzzerState {
     buzzerActive: boolean;
     buzzerLocked: boolean;
     buzzed: boolean;
+    buzzedInUser: IBuzzerUser;
 }
 
 /**
@@ -59,7 +60,8 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
             connected: false,
             buzzerActive: false,
             buzzerLocked: false,
-            buzzed: false
+            buzzed: false,
+            buzzedInUser: null
         };
     }
 
@@ -99,10 +101,11 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
             });
 
             this.state.hubConnection.on('assignWinner', (user) => {
+                this.setState({ buzzedInUser: user });
                 // If I'm the winner, leave the buzzer at buzzed.
                 // If not the winner, show it as locked out.
                 if (this.state.hubConnection.connectionId == user.connectionId) {
-                    alert("WINNER");
+
                 } else {
                     this.setState({ buzzerLocked: true });
                 }
@@ -112,7 +115,8 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
                 this.setState({
                     buzzed: false,
                     buzzerActive: false,
-                    buzzerLocked: false
+                    buzzerLocked: false,
+                    buzzedInUser: null
                 })
             });
 
@@ -122,10 +126,6 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
                 this.setState({ buzzerActive: true });
             });
         });
-    }
-
-    activateLasers = () => {
-        alert(1);
     }
 
     registerPlayer = () => {
@@ -241,6 +241,10 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
 
                         <br />
                         <button id="buzzer" className={ buzzerClassName } onClick={ this.buzzIn }>Buzz</button>
+
+                        { this.state.buzzedInUser != null &&
+                            <div>Buzzed-in User: { this.state.buzzedInUser.name }</div>
+                        }
 
                         <div>
                             { this.state.logMessages.map((message, index) => (

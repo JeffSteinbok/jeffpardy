@@ -2,6 +2,7 @@ import * as React from "react";
 import { IJeopardyController } from "../../IJeopardyController";
 import { AppTitleBar } from "../appTitleBar/AppTitleBar";
 import { JeopardyBoard } from "../gameBoard/JeopardyBoard";
+import { Scoreboard } from "../scoreboard/Scoreboard";
 
 export interface IPageLayoutState {
 }
@@ -15,6 +16,7 @@ export class PageLayout extends React.Component<any, IPageLayoutState> implement
                 <div className="middleSection">
                     <div id="pageContent" className="pageContent">
                         <JeopardyBoard></JeopardyBoard>
+                        <Scoreboard></Scoreboard>
                     </div>
                 </div>
                 <div className="bottomSection">
@@ -23,8 +25,7 @@ export class PageLayout extends React.Component<any, IPageLayoutState> implement
                             <tr>
                                 <td id="footer_left" className="footerCell resetWidth">
                                     <ul>
-                                        <li><span>&copy; 2017 Microsoft</span></li>
-                                        <li><span>Confidential</span></li>
+                                        <li><span>&copy; 2020 Jeff Steinbok</span></li>
                                     </ul>
                                 </td>
                             </tr>
