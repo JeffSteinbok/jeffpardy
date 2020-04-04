@@ -43,9 +43,9 @@ namespace Jeopardy.Hubs
             this.b.ActivateBuzzer();
         }
 
-        public void BuzzIn(string team, string name, int timeInMillisenconds)
+        public void BuzzIn(int timeInMillisenconds)
         {
-            b.BuzzIn(team, name, timeInMillisenconds);
+            b.BuzzIn(Context.ConnectionId, timeInMillisenconds);
         }
 
     }

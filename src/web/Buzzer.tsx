@@ -98,13 +98,11 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
                 }
             });
 
-            this.state.hubConnection.on('assignWinner', (nick, receivedMessage) => {
-                this.appendLogMessage(JSON.stringify(nick));
-
+            this.state.hubConnection.on('assignWinner', (user) => {
                 // If I'm the winner, leave the buzzer at buzzed.
                 // If not the winner, show it as locked out.
-                if (this.state.name == nick.name) {
-
+                if (this.state.hubConnection.connectionId == user.connectionId) {
+                    alert("WINNER");
                 } else {
                     this.setState({ buzzerLocked: true });
                 }
@@ -165,7 +163,7 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
         } else if (this.state.buzzerActive) {
             Logger.debug("Buzzer clicked when active. Time:", new Date().getTime());
             this.state.hubConnection
-                .invoke('buzzIn', this.state.team, this.state.name, new Date().getTime() - this.buzzerActivateTime.getTime())
+                .invoke('buzzIn', new Date().getTime() - this.buzzerActivateTime.getTime())
                 .catch(err => console.error(err));
             this.setState({ buzzed: true });
         } else {
@@ -237,13 +235,6 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
                     <div>
                         Players:
                         <br />
-                        <div>
-                            {
-                                this.state.users.map((message, index) => (
-                                    <span style={ { display: 'block' } } key={ index }> { JSON.stringify(message) } </span>
-                                )) }
-                        </div>
-
                         <div>
                             <BuzzerUserList teams={ this.state.teams } />
                         </div>

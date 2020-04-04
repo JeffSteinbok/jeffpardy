@@ -91,20 +91,16 @@ namespace Jeopardy
         public async Task AssignWinner()
         {
             this.buzzerWindowTimer.Stop();
-            await BuzzerHubContext.Clients.All.SendAsync("assignWinner", this.buzzerActivations.First().Value, "2");
+            await BuzzerHubContext.Clients.All.SendAsync("assignWinner", this.buzzerActivations.First().Value);
 
         }
 
-        public void BuzzIn(string team, string name, int timeInMillisenconds)
+        public void BuzzIn(string connectionId, int timeInMillisenconds)
         {
 
             buzzerWindowTimer.Start();
             this.buzzerActivations.Add(timeInMillisenconds,
-                new BuzzerUser()
-                {
-                    Team = team,
-                    Name = name
-                });
+                buzzerUsers[connectionId]);
         }
     }
 }
