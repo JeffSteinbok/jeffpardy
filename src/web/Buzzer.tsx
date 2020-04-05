@@ -37,6 +37,7 @@ export interface IBuzzerState {
     buzzerLocked: boolean;
     buzzed: boolean;
     buzzedInUser: IBuzzerUser;
+    isWinner: boolean;
 }
 
 /**
@@ -61,7 +62,8 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
             buzzerActive: false,
             buzzerLocked: false,
             buzzed: false,
-            buzzedInUser: null
+            buzzedInUser: null,
+            isWinner: false
         };
     }
 
@@ -100,12 +102,14 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
                 }
             });
 
-            this.state.hubConnection.on('assignWinner', (user) => {
+            this.state.hubConnection.on('assignWinner', (user: IBuzzerUser) => {
+                Logger.debug("Winner Assigned " + JSON.stringify(user));
+
                 this.setState({ buzzedInUser: user });
                 // If I'm the winner, leave the buzzer at buzzed.
                 // If not the winner, show it as locked out.
                 if (this.state.hubConnection.connectionId == user.connectionId) {
-
+                    this.setState({ isWinner: true })
                 } else {
                     this.setState({ buzzerLocked: true });
                 }
@@ -116,13 +120,14 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
                     buzzed: false,
                     buzzerActive: false,
                     buzzerLocked: false,
-                    buzzedInUser: null
+                    buzzedInUser: null,
+                    isWinner: false
                 })
             });
 
             this.state.hubConnection.on('activateBuzzer', (nick, receivedMessage) => {
                 this.buzzerActivateTime = new Date();
-                this.appendLogMessage("Buzzer activated at " + this.buzzerActivateTime.getTime())
+                Logger.debug("Buzzer activated at " + this.buzzerActivateTime.getTime())
                 this.setState({ buzzerActive: true });
             });
         });
@@ -130,29 +135,10 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
 
     registerPlayer = () => {
         this.state.hubConnection
-            .invoke('connect', this.state.team, this.state.name)
+            .invoke('connectUser', this.state.team, this.state.name)
             .then(() => this.setState({ connected: true }))
             .catch(err => console.error(err));
     }
-
-    resetBuzzer = () => {
-
-
-        this.state.hubConnection
-            .invoke('resetBuzzer')
-            .catch(err => console.error(err));
-    };
-
-
-    activateBuzzer = () => {
-
-
-        this.state.hubConnection
-            .invoke('activateBuzzer')
-            .catch(err => console.error(err));
-        this.setState({ message: '' });
-    };
-
 
     buzzIn = () => {
 
@@ -185,12 +171,6 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
         this.state.hubConnection.stop();
     }
 
-    appendLogMessage(text: string) {
-        const logMessages = this.state.logMessages.concat([text]);
-        this.setState({ logMessages });
-        Logger.debug(text)
-    }
-
     public render() {
         let buzzerClassName: string = "inactive";
         if (this.state.buzzerLocked) {
@@ -210,65 +190,51 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
 
 
 
-            <div>
-                <br />
+            <div id="buzzerView">
+                <div className="buzzerViewTitle">JS Jeopardy Buzzer</div>
 
-                { this.state.connected == false &&
-                    <div>
-                        Team:
-                        <input
-                            type="text"
-                            value={ this.state.team }
-                            onChange={ e => this.setState({ team: e.target.value }) }
-                        />
-                        <br />
-                        Player Name:
-                        <input
-                            type="name"
-                            value={ this.state.name }
-                            onChange={ e => this.setState({ name: e.target.value }) }
-                        />
-                        <button onClick={ this.registerPlayer }>Register Player</button>
-                    </div>
-                }
-                { this.state.connected == true &&
-                    <div>
-                        Players:
-                        <br />
-                        <div>
-                            <BuzzerUserList teams={ this.state.teams } />
+                <div className="buzzerCurrentUserView">
+                    { this.state.connected == false &&
+                        <div className="buzzerRegistration">
+                            <div>Register</div>
+                            <div>Team:</div>
+                            <input
+                                type="text"
+                                value={ this.state.team }
+                                onChange={ e => this.setState({ team: e.target.value }) }
+                            />
+                            <div>Player Name:</div>
+                            <input
+                                type="name"
+                                value={ this.state.name }
+                                onChange={ e => this.setState({ name: e.target.value }) }
+                            />
+                            <button onClick={ this.registerPlayer }>Register Player</button>
                         </div>
-
-                        <br />
-                        <button id="buzzer" className={ buzzerClassName } onClick={ this.buzzIn }>Buzz</button>
-
-                        { this.state.buzzedInUser != null &&
-                            <div>Buzzed-in User: { this.state.buzzedInUser.name }</div>
-                        }
-
+                    }
+                    { this.state.connected == true &&
                         <div>
-                            { this.state.logMessages.map((message, index) => (
-                                <span style={ { display: 'block' } } key={ index }> { JSON.stringify(message) } </span>
-                            )) }
+                            <div className="playerName">{ this.state.name } ({ this.state.team })</div>
+
+                            <button id="buzzer" className={ buzzerClassName } onClick={ this.buzzIn }>Buzz</button>
+
+                            { this.state.buzzedInUser != null &&
+                                <div className="buzzedInUser">
+                                    <div className="buzzedInUserTitle">Buzzed-in User</div>
+                                    <div className="buzzedInUserName">{ this.state.buzzedInUser.name } ({ this.state.team })</div>
+                                </div>
+                            }
                         </div>
-
+                    }
+                </div>
+                <div className="buzzerUserListView">
+                    Players:
+                        <br />
+                    <div>
+                        <BuzzerUserList teams={ this.state.teams } />
                     </div>
-                }
-
-                <hr />
-                <h1>Host Settings</h1>
-                Ingore the below if you are the player.  This will all move to a different
-                page in the future.
-                <p />
-                { this.state.buzzerActive == true &&
-                    <button onClick={ this.resetBuzzer }>Reset</button>
-                }
-
-                { this.state.buzzerActive == false &&
-                    <button onClick={ this.activateBuzzer }>Activate</button>
-                }
-
-            </div>
+                </div>
+            </div >
 
         );
     }

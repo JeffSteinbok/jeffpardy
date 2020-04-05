@@ -10,42 +10,43 @@ namespace Jeopardy.Hubs
 {
     public class BuzzerHub : Hub
     {
-        Buzzer b;
+        Buzzer buzzer;
 
-        public BuzzerHub(Buzzer b)
+        public BuzzerHub(Buzzer buzzer)
         {
-            this.b = b;
+            this.buzzer = buzzer;
         }
 
-        public override Task OnConnectedAsync()
+        public override async Task OnConnectedAsync()
         {
-            return base.OnConnectedAsync();
+            await this.buzzer.ConnectAsync(Context.ConnectionId);
+            await base.OnConnectedAsync();
         }
 
-        public override Task OnDisconnectedAsync(Exception exception)
+        public override async Task OnDisconnectedAsync(Exception exception)
         {
-            this.b.RemoveUser(Context.ConnectionId);
-            return base.OnDisconnectedAsync(exception);
+            await this.buzzer.RemoveUserAsync(Context.ConnectionId);
+            await base.OnDisconnectedAsync(exception);
         }
 
-        public void Connect(string team, string name)
+        public async void ConnectUser(string team, string name)
         {
-            this.b.AddUser(Context.ConnectionId, team, name);
+            await this.buzzer.ConnectUserAsync(Context.ConnectionId, team, name);
         }
 
-        public void ResetBuzzer()
+        public async void ResetBuzzer()
         {
-            this.b.ResetBuzzer();
+            await this.buzzer.ResetBuzzerAsync();
         }
 
-        public void ActivateBuzzer()
+        public async void ActivateBuzzer()
         {
-            this.b.ActivateBuzzer();
+            await this.buzzer.ActivateBuzzerAsync();
         }
 
         public void BuzzIn(int timeInMillisenconds)
         {
-            b.BuzzIn(Context.ConnectionId, timeInMillisenconds);
+            buzzer.BuzzIn(Context.ConnectionId, timeInMillisenconds);
         }
 
     }

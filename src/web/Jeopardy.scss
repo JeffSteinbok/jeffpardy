@@ -1,3 +1,6 @@
+$colorGameBoard: #060CE9;
+$colorBrown: #2b0f01;
+
 /* Font Families */
 @font-face
 {
@@ -45,6 +48,7 @@ body {
     height: 100%;
 }
 
+button { cursor:pointer; }
 
 div#jeopardyBoardFrame {
     width:100%;
@@ -83,7 +87,7 @@ div#jeopardyBoard div.jeopardyCategory {
 div#jeopardyBoard div.jeopardyCategory .categoryName
 {
     height: 15%;
-    background-color:#060CE9;
+    background-color:$colorGameBoard;
     color:white;
     text-transform: uppercase;
     text-shadow: 2px 2px black;
@@ -144,7 +148,7 @@ div#jeopardyBoard div.jeopardyCategory .clues .clue a
 
 div#jeopardyBoard div.jeopardyCategory .clues .clue a:hover
 {
-    background-color:darkblue;
+    background-color:darken($colorGameBoard, 20);
 }
 
 div#jeopardyBoard div.jeopardyActiveClue {
@@ -180,7 +184,7 @@ div#jeopardyBoard div.jeopardyActiveClue .clue
 div#jeopardyBoard div.jeopardyActiveClue .question
 {
     flex-grow: 1;
-    background-color:#060CE9;
+    background-color:$colorGameBoard;
     color: white;
     font-size:3em;
     display: flex;
@@ -196,15 +200,78 @@ div#jeopardyBoard div.jeopardyActiveClue .question
 
 }
 
+div#buzzerView
+{
+    padding:10px;
+    background-color: $colorGameBoard;
+    color:white;
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 50px auto;
+    flex-direction: row;
+    height:100%;
+    box-sizing: border-box;
+}
+
+div#buzzerView div.buzzerViewTitle
+{
+    font-size:2em;
+    text-transform: uppercase;
+    text-shadow: 2px 2px black;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-stretch: ultra-condensed;
+    grid-column-start: span 2;
+    text-align: center;
+}
+
+div#buzzerView div.buzzerCurrentUserView
+{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+div#buzzerView div.buzzerCurrentUserView div.playerName {
+    font-size:1.5em;
+    margin-bottom: 20px;
+}
+
+div#buzzerView div.buzzerCurrentUserView div.buzzedInUser {
+    margin-top:20px;
+    padding:10px 30px 10px 30px;
+    background-color: green;
+}
+
+div#buzzerView div.buzzerCurrentUserView div.buzzedInUser div.buzzedInUserTitle{
+
+}
+
+div#buzzerView div.buzzerCurrentUserView div.buzzedInUser div.buzzedInUserName{
+    font-size:2em;
+}
+
+div#buzzerView div.userList
+{
+
+}
+
+
 button#buzzer {
     display:block;
-    height: 100px;
-    width: 100px;
+    height: 200px;
+    width: 200px;
     font-size:2em;
     color:white;
     border-radius: 50%;
-    box-shadow: 0px 0px 20px rgb(50, 50, 50);
+    box-shadow: 0px 0px 20px rgba(50, 50, 50, 0.5);
 }
+
+button#buzzer:focus {
+    outline:0;
+}
+
 
 button#buzzer.active {
     border: 1px solid green;
@@ -230,7 +297,7 @@ button#buzzer.lockedout {
 div#scoreboard {
     height:130px;
     box-sizing: border-box;
-    background-color:#2b0f01;
+    background-color:$colorBrown;
     display:flex;
     flex-direction: row;
 }
@@ -367,7 +434,8 @@ div#header {
     top: 0;
     left: 0;
     right: 0;
-    height: 40px
+    height: 40px;
+    background-color:$colorBrown;
 }
 
 /* Home section */

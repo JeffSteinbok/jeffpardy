@@ -60,7 +60,8 @@ export class JeopardyBoard extends React.Component<any, IJeopardyBoardState> imp
         this.setState({
             "activeClue": null,
             activeClueValue: null,
-            activeCategory: null
+            activeCategory: null,
+            showQuestion: false
         })
     };
 

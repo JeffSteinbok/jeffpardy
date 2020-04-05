@@ -26,7 +26,7 @@ module.exports = {
                     options: {
                         "presets": ["@babel/preset-env", "@babel/preset-react"]
                     }
-                }
+                },
             },
             {
                 test: /\.ts(x?)$/,
@@ -41,13 +41,5 @@ module.exports = {
     },
     resolve: {
         extensions: ['*', '.js', '.jsx', '.tsx']
-    },
-    plugins: [
-        new CopyWebpackPlugin([
-            {
-                from: './src/web/Jeopardy.scss',
-                to: '../../css/dist/Jeopardy.css',
-            }
-        ])
-    ]
+    }
 };

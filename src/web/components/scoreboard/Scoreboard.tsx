@@ -90,11 +90,6 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                 .start()
                 .then(() => {
                     console.log('Connection started!');
-
-                    this.state.hubConnection
-                        .invoke('connect', "WATSON", "PLACEHOLDER")
-                        .catch(err => console.error(err));
-
                 })
                 .catch(err => console.log('Error while establishing connection :('));
 
@@ -160,10 +155,6 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                     { this.state.buzzerActive == false &&
                         <button onClick={ this.activateBuzzer }>Activate</button>
                     }
-
-                    <button></button>
-                    <button>Correct Response</button>
-                    <button>Incorrect Response</button>
                 </div>
 
                 <div className="scoreEntries">
