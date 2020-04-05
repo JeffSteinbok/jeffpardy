@@ -160,11 +160,15 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                 <div className="scoreEntries">
                     { Object.keys(this.state.teams).sort().map((teamName, index) => {
                         let buzzerState = ScoreboardEntryBuzzerState.Off;
+                        let buzzedInUserName = "";
                         if (this.state.buzzerActive) { buzzerState = ScoreboardEntryBuzzerState.Active }
-                        if (this.state.buzzedInUser != null && this.state.buzzedInUser.team == teamName) { buzzerState = ScoreboardEntryBuzzerState.BuzzedIn }
+                        if (this.state.buzzedInUser != null && this.state.buzzedInUser.team == teamName) {
+                            buzzerState = ScoreboardEntryBuzzerState.BuzzedIn;
+                            buzzedInUserName = this.state.buzzedInUser.name;
+                        }
 
                         return (
-                            <ScoreboardEntry key={ index } teamName={ teamName } buzzerState={ buzzerState } />
+                            <ScoreboardEntry key={ index } teamName={ teamName } buzzerState={ buzzerState } buzzedInUserName={ buzzedInUserName } />
                         )
                     }) }
                 </div>

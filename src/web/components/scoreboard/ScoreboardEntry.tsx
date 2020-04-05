@@ -9,6 +9,7 @@ export enum ScoreboardEntryBuzzerState {
 export interface IScoreboardEntryProps {
     teamName: string;
     buzzerState: ScoreboardEntryBuzzerState;
+    buzzedInUserName: string;
 }
 
 /**
@@ -30,7 +31,7 @@ export class ScoreboardEntry extends React.Component<IScoreboardEntryProps, any>
 
         return (
             <div className="scoreboardEntry">
-                <div className={ buzzerIndicatorClass }></div>
+                <div className={ buzzerIndicatorClass }>{ this.props.buzzedInUserName }</div>
                 <div className="teamName">{ this.props.teamName } </div>
                 <div className="score">20000</div>
             </div>
