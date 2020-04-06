@@ -1,13 +1,23 @@
 import * as React from "react";
-import { IJeopardyController } from "../../IJeopardyController";
+import { JeopardyController } from "../../JeopardyController";
 import { AppTitleBar } from "../appTitleBar/AppTitleBar";
-import { JeopardyBoard } from "../gameBoard/JeopardyBoard";
+import { JeopardyBoard, IJeopardyBoard } from "../gameBoard/JeopardyBoard";
 import { Scoreboard } from "../scoreboard/Scoreboard";
+import { Logger } from "../../utilities/Logger";
 
 export interface IPageLayoutState {
 }
 
-export class PageLayout extends React.Component<any, IPageLayoutState> implements IJeopardyController {
+export class PageLayout extends React.Component<any, IPageLayoutState> {
+
+    jeopardyController: JeopardyController;
+
+    constructor(props: any) {
+        super(props);
+        this.jeopardyController = new JeopardyController();
+    }
+
+
     public render() {
         return (
             <div className="topPageNormal">
@@ -15,8 +25,8 @@ export class PageLayout extends React.Component<any, IPageLayoutState> implement
                 </div>
                 <div className="middleSection">
                     <div id="pageContent" className="pageContent">
-                        <JeopardyBoard></JeopardyBoard>
-                        <Scoreboard></Scoreboard>
+                        <JeopardyBoard jeopardyController={ this.jeopardyController }></JeopardyBoard>
+                        <Scoreboard jeopardyController={ this.jeopardyController } ></Scoreboard>
                     </div>
                 </div>
                 <div className="bottomSection">

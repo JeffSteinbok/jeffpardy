@@ -1,7 +1,6 @@
 ﻿import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as signalR from "@microsoft/signalr";
-import { PageLayout } from "./components/pageLayout/PageLayout";
 
 /**
  * Root page for the application, begins the rendering.
@@ -15,7 +14,9 @@ export class Index extends React.Component<any, any> {
     public render() {
         return (
             <div>
-                <PageLayout />
+                <div>JSJeopardy</div>
+                <div><a href="/host">Host a Game</a></div>
+                <div><a href="/player">Join a Game as a Player</a></div>
             </div>
         );
     }

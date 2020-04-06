@@ -3,6 +3,11 @@ import { JeopardyCategory } from "./JeopardyCategory"
 import { WebServerApiManager, IApiExecutionContext } from "../../utilities/WebServerApiManager";
 import { ICategory, IQuestion } from "./ICategory";
 import { Logger } from "../../utilities/Logger";
+import { JeopardyController } from "../../JeopardyController";
+
+export interface IJeopardyBoardProps {
+    jeopardyController: JeopardyController;
+}
 
 export interface IJeopardyBoardState {
     categories: ICategory[];
@@ -13,10 +18,11 @@ export interface IJeopardyBoardState {
 }
 
 export interface IJeopardyBoard {
-    showClue(category: ICategory, value: number, clue: IQuestion);
+    showClue: (category: ICategory, value: number, clue: IQuestion) => void;
+    hideClue: () => void;
 }
 
-export class JeopardyBoard extends React.Component<any, IJeopardyBoardState> implements IJeopardyBoard {
+export class JeopardyBoard extends React.Component<IJeopardyBoardProps, IJeopardyBoardState> implements IJeopardyBoard {
 
     private contextMenuTarget: any;
     private categories: ICategory = null;
@@ -30,12 +36,15 @@ export class JeopardyBoard extends React.Component<any, IJeopardyBoardState> imp
             categories: null,
             showQuestion: false
         }
+
+        this.props.jeopardyController.setJeopardyBoard(this);
     }
 
     private loadGameBoard() {
+        Logger.debug("loadGameBoard");
         let context: IApiExecutionContext = {
             showProgressIndicator: true,
-            apiName: "Get-OneDriveMachine",
+            apiName: "/api/Categories/GetGameBoard",
             formData: {},
             json: true,
             success: (results: any) => {
@@ -50,10 +59,11 @@ export class JeopardyBoard extends React.Component<any, IJeopardyBoardState> imp
 
     public showClue(category: ICategory, value: number, clue: IQuestion) {
         this.setState({
-            "activeClue": clue,
+            activeClue: clue,
             activeClueValue: value,
             activeCategory: category
-        })
+        });
+        this.props.jeopardyController.showClue();
     }
 
     hideClue = () => {
@@ -75,10 +85,9 @@ export class JeopardyBoard extends React.Component<any, IJeopardyBoardState> imp
         this.loadGameBoard();
     }
 
-
     public render() {
         return (
-            <div id="jeopardyBoardFrame">
+            <div id="jeopardyBoardFrame" >
                 <div id="jeopardyBoardInnerFrame">
                     { this.state.categories &&
                         <div id="jeopardyBoard">
@@ -88,11 +97,7 @@ export class JeopardyBoard extends React.Component<any, IJeopardyBoardState> imp
                                 }) }
                             { this.state.activeClue != null &&
                                 <div className="jeopardyActiveClue">
-                                    <div className="header">
-                                        <div><button onClick={ this.hideClue }>Back</button></div>
-                                        <div>{ this.state.activeCategory.title } for { this.state.activeClueValue }</div>
-                                        <div><button onClick={ this.showQuestion }>Show Question</button></div>
-                                    </div>
+                                    <div className="header">{ this.state.activeCategory.title } for { this.state.activeClueValue }</div>
                                     <div className="clue">{ this.state.activeClue.clue }</div>
                                     { this.state.showQuestion == true &&
                                         <div className="question">{ this.state.activeClue.question }</div>

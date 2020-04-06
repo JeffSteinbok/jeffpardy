@@ -1,13 +1,13 @@
 import * as React from "react";
-import { IBuzzerUser } from "../../Buzzer";
+import { IPlayer } from "../../../interfaces/IPlayer";
 
-export interface IBuzzerUserListProps {
-    teams: { [key: string]: IBuzzerUser[] }
+export interface IPlayerListProps {
+    teams: { [key: string]: IPlayer[] }
 }
 /**
  * Top bar containing toolbar buttons and drop downs
  */
-export class BuzzerUserList extends React.Component<IBuzzerUserListProps, any> {
+export class PlayerList extends React.Component<IPlayerListProps, any> {
 
     constructor(props: any) {
         super(props);

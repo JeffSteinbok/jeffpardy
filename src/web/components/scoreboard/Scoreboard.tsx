@@ -2,7 +2,9 @@ import * as React from "react";
 import { ScoreboardEntry, ScoreboardEntryBuzzerState } from "./ScoreboardEntry";
 import * as signalR from "@microsoft/signalr";
 import { Logger } from "../../utilities/Logger";
-import { IBuzzerUser } from "../../Buzzer";
+import { IPlayer } from "../../../interfaces/IPlayer";
+import { JeopardyController } from "../../JeopardyController";
+import { Key, SpecialKey } from "../../utilities/Key";
 
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub/buzzer")
@@ -18,30 +20,36 @@ connection.on("messageReceived", (username: string, message: string) => {
 
 
 export interface IScoreboardProps {
+    jeopardyController: JeopardyController;
 }
 
 export interface IScoreboardState {
     message: string;
-    users: IBuzzerUser[];
-    teams: { [key: string]: IBuzzerUser[] };
+    users: IPlayer[];
+    teams: { [key: string]: IPlayer[] };
     logMessages: string[];
     hubConnection: signalR.HubConnection;
-    name: string;
-    team: string;
     connected: boolean;
     buzzerActive: boolean;
     buzzerLocked: boolean;
     buzzed: boolean;
-    buzzedInUser: IBuzzerUser;
+    buzzedInUser: IPlayer;
+    isClueShown: boolean;
 }
 
+export interface IScoreboard {
+    showClue: () => void;
+    hideClue: () => void;
+}
 /**
  * Top bar containing toolbar buttons and drop downs
  */
-export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardState> {
+export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardState> implements IScoreboard {
 
     constructor(props: any) {
         super(props);
+
+        this.props.jeopardyController.setScoreboard(this);
 
         this.state = {
             message: '',
@@ -49,13 +57,12 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
             teams: {},
             logMessages: [],
             hubConnection: null,
-            name: '',
-            team: '',
             connected: false,
             buzzerActive: false,
             buzzerLocked: false,
             buzzed: false,
-            buzzedInUser: null
+            buzzedInUser: null,
+            isClueShown: false
         };
     }
 
@@ -77,9 +84,37 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         this.setState({ message: '' });
     };
 
+    showClue = () => {
+        this.setState({ isClueShown: true });
+    };
+
+    hideClue = () => {
+        this.setState({ isClueShown: false });
+    };
+
+    showBoard = () => {
+        this.props.jeopardyController.hideClue();
+    };
+
+    showQuestion = () => {
+        //this.props.jeopardyController.jeopardyBoard.showQuestion();
+    };
+
+
+    handleKeyDOwn = (event: KeyboardEvent) => {
+        switch (event.keyCode) {
+            case SpecialKey.ESCAPE:
+                this.showBoard();
+                break;
+            case SpecialKey.SPACE:
+                this.showQuestion();
+                break;
+        }
+    }
 
     componentDidMount = () => {
 
+        window.addEventListener("keydown", this.handleKeyDOwn)
 
         const hubConnection: signalR.HubConnection = new signalR.HubConnectionBuilder()
             .withUrl('/hub/buzzer')
@@ -93,7 +128,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                 })
                 .catch(err => console.log('Error while establishing connection :('));
 
-            this.state.hubConnection.on('updateUsers', (users: IBuzzerUser[]) => {
+            this.state.hubConnection.on('updateUsers', (users: IPlayer[]) => {
                 Logger.debug(JSON.stringify(users));
                 this.setState({ "users": users });
 
@@ -141,6 +176,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
     componentWillUnmount() {
         this.state.hubConnection.stop();
+        window.addEventListener("keydown", this.handleKeyDOwn);
     }
 
     public render() {
@@ -148,13 +184,9 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         return (
             <div id="scoreboard">
                 <div className="scoreboardMargin">
-                    { this.state.buzzerActive == true &&
-                        <button onClick={ this.resetBuzzer }>Reset</button>
-                    }
-
-                    { this.state.buzzerActive == false &&
-                        <button onClick={ this.activateBuzzer }>Activate</button>
-                    }
+                    <button disabled={ !this.state.isClueShown } onClick={ this.showBoard }>Show Board (esc)</button>
+                    <button disabled={ !this.state.buzzerActive } onClick={ this.resetBuzzer }>Reset</button>
+                    <button disabled={ this.state.buzzerActive } onClick={ this.activateBuzzer }>Activate</button>
                 </div>
 
                 <div className="scoreEntries">

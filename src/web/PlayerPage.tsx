@@ -2,7 +2,8 @@
 import * as ReactDOM from "react-dom";
 import * as signalR from "@microsoft/signalr";
 import { Logger } from "./utilities/Logger";
-import { BuzzerUserList } from "./components/buzzerUserList/BuzzerUserList";
+import { IPlayer } from "../interfaces/IPlayer"
+import { PlayerList } from "./components/playerList/PlayerList";
 
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub/buzzer")
@@ -18,16 +19,11 @@ connection.on("messageReceived", (username: string, message: string) => {
 
 connection.start().catch(err => document.write(err));
 
-export interface IBuzzerUser {
-    team: string;
-    name: string;
-    connectionId: string;
-}
 
-export interface IBuzzerState {
+export interface IPlayerPageState {
     message: string;
-    users: IBuzzerUser[];
-    teams: { [key: string]: IBuzzerUser[] };
+    users: IPlayer[];
+    teams: { [key: string]: IPlayer[] };
     logMessages: string[];
     hubConnection: signalR.HubConnection;
     name: string;
@@ -36,14 +32,14 @@ export interface IBuzzerState {
     buzzerActive: boolean;
     buzzerLocked: boolean;
     buzzed: boolean;
-    buzzedInUser: IBuzzerUser;
+    buzzedInUser: IPlayer;
     isWinner: boolean;
 }
 
 /**
  * Root page for the application, begins the rendering.
  */
-export class Buzzer extends React.Component<any, IBuzzerState> {
+export class Buzzer extends React.Component<any, IPlayerPageState> {
 
     buzzerActivateTime: Date;
 
@@ -82,7 +78,7 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
                 })
                 .catch(err => console.log('Error while establishing connection :('));
 
-            this.state.hubConnection.on('updateUsers', (users: IBuzzerUser[]) => {
+            this.state.hubConnection.on('updateUsers', (users: IPlayer[]) => {
                 Logger.debug(JSON.stringify(users));
                 this.setState({ "users": users });
 
@@ -102,7 +98,7 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
                 }
             });
 
-            this.state.hubConnection.on('assignWinner', (user: IBuzzerUser) => {
+            this.state.hubConnection.on('assignWinner', (user: IPlayer) => {
                 Logger.debug("Winner Assigned " + JSON.stringify(user));
 
                 this.setState({ buzzedInUser: user });
@@ -231,7 +227,7 @@ export class Buzzer extends React.Component<any, IBuzzerState> {
                     Players:
                         <br />
                     <div>
-                        <BuzzerUserList teams={ this.state.teams } />
+                        <PlayerList teams={ this.state.teams } />
                     </div>
                 </div>
             </div >

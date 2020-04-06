@@ -22,7 +22,7 @@ export class WebServerApiManager {
      * @param {IApiExecutionContext} apiExecutionContext Parameters for executing the api against the webserver.
      */
     public executeApi(apiExecutionContext: IApiExecutionContext) {
-        axios.get("/api/Categories/GetGameBoard").then(
+        axios.get(apiExecutionContext.apiName).then(
             (response: AxiosResponse<any>) => {
                 let result = response;
 

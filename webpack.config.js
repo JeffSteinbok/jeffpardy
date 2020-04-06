@@ -5,8 +5,9 @@ const path = require('path');
 module.exports = {
     mode: 'development',
     entry: {
-        index: './src/web/Index.tsx',
-        buzzer: './src/web/Buzzer.tsx'
+        index: './src/web/StartPage.tsx',
+        host: './src/web/HostPage.tsx',
+        player: './src/web/PlayerPage.tsx'
     },
     output: {
         path: path.resolve(__dirname, './wwwroot/js/dist'),

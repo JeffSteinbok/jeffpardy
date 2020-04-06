@@ -161,6 +161,8 @@ div#jeopardyBoard div.jeopardyActiveClue {
 div#jeopardyBoard div.jeopardyActiveClue .header {
     background-color: darkblue;
     flex-grow:0;
+    text-align: center;
+    color:white;
 }
 
 div#jeopardyBoard div.jeopardyActiveClue .clue
