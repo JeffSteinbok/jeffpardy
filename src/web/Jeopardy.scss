@@ -120,19 +120,20 @@ div#jeopardyBoard {
     position: relative;
     padding:10px;
     box-sizing: inherit;
+}
+
+div#jeopardyBoard div.jeopardyBoardClues {
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1.5fr 1fr 1fr 1fr 1fr 1fr;
+    width:100%;
 
 }
 
-div#jeopardyBoard div.jeopardyCategory {
-    flex: 1 1 0px;
-    flex-grow: 1;
-}
-
-div#jeopardyBoard div.jeopardyCategory .categoryName
+div#jeopardyBoard div.jeopardyCategory
 {
     @extend %jeopardyMainFont;
 
-    height: 15%;
     background-color:$colorGameBoard;
     font-size: 2em;
     text-align: center;
@@ -143,51 +144,49 @@ div#jeopardyBoard div.jeopardyCategory .categoryName
     justify-content: center;
 }
 
-
-div#jeopardyBoard div.jeopardyCategory .clues
-{
-    display:flex;
-    flex-direction: column;
-    height: 80%;
-
-}
-
-div#jeopardyBoard div.jeopardyCategory .clues .clue
+div#jeopardyBoard div.jeopardyClue
 {
     @extend %jeopardyMainFont;
 
-    display:flex;
-    flex-grow: 1;
     box-sizing: inherit;
-    align-items: center;
-    justify-content: center;
     margin:2px;
     position: relative;
     font-size: 3.5em;
     box-sizing: inherit;
+    background-color:#060CE9;
+    box-sizing: border-box;
+
 }
 
-
-div#jeopardyBoard div.jeopardyCategory .clues .clue a
+div#jeopardyBoard div.jeopardyClue div
 {
-    background-color:#060CE9;
-    color:yellow;
-    text-decoration: none;
-    display: flex;
-    position: relative;
-    top:0;
-    left:0;
-    width:100%;
     height:100%;
-    padding:10px;
-    box-sizing: border-box;
+    width:100%;
+    display:flex;
+    flex-grow: 1;
     align-items: center;
     justify-content: center;
 }
 
-div#jeopardyBoard div.jeopardyCategory .clues .clue a:hover
+div#jeopardyBoard div.jeopardyClue a
+{
+    display:flex;
+    height:100%;
+    width:100%;
+    color:yellow;
+    text-decoration: none;
+    align-items: center;
+    justify-content: center;
+}
+
+div#jeopardyBoard  div.jeopardyClue a:hover
 {
     background-color:darken($colorGameBoard, 20);
+}
+
+div#jeopardyBoard  div.jeopardyClue a:hover a.asked:hover
+{
+    background-color:$colorGameBoard;
 }
 
 div#jeopardyBoard div.jeopardyActiveClue {
@@ -199,9 +198,11 @@ div#jeopardyBoard div.jeopardyActiveClue {
 
 div#jeopardyBoard div.jeopardyActiveClue .header {
     background-color: darkblue;
+    font-size:1.5em;
     flex-grow:0;
     text-align: center;
     color:white;
+    padding:5px;
 }
 
 div#jeopardyBoard div.jeopardyActiveClue .clue
@@ -338,29 +339,50 @@ div#scoreboard {
     background-color:$colorBrown;
     display:flex;
     flex-direction: row;
+    padding-top:10px;
+    padding-bottom: 10px;
 }
 
-div#scoreboard .scoreboardMargin {
-    width:50px;
+div#scoreboard div#hostControls {
+    width:250px;
+    padding-left:10px;
+    display:grid;
+    color:white;
+    font-weight: bold;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto 1fr;
+    row-gap:4px;
 }
+
+div#scoreboard div#hostControls button {
+    margin-right:4px;
+    background-color:green;
+    border-color: darkgreen;
+}
+
+div#scoreboard div#hostControls button:disabled {
+    background-color:grey;
+    border-color: darkgrey;
+}
+
 
 div#scoreboard .scoreEntries {
     display: flex;
     flex-grow: 1;
     flex-direction: row;
-    align-items: center;
-    justify-content: space-evenly;
+    align-items: left;
     text-align: center;
+    padding-left:30px;
 }
 
 div#scoreboard .scoreboardEntry {
     @extend %jeopardyMainFont;
 
-    box-sizing: border-box;
     width: 200px;
     background-color:#060CE9;
     box-shadow: 0px 0px 20px rgb(50, 50, 50);
     border:2px solid black;
+    margin-right:10px;
 }
 
 div#scoreboard .scoreboardEntry .buzzerIndicator{

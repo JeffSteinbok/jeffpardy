@@ -84,7 +84,7 @@ export class Buzzer extends React.Component<any, IPlayerPageState> {
 
 
                 if (this.state.users.length > 0) {
-                    let r = this.state.users.reduce((acc, obj) => {
+                    let teams: { [key: string]: IPlayer[] } = this.state.users.reduce((acc, obj) => {
                         let k = obj.team;
                         if (!acc[k]) {
                             acc[k] = []
@@ -94,7 +94,7 @@ export class Buzzer extends React.Component<any, IPlayerPageState> {
                     },
                         {});
 
-                    this.setState({ teams: r });
+                    this.setState({ teams: teams });
                 }
             });
 
