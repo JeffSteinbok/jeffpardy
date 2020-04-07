@@ -1,15 +1,16 @@
 import * as React from "react";
-import { IQuestion } from "./ICategory";
+import { IClue, ICategory } from "../../JeopardyController";
 import { Logger } from "../../utilities/Logger";
 import { IJeopardyBoard } from "./JeopardyBoard";
 
 export interface IJeopardyClueState {
+    isAsked: boolean;
 }
 
 export interface IJeopardyClueProps {
     jeopardyBoard: IJeopardyBoard;
-    value: number;
-    question: IQuestion;
+    category: ICategory;
+    clue: IClue;
 }
 
 export class JeopardyClue extends React.Component<IJeopardyClueProps, IJeopardyClueState> {
@@ -17,18 +18,36 @@ export class JeopardyClue extends React.Component<IJeopardyClueProps, IJeopardyC
     private contextMenuTarget: any;
 
     constructor(props: IJeopardyClueProps) {
+        Logger.debug("ClueConst");
         super(props);
+
+        this.state = {
+            isAsked: false
+        }
     }
 
-    private clickClue() {
-        this.props.jeopardyBoard.showClue(this.props.question)
+    private clickClue(event) {
+        this.props.jeopardyBoard.showClue(this.props.category, this.props.clue);
+        this.props.clue.isAsked = true;
+
+        let isCategoryAsked: boolean = true;
+        this.props.category.questions.forEach((clue: IClue) => {
+            if (!clue.isAsked) {
+                isCategoryAsked = false;
+            }
+        })
+        this.props.category.isAsked = isCategoryAsked;
+
+        event.preventDefault();
     }
 
     public render() {
         return (
-            <div className="clue">
-                <a href="#" onClick={ () => this.clickClue() }>{ this.props.value }</a>
-            </div>
+            <div>
+                { !this.props.clue.isAsked &&
+                    <a href="#" onClick={ (e) => { this.clickClue(e); } }>{ this.props.clue.value }</a>
+                }
+            </div >
         );
     }
 }

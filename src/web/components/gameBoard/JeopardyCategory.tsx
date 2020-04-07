@@ -1,6 +1,5 @@
 import * as React from "react";
-import { JeopardyClue } from "./JeopardyClue"
-import { ICategory } from "./ICategory";
+import { ICategory } from "../../JeopardyController";
 import { Logger } from "../../utilities/Logger";
 import { IJeopardyBoard } from "./JeopardyBoard";
 
@@ -23,19 +22,9 @@ export class JeopardyCategory extends React.Component<IJeopardyCategoryProps, IJ
 
     public render() {
         return (
-            <div className="jeopardyCategory">
-                <div className="categoryName">
-                    { this.props.category.title }
-                </div>
-                <div className="clues">
-                    { this.props.category.questions.map((value, index) => {
-                        return <JeopardyClue
-                            jeopardyBoard={ this.props.jeopardyBoard }
-                            key={ index }
-                            value={ (index + 1) * 100 }
-                            question={ value } />
-                    }) }
-                </div>
+            <div>
+                { !this.props.category.isAsked &&
+                    this.props.category.title }
             </div>
         );
     }

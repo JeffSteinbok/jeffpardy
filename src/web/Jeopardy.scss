@@ -1,3 +1,6 @@
+$colorGameBoard: #060CE9;
+$colorBrown: #2b0f01;
+
 /* Font Families */
 @font-face
 {
@@ -45,10 +48,55 @@ body {
     height: 100%;
 }
 
+button { cursor:pointer; }
+
+/* Base Styles to inherit from */
+%jeopardyMainFont {
+    color:white;
+    text-transform: uppercase;
+    text-shadow: 2px 2px black;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-stretch: ultra-condensed;
+}
+
+/* Start Page */
+/* ------------------------------------------------------ */
+
+div#startPage {
+    padding:10px;
+    background-color: $colorGameBoard;
+    color:white;
+    display:flex;
+    flex-direction: column;
+    height:100%;
+    box-sizing: border-box;
+    align-content: center;
+}
+
+div#startPage a {
+    font-size:2em;
+    color:white;
+}
+
+div#startPage div.title {
+    @extend %jeopardyMainFont;
+
+    height: 15%;
+    background-color:$colorGameBoard;
+    font-size: 4em;
+    text-align: center;
+    margin:2px;
+    padding:10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 
 div#jeopardyBoardFrame {
     width:100%;
-    height:100%;
+    flex-grow:1;
     background-color:grey;
     padding:20px;
     box-sizing: border-box;
@@ -72,25 +120,22 @@ div#jeopardyBoard {
     position: relative;
     padding:10px;
     box-sizing: inherit;
+}
+
+div#jeopardyBoard div.jeopardyBoardClues {
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1.5fr 1fr 1fr 1fr 1fr 1fr;
+    width:100%;
 
 }
 
-div#jeopardyBoard div.jeopardyCategory {
-    flex: 1 1 0px;
-    flex-grow: 1;
-}
-
-div#jeopardyBoard div.jeopardyCategory .categoryName
+div#jeopardyBoard div.jeopardyCategory
 {
-    height: 15%;
-    background-color:#060CE9;
-    color:white;
-    text-transform: uppercase;
-    text-shadow: 2px 2px black;
-    font-family: Arial, Helvetica, sans-serif;
+    @extend %jeopardyMainFont;
+
+    background-color:$colorGameBoard;
     font-size: 2em;
-    font-weight: bold;
-    font-stretch: ultra-condensed;
     text-align: center;
     margin:2px;
     padding:10px;
@@ -99,56 +144,70 @@ div#jeopardyBoard div.jeopardyCategory .categoryName
     justify-content: center;
 }
 
-
-div#jeopardyBoard div.jeopardyCategory .clues
+div#jeopardyBoard div.jeopardyClue
 {
-    display:flex;
-    flex-direction: column;
-    height: 80%;
+    @extend %jeopardyMainFont;
 
-}
-
-div#jeopardyBoard div.jeopardyCategory .clues .clue
-{
-    display:flex;
-    flex-grow: 1;
     box-sizing: inherit;
-    align-items: center;
-    justify-content: center;
     margin:2px;
     position: relative;
-    text-shadow: 2px 2px black;
-    font-family: Arial, Helvetica, sans-serif;
     font-size: 3.5em;
-    font-stretch: ultra-condensed;
     box-sizing: inherit;
+    background-color:#060CE9;
+    box-sizing: border-box;
+
 }
 
-
-div#jeopardyBoard div.jeopardyCategory .clues .clue a
+div#jeopardyBoard div.jeopardyClue div
 {
-    background-color:#060CE9;
-    color:yellow;
-    text-decoration: none;
-    display: flex;
-    position: relative;
-    top:0;
-    left:0;
-    width:100%;
     height:100%;
-    padding:10px;
-    box-sizing: border-box;
+    width:100%;
+    display:flex;
+    flex-grow: 1;
     align-items: center;
     justify-content: center;
 }
 
-div#jeopardyBoard div.jeopardyCategory .clues .clue a:hover
+div#jeopardyBoard div.jeopardyClue a
 {
-    background-color:darkblue;
+    display:flex;
+    height:100%;
+    width:100%;
+    color:yellow;
+    text-decoration: none;
+    align-items: center;
+    justify-content: center;
 }
 
-div#jeopardyBoard div.jeopardyActiveClue
+div#jeopardyBoard  div.jeopardyClue a:hover
 {
+    background-color:darken($colorGameBoard, 20);
+}
+
+div#jeopardyBoard  div.jeopardyClue a:hover a.asked:hover
+{
+    background-color:$colorGameBoard;
+}
+
+div#jeopardyBoard div.jeopardyActiveClue {
+    display:flex;
+    flex-direction:column;
+    height:100%;
+    width:100%;
+}
+
+div#jeopardyBoard div.jeopardyActiveClue .header {
+    background-color: darkblue;
+    font-size:1.5em;
+    flex-grow:0;
+    text-align: center;
+    color:white;
+    padding:5px;
+}
+
+div#jeopardyBoard div.jeopardyActiveClue .clue
+{
+    flex-grow: 1;
     background-color:#060CE9;
     color: white;
     font-size:4em;
@@ -157,7 +216,24 @@ div#jeopardyBoard div.jeopardyActiveClue
     top:0;
     left:0;
     width:100%;
-    height:100%;
+    padding:10px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+div#jeopardyBoard div.jeopardyActiveClue .question
+{
+    flex-grow: 1;
+    background-color:$colorGameBoard;
+    color: white;
+    font-size:3em;
+    display: flex;
+    position: relative;
+    top:0;
+    left:0;
+    width:100%;
     padding:10px;
     box-sizing: border-box;
     align-items: center;
@@ -166,15 +242,75 @@ div#jeopardyBoard div.jeopardyActiveClue
 
 }
 
+div#buzzerView
+{
+    padding:10px;
+    background-color: $colorGameBoard;
+    color:white;
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 50px auto;
+    flex-direction: row;
+    height:100%;
+    box-sizing: border-box;
+}
+
+div#buzzerView div.buzzerViewTitle
+{
+    @extend %jeopardyMainFont;
+
+    font-size:2em;
+    grid-column-start: span 2;
+    text-align: center;
+}
+
+div#buzzerView div.buzzerCurrentUserView
+{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+div#buzzerView div.buzzerCurrentUserView div.playerName {
+    font-size:1.5em;
+    margin-bottom: 20px;
+}
+
+div#buzzerView div.buzzerCurrentUserView div.buzzedInUser {
+    margin-top:20px;
+    padding:10px 30px 10px 30px;
+    background-color: green;
+}
+
+div#buzzerView div.buzzerCurrentUserView div.buzzedInUser div.buzzedInUserTitle{
+
+}
+
+div#buzzerView div.buzzerCurrentUserView div.buzzedInUser div.buzzedInUserName{
+    font-size:2em;
+}
+
+div#buzzerView div.userList
+{
+
+}
+
+
 button#buzzer {
     display:block;
-    height: 100px;
-    width: 100px;
+    height: 200px;
+    width: 200px;
     font-size:2em;
     color:white;
     border-radius: 50%;
-    box-shadow: 0px 0px 20px rgb(50, 50, 50);
+    box-shadow: 0px 0px 20px rgba(50, 50, 50, 0.5);
 }
+
+button#buzzer:focus {
+    outline:0;
+}
+
 
 button#buzzer.active {
     border: 1px solid green;
@@ -197,8 +333,95 @@ button#buzzer.lockedout {
 }
 
 
+div#scoreboard {
+    height:130px;
+    box-sizing: border-box;
+    background-color:$colorBrown;
+    display:flex;
+    flex-direction: row;
+    padding-top:10px;
+    padding-bottom: 10px;
+}
+
+div#scoreboard div#hostControls {
+    width:250px;
+    padding-left:10px;
+    display:grid;
+    color:white;
+    font-weight: bold;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto 1fr;
+    row-gap:4px;
+}
+
+div#scoreboard div#hostControls button {
+    margin-right:4px;
+    background-color:green;
+    border-color: darkgreen;
+}
+
+div#scoreboard div#hostControls button:disabled {
+    background-color:grey;
+    border-color: darkgrey;
+}
+
+
+div#scoreboard .scoreEntries {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: row;
+    align-items: left;
+    text-align: center;
+    padding-left:30px;
+}
+
+div#scoreboard .scoreboardEntry {
+    @extend %jeopardyMainFont;
+
+    width: 200px;
+    background-color:#060CE9;
+    box-shadow: 0px 0px 20px rgb(50, 50, 50);
+    border:2px solid black;
+    margin-right:10px;
+}
+
+div#scoreboard .scoreboardEntry .buzzerIndicator{
+    height:15px;
+    background-color: black;
+}
+
+div#scoreboard .scoreboardEntry .buzzerIndicator.buzzerActive{
+    background-color: white;
+}
+
+
+div#scoreboard .scoreboardEntry .buzzerIndicator.buzzedIn{
+    background-color: red;
+}
+
+
+div#scoreboard .scoreboardEntry .teamName{
+    font-size:2em;
+    border-bottom: solid 5px black;
+}
+
+
+div#scoreboard .scoreboardEntry .score{
+    font-size:2.5em;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+
+
 /* main layout
 ----------------------------------------------------------*/
+div.topPageNormal {
+    display:flex;
+    flex-direction: column;
+    height:100%;
+}
+
 div#header {
     height: 40px;
     background-color: rgb(9, 74, 178);
@@ -231,12 +454,6 @@ div#header {
 
 #logoButton div.ms-Button-flexContainer {
     padding-left:0px;
-}
-
-#logoButton {
-    background-image: url("./content/images/YodaLogo.png") !important;
-    background-repeat: no-repeat;
-    height:40px;
 }
 
 .pageTitle {
@@ -273,11 +490,11 @@ div#header {
 
 /*   topSection container ===========================  */
 .topSection {
-    position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    height: 40px
+    height: 40px;
+    background-color:$colorBrown;
 }
 
 /* Home section */
@@ -298,7 +515,6 @@ div#header {
 
 .appTitleBarPane {
     position: fixed;
-    top: 0;
     left: 180px;
     height: 40px;
     background-color: black;
@@ -311,25 +527,22 @@ div#header {
 
 /*   middleSection container =========================  */
 .middleSection {
-
+    flex-grow: 1;
+    display:flex;
 }
 
 .pageContent {
-    position: relative;
-    top:40px;
+    flex-grow: 1;
     overflow-x: hidden;
-    height: calc(100vh - 80px);
     width: calc(100vw);
+    display: flex;
+    flex-direction: column;
 }
 
 /*   bottomSection Start =========================  */
 
 .bottomSection {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 30px;
+
 }
 
 
@@ -397,12 +610,4 @@ div#header {
 .footerCell a:focus
 {
     color: rgba(102,102,102,.6)!important;
-}
-
-td.details-control {
-    background: url('/content/images/details_open.png') no-repeat center center;
-    cursor: pointer;
-}
-tr.shown td.details-control {
-    background: url('/content/images/details_close.png') no-repeat center center;
 }
