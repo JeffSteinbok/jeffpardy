@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <Target Name="NPM / WebPack Build" AfterTargets="Build">
-    <Exec Condition="$(Configuration) == 'Debug'" Command="npm i &amp;&amp; npm run build" />
-    <Exec Condition="$(Configuration) == 'Release'" Command="npm i &amp;&amp; npm run buildProd" />
+    <Exec Condition="$(Configuration) == 'Debug'" Command="npm i &amp;&amp; npm run build &amp;&amp; npm run sass" />
+    <Exec Condition="$(Configuration) == 'Release'" Command="npm i &amp;&amp; npm run buildProd &amp;&amp; npm run sass" />
   </Target>
 
 </Project>
