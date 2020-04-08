@@ -1,11 +1,12 @@
 import * as React from "react";
 import { JeffpardyCategory } from "./JeffpardyCategory"
 import { Logger } from "../../utilities/Logger";
-import { JeffpardyController, ICategory, IClue } from "../../JeffpardyController";
+import { JeffpardyHostController, ICategory, IClue } from "../../JeffpardyHostController";
 import { JeffpardyClue } from "./JeffpardyClue"
 
 export interface IJeffpardyBoardProps {
-    jeopardyController: JeffpardyController;
+    jeffpardyController: JeffpardyHostController;
+    categories: ICategory[];
 }
 
 export interface IJeffpardyBoardState {
@@ -16,7 +17,6 @@ export interface IJeffpardyBoardState {
 }
 
 export interface IJeffpardyBoard {
-    onCategoriesLoaded: (categories: ICategory[]) => void;
     showClue: (category: ICategory, clue: IClue) => void;
     showQuestion: () => void;
     hideClue: () => void;
@@ -29,18 +29,17 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
 
     constructor(props: any) {
         super(props);
+
+        Logger.debug("JeffpardyBoard:constructor", this.props.categories);
+
         this.state = {
             activeClue: null,
             activeCategory: null,
-            categories: null,
+            categories: this.props.categories,
             showQuestion: false
         }
 
-        this.props.jeopardyController.setJeffpardyBoard(this);
-    }
-
-    public onCategoriesLoaded = (categories: ICategory[]) => {
-        this.setState({ categories: categories })
+        this.props.jeffpardyController.setJeffpardyBoard(this);
     }
 
     public showClue = (category: ICategory, clue: IClue) => {
@@ -48,7 +47,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             activeClue: clue,
             activeCategory: category
         });
-        this.props.jeopardyController.showClue(clue);
+        this.props.jeffpardyController.showClue(clue);
     }
 
     public showQuestion = () => {
@@ -65,42 +64,40 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
         })
     };
 
-    public componentDidMount() {
-        this.props.jeopardyController.loadCategories();
-    }
-
     public render() {
+
+        Logger.debug("JeffpardyBoard:render", this.props.categories);
 
         let boardGridElements: JSX.Element[] = [];
 
-        if (this.state.categories && this.state.activeClue == null) {
-
+        if (this.props.categories && this.state.activeClue == null) {
+            Logger.debug("Drawing Categories!", this.props.categories);
             // Generate the grid of DIVs.  Doesn't work super-well in the below because they are not
             // nested.
             var keyCounter: number = 0;
-            for (var i: number = 0; i < this.state.categories.length; i++) {
-                let category: ICategory = this.state.categories[i];
-                boardGridElements.push(<div className="jeopardyCategory" key={ keyCounter++ } style={ { gridRow: 1, gridColumn: i + 1 } }><JeffpardyCategory category={ category } jeopardyBoard={ this } /></div>);
+            for (var i: number = 0; i < this.props.categories.length; i++) {
+                let category: ICategory = this.props.categories[i];
+                boardGridElements.push(<div className="jeffpardyCategory" key={ keyCounter++ } style={ { gridRow: 1, gridColumn: i + 1 } }><JeffpardyCategory category={ category } jeffpardyBoard={ this } /></div>);
 
                 for (var j: number = 0; j < category.questions.length; j++) {
                     let clue: IClue = category.questions[j];
-                    boardGridElements.push(<div className="jeopardyClue" key={ keyCounter++ } style={ { gridRow: j + 2, gridColumn: i + 1 } }><JeffpardyClue jeopardyBoard={ this } category={ category } clue={ clue } /></div>);
+                    boardGridElements.push(<div className="jeffpardyClue" key={ keyCounter++ } style={ { gridRow: j + 2, gridColumn: i + 1 } }><JeffpardyClue jeffpardyBoard={ this } category={ category } clue={ clue } /></div>);
                 }
             }
         }
 
         return (
-            <div id="jeopardyBoardFrame" >
-                <div id="jeopardyBoardInnerFrame">
+            <div id="jeffpardyBoardFrame" >
+                <div id="jeffpardyBoardInnerFrame">
                     { this.state.categories &&
-                        <div id="jeopardyBoard">
+                        <div id="jeffpardyBoard">
                             { this.state.activeClue == null &&
-                                <div className="jeopardyBoardClues">
+                                <div className="jeffpardyBoardClues">
                                     { boardGridElements }
                                 </div>
                             }
                             { this.state.activeClue != null &&
-                                <div className="jeopardyActiveClue">
+                                <div className="jeffpardyActiveClue">
                                     <div className="header">{ this.state.activeCategory.title } for { this.state.activeClue.value }</div>
                                     <div className="clue">{ this.state.activeClue.clue }</div>
                                     { this.state.showQuestion == true &&

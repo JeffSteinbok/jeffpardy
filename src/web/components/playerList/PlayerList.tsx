@@ -15,11 +15,11 @@ export class PlayerList extends React.Component<IPlayerListProps, any> {
 
     public render() {
         return (
-            <ul>
+            <ul className="playerList">
                 {
                     Object.keys(this.props.teams).sort().map((teamName, index) => {
                         return (
-                            <li key={ index }>{ teamName }
+                            <li key={ index }>Team: { teamName }
                                 <ul>
                                     {
                                         this.props.teams[teamName].map((user, index) => {

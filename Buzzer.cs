@@ -165,7 +165,16 @@ namespace Jeffpardy
             await buzzerGame.ConnectAsync(connectionId);
         }
 
-        public async Task ConnectUserAsync(string connectionId, string gameCode, string team, string name)
+        public async Task ConnectPlayerLobbyAsync(string connectionId, string gameCode)
+        {
+            BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
+
+            connectionToGameDictionary[connectionId] = gameCode;
+            await this.buzzerHubContext.Groups.AddToGroupAsync(connectionId, gameCode);
+            await buzzerGame.ConnectAsync(connectionId);
+        }
+
+        public async Task ConnectPlayerAsync(string connectionId, string gameCode, string team, string name)
         {
             BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
 

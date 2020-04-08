@@ -2,7 +2,7 @@ import { IJeffpardyBoard } from "./components/gameBoard/JeffpardyBoard";
 import { Logger } from "./utilities/Logger";
 import { IScoreboard } from "./components/scoreboard/Scoreboard";
 import { WebServerApiManager, IApiExecutionContext } from "./utilities/WebServerApiManager";
-import { JeffpardyClue } from "./components/gameBoard/JeffpardyClue";
+import { IHostPage, HostPageViewMode } from "./HostPage";
 
 export interface IClue {
     clue: string;
@@ -22,13 +22,16 @@ export interface ICategory {
  * This class is to be passed down to pages and components so they can interact with
  * global state in a type-safe manner.
  */
-export class JeffpardyController {
+export class JeffpardyHostController {
 
-    jeopardyBoard: IJeffpardyBoard;
+    hostPage: IHostPage;
+    jeffpardyBoard: IJeffpardyBoard;
     scoreboard: IScoreboard;
 
+    categories: ICategory[];
+
     public loadCategories() {
-        Logger.debug("loadCategories");
+        Logger.debug("JeffpardyHostController:loadCategories");
         let context: IApiExecutionContext = {
             showProgressIndicator: true,
             apiName: "/api/Categories/GetGameBoard",
@@ -45,7 +48,8 @@ export class JeffpardyController {
                     }
                 });
 
-                this.jeopardyBoard.onCategoriesLoaded(results);
+                this.categories = results;
+                this.hostPage.onCategoriesLoaded(this.categories);
             },
             error: null
         };
@@ -54,8 +58,12 @@ export class JeffpardyController {
         wsam.executeApi(context);
     }
 
+    public setViewMode(viewMode: HostPageViewMode) {
+        this.hostPage.setViewMode(viewMode);
+    }
+
     public setJeffpardyBoard(board: IJeffpardyBoard) {
-        this.jeopardyBoard = board;
+        this.jeffpardyBoard = board;
     }
 
     public setScoreboard(scoreboard: IScoreboard) {
@@ -67,11 +75,11 @@ export class JeffpardyController {
     }
 
     public showQuestion() {
-        this.jeopardyBoard.showQuestion();
+        this.jeffpardyBoard.showQuestion();
     }
 
     public showBoard() {
-        this.jeopardyBoard.hideClue();
+        this.jeffpardyBoard.hideClue();
     }
 
 }

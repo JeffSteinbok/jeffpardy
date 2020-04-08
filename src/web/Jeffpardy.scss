@@ -51,7 +51,7 @@ body {
 button { cursor:pointer; }
 
 /* Base Styles to inherit from */
-%jeopardyMainFont {
+%jeffpardyMainFont {
     color:white;
     text-transform: uppercase;
     text-shadow: 2px 2px black;
@@ -80,7 +80,7 @@ div#startPage a {
 }
 
 div#startPage div.title {
-    @extend %jeopardyMainFont;
+    @extend %jeffpardyMainFont;
 
     height: 15%;
     background-color:$colorGameBoard;
@@ -94,7 +94,7 @@ div#startPage div.title {
 }
 
 
-div#jeopardyBoardFrame {
+div#jeffpardyBoardFrame {
     width:100%;
     flex-grow:1;
     background-color:grey;
@@ -102,7 +102,7 @@ div#jeopardyBoardFrame {
     box-sizing: border-box;
 }
 
-div#jeopardyBoardInnerFrame {
+div#jeffpardyBoardInnerFrame {
     width:100%;
     height:100%;
     background-color:darkgrey;
@@ -111,7 +111,7 @@ div#jeopardyBoardInnerFrame {
     min-width: 1100px;
 }
 
-div#jeopardyBoard {
+div#jeffpardyBoard {
     width:100%;
     height:100%;
     background-color:black;
@@ -122,7 +122,7 @@ div#jeopardyBoard {
     box-sizing: inherit;
 }
 
-div#jeopardyBoard div.jeopardyBoardClues {
+div#jeffpardyBoard div.jeffpardyBoardClues {
     display:grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     grid-template-rows: 1.5fr 1fr 1fr 1fr 1fr 1fr;
@@ -130,9 +130,9 @@ div#jeopardyBoard div.jeopardyBoardClues {
 
 }
 
-div#jeopardyBoard div.jeopardyCategory
+div#jeffpardyBoard div.jeffpardyCategory
 {
-    @extend %jeopardyMainFont;
+    @extend %jeffpardyMainFont;
 
     background-color:$colorGameBoard;
     font-size: 2em;
@@ -144,9 +144,9 @@ div#jeopardyBoard div.jeopardyCategory
     justify-content: center;
 }
 
-div#jeopardyBoard div.jeopardyClue
+div#jeffpardyBoard div.jeffpardyClue
 {
-    @extend %jeopardyMainFont;
+    @extend %jeffpardyMainFont;
 
     box-sizing: inherit;
     margin:2px;
@@ -158,7 +158,7 @@ div#jeopardyBoard div.jeopardyClue
 
 }
 
-div#jeopardyBoard div.jeopardyClue div
+div#jeffpardyBoard div.jeffpardyClue div
 {
     height:100%;
     width:100%;
@@ -168,7 +168,7 @@ div#jeopardyBoard div.jeopardyClue div
     justify-content: center;
 }
 
-div#jeopardyBoard div.jeopardyClue a
+div#jeffpardyBoard div.jeffpardyClue a
 {
     display:flex;
     height:100%;
@@ -179,24 +179,24 @@ div#jeopardyBoard div.jeopardyClue a
     justify-content: center;
 }
 
-div#jeopardyBoard  div.jeopardyClue a:hover
+div#jeffpardyBoard  div.jeffpardyClue a:hover
 {
     background-color:darken($colorGameBoard, 20);
 }
 
-div#jeopardyBoard  div.jeopardyClue a:hover a.asked:hover
+div#jeffpardyBoard  div.jeffpardyClue a:hover a.asked:hover
 {
     background-color:$colorGameBoard;
 }
 
-div#jeopardyBoard div.jeopardyActiveClue {
+div#jeffpardyBoard div.jeffpardyActiveClue {
     display:flex;
     flex-direction:column;
     height:100%;
     width:100%;
 }
 
-div#jeopardyBoard div.jeopardyActiveClue .header {
+div#jeffpardyBoard div.jeffpardyActiveClue .header {
     background-color: darkblue;
     font-size:1.5em;
     flex-grow:0;
@@ -205,7 +205,7 @@ div#jeopardyBoard div.jeopardyActiveClue .header {
     padding:5px;
 }
 
-div#jeopardyBoard div.jeopardyActiveClue .clue
+div#jeffpardyBoard div.jeffpardyActiveClue .clue
 {
     flex-grow: 1;
     background-color:#060CE9;
@@ -223,7 +223,7 @@ div#jeopardyBoard div.jeopardyActiveClue .clue
     text-align: center;
 }
 
-div#jeopardyBoard div.jeopardyActiveClue .question
+div#jeffpardyBoard div.jeffpardyActiveClue .question
 {
     flex-grow: 1;
     background-color:$colorGameBoard;
@@ -257,9 +257,9 @@ div#buzzerView
 
 div#buzzerView div.buzzerViewTitle
 {
-    @extend %jeopardyMainFont;
+    @extend %jeffpardyMainFont;
 
-    font-size:2em;
+    font-size:3em;
     grid-column-start: span 2;
     text-align: center;
 }
@@ -272,6 +272,29 @@ div#buzzerView div.buzzerCurrentUserView
     text-align: center;
 }
 
+div#buzzerView div.buzzerCurrentUserView h1 {
+    margin-bottom:0px;
+}
+
+div#buzzerView div.buzzerCurrentUserView h2 {
+    margin-top:0px;
+}
+
+div#buzzerView div.buzzerCurrentUserView div.buzzerRegistration
+{
+    font-size:1.5em;
+}
+
+div#buzzerView div.buzzerCurrentUserView div.buzzerRegistration input[type="text"] {
+    font-size:0.8em;
+    text-align: center;
+}
+
+div#buzzerView div.buzzerCurrentUserView div.buzzerRegistration button {
+    font-size:1em;
+    padding:5px 20px 5px 20px;
+}
+
 div#buzzerView div.buzzerCurrentUserView div.playerName {
     font-size:1.5em;
     margin-bottom: 20px;
@@ -280,8 +303,14 @@ div#buzzerView div.buzzerCurrentUserView div.playerName {
 div#buzzerView div.buzzerCurrentUserView div.buzzedInUser {
     margin-top:20px;
     padding:10px 30px 10px 30px;
+    background-color: orangered;
+}
+
+
+div#buzzerView div.buzzerCurrentUserView div.buzzedInUser.buzzedInWinner {
     background-color: green;
 }
+
 
 div#buzzerView div.buzzerCurrentUserView div.buzzedInUser div.buzzedInUserTitle{
 
@@ -298,7 +327,7 @@ div#buzzerView div.userList
 
 
 button#buzzer {
-    display:block;
+    margin-top:20px;
     height: 200px;
     width: 200px;
     font-size:2em;
@@ -376,7 +405,7 @@ div#scoreboard .scoreEntries {
 }
 
 div#scoreboard .scoreboardEntry {
-    @extend %jeopardyMainFont;
+    @extend %jeffpardyMainFont;
 
     width: 200px;
     background-color:#060CE9;
@@ -412,6 +441,23 @@ div#scoreboard .scoreboardEntry .score{
     padding-bottom: 5px;
 }
 
+
+div.buzzerUserListView ul.playerList {
+    list-style: none;
+    padding-left:0px;
+}
+
+div.buzzerUserListView ul.playerList li {
+    font-weight:bold;
+}
+
+div.buzzerUserListView ul.playerList ul {
+    padding-left:10px;
+}
+
+div.buzzerUserListView ul.playerList ul li {
+    font-weight:normal;
+}
 
 
 /* main layout

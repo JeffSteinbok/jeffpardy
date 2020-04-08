@@ -27,10 +27,14 @@ namespace Jeffpardy.Hubs
         {
             await this.buzzer.ConnectHostAsync(Context.ConnectionId, gameCode);
         }
-
-        public async void ConnectUser(string gameCode, string team, string name)
+        public async void ConnectPlayerLobby(string gameCode)
         {
-            await this.buzzer.ConnectUserAsync(Context.ConnectionId, gameCode, team, name);
+            await this.buzzer.ConnectPlayerLobbyAsync(Context.ConnectionId, gameCode);
+        }
+
+        public async void ConnectPlayer(string gameCode, string team, string name)
+        {
+            await this.buzzer.ConnectPlayerAsync(Context.ConnectionId, gameCode, team, name);
         }
 
         public async void ResetBuzzer(string gameCode)

@@ -3,9 +3,10 @@ import { ScoreboardEntry, ScoreboardEntryBuzzerState } from "./ScoreboardEntry";
 import * as signalR from "@microsoft/signalr";
 import { Logger } from "../../utilities/Logger";
 import { IPlayer } from "../../../interfaces/IPlayer";
-import { JeffpardyController } from "../../JeffpardyController";
+import { JeffpardyHostController } from "../../JeffpardyHostController";
 import { Key, SpecialKey } from "../../utilities/Key";
 import { timingSafeEqual } from "crypto";
+import { HostPageViewMode } from "../../HostPage";
 
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub/buzzer")
@@ -26,7 +27,7 @@ enum GameBoardState {
 }
 
 export interface IScoreboardProps {
-    jeopardyController: JeffpardyController;
+    jeffpardyController: JeffpardyHostController;
 }
 
 export interface IScoreboardState {
@@ -56,7 +57,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
     constructor(props: any) {
         super(props);
 
-        this.props.jeopardyController.setScoreboard(this);
+        this.props.jeffpardyController.setScoreboard(this);
 
         this.state = {
             message: '',
@@ -104,7 +105,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
     showQuestion = () => {
         if ((this.state.gameBoardState == GameBoardState.Clue) &&
             this.state.buzzerActive) {
-            this.props.jeopardyController.showQuestion();
+            this.props.jeffpardyController.showQuestion();
             this.setState({ gameBoardState: GameBoardState.Question });
         }
         this.resetBuzzer();
@@ -112,7 +113,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
     showBoard = () => {
         if (this.state.gameBoardState == GameBoardState.Question) {
-            this.props.jeopardyController.showBoard();
+            this.props.jeffpardyController.showBoard();
             this.setState({ gameBoardState: GameBoardState.Normal });
         }
     };
@@ -148,7 +149,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
     }
 
 
-    handleKeyDOwn = (event: KeyboardEvent) => {
+    handleKeyDown = (event: KeyboardEvent) => {
         switch (event.keyCode) {
             case SpecialKey.SPACE:
                 if (this.state.gameBoardState == GameBoardState.Clue)
@@ -173,7 +174,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
     componentDidMount = () => {
 
-        window.addEventListener("keydown", this.handleKeyDOwn)
+        window.addEventListener("keydown", this.handleKeyDown)
 
         const hubConnection: signalR.HubConnection = new signalR.HubConnectionBuilder()
             .withUrl('/hub/buzzer')
@@ -251,7 +252,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
     componentWillUnmount() {
         this.state.hubConnection.stop();
-        window.addEventListener("keydown", this.handleKeyDOwn);
+        window.removeEventListener("keydown", this.handleKeyDown);
     }
 
     public render() {
@@ -273,6 +274,10 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                     <div>
                         <button disabled={ this.state.buzzedInUser == null } onClick={ this.correctResponse }>Right (z)</button>
                         <button disabled={ this.state.buzzedInUser == null } onClick={ this.incorrectResponse }>Wrong (x)</button>
+                    </div>
+                    <div>Host Tools:</div>
+                    <div>
+                        <button onClick={ () => this.props.jeffpardyController.setViewMode(HostPageViewMode.HostCheatSheet) }>Show Answer Key</button>
                     </div>
                 </div>
 

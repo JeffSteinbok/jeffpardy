@@ -4,6 +4,7 @@ import * as signalR from "@microsoft/signalr";
 import { Logger } from "./utilities/Logger";
 import { IPlayer } from "../interfaces/IPlayer"
 import { PlayerList } from "./components/playerList/PlayerList";
+import { stringify } from "querystring";
 
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub/buzzer")
@@ -19,6 +20,8 @@ connection.on("messageReceived", (username: string, message: string) => {
 
 connection.start().catch(err => document.write(err));
 
+export interface IPlayerPageProps {
+}
 
 export interface IPlayerPageState {
     message: string;
@@ -39,7 +42,7 @@ export interface IPlayerPageState {
 /**
  * Root page for the application, begins the rendering.
  */
-export class Buzzer extends React.Component<any, IPlayerPageState> {
+export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageState> {
 
     buzzerActivateTime: Date;
 
@@ -75,6 +78,9 @@ export class Buzzer extends React.Component<any, IPlayerPageState> {
                 .start()
                 .then(() => {
                     console.log('Connection started!');
+
+                    this.state.hubConnection
+                        .invoke('connectPlayerLobby', "FOOBAR");
                 })
                 .catch(err => console.log('Error while establishing connection :('));
 
@@ -130,8 +136,13 @@ export class Buzzer extends React.Component<any, IPlayerPageState> {
     }
 
     registerPlayer = () => {
+        if (this.state.name == "" || this.state.team == "") {
+            alert("Please fill in a team name and player name.");
+            return;
+        }
+
         this.state.hubConnection
-            .invoke('connectUser', "FOOBAR", this.state.team, this.state.name)
+            .invoke('connectPlayer', "FOOBAR", this.state.team, this.state.name)
             .then(() => this.setState({ connected: true }))
             .catch(err => console.error(err));
     }
@@ -191,41 +202,48 @@ export class Buzzer extends React.Component<any, IPlayerPageState> {
 
                 <div className="buzzerCurrentUserView">
                     { this.state.connected == false &&
-                        <div className="buzzerRegistration">
-                            <div>Register</div>
-                            <div>Team:</div>
-                            <input
-                                type="text"
-                                value={ this.state.team }
-                                onChange={ e => this.setState({ team: e.target.value }) }
-                            />
-                            <div>Player Name:</div>
-                            <input
-                                type="name"
-                                value={ this.state.name }
-                                onChange={ e => this.setState({ name: e.target.value }) }
-                            />
-                            <button onClick={ this.registerPlayer }>Register Player</button>
+                        <div>
+                            <h1>Register</h1>
+                            <div className="buzzerRegistration">
+                                <div>Team Name</div>
+                                <input
+                                    type="text"
+                                    value={ this.state.team }
+                                    onChange={ e => this.setState({ team: e.target.value }) }
+                                />
+                                <p />
+                                <div>Player Name</div>
+                                <input
+                                    type="text"
+                                    value={ this.state.name }
+                                    onChange={ e => this.setState({ name: e.target.value }) }
+                                />
+                                <p />
+                                <button onClick={ this.registerPlayer }>Start</button>
+                            </div>
                         </div>
                     }
                     { this.state.connected == true &&
                         <div>
-                            <div className="playerName">{ this.state.name } ({ this.state.team })</div>
+                            <h1>{ this.state.name }</h1>
+                            <h2>Team: { this.state.team }</h2>
+
+                            <div><i>Wait for the button to turn green before buzzing in.</i></div>
 
                             <button id="buzzer" className={ buzzerClassName } onClick={ this.buzzIn }>Buzz</button>
 
                             { this.state.buzzedInUser != null &&
-                                <div className="buzzedInUser">
+                                <div className={ "buzzedInUser " + (this.state.buzzedInUser.name == this.state.name ? " buzzedInWinner" : "") }>
                                     <div className="buzzedInUserTitle">Buzzed-in User</div>
-                                    <div className="buzzedInUserName">{ this.state.buzzedInUser.name } ({ this.state.team })</div>
+                                    <div className="buzzedInUserName">{ this.state.buzzedInUser.name }</div>
+                                    <div className="buzzedInUserTeam">Team: { this.state.buzzedInUser.team }</div>
                                 </div>
                             }
                         </div>
                     }
                 </div>
                 <div className="buzzerUserListView">
-                    Players:
-                        <br />
+                    <h1>Current Players</h1>
                     <div>
                         <PlayerList teams={ this.state.teams } />
                     </div>
@@ -242,6 +260,6 @@ let root = document.createElement("div");
 root.id = 'main';
 document.body.appendChild(root);
 ReactDOM.render(
-    <Buzzer />,
+    <PlayerPage />,
     document.getElementById("main")
 );
