@@ -1,28 +1,28 @@
 import * as React from "react";
-import { JeopardyCategory } from "./JeopardyCategory"
+import { JeffpardyCategory } from "./JeffpardyCategory"
 import { Logger } from "../../utilities/Logger";
-import { JeopardyController, ICategory, IClue } from "../../JeopardyController";
-import { JeopardyClue } from "./JeopardyClue"
+import { JeffpardyController, ICategory, IClue } from "../../JeffpardyController";
+import { JeffpardyClue } from "./JeffpardyClue"
 
-export interface IJeopardyBoardProps {
-    jeopardyController: JeopardyController;
+export interface IJeffpardyBoardProps {
+    jeopardyController: JeffpardyController;
 }
 
-export interface IJeopardyBoardState {
+export interface IJeffpardyBoardState {
     categories: ICategory[];
     activeClue: IClue;
     activeCategory: ICategory;
     showQuestion: boolean;
 }
 
-export interface IJeopardyBoard {
+export interface IJeffpardyBoard {
     onCategoriesLoaded: (categories: ICategory[]) => void;
     showClue: (category: ICategory, clue: IClue) => void;
     showQuestion: () => void;
     hideClue: () => void;
 }
 
-export class JeopardyBoard extends React.Component<IJeopardyBoardProps, IJeopardyBoardState> implements IJeopardyBoard {
+export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffpardyBoardState> implements IJeffpardyBoard {
 
     private contextMenuTarget: any;
     private categories: ICategory = null;
@@ -36,7 +36,7 @@ export class JeopardyBoard extends React.Component<IJeopardyBoardProps, IJeopard
             showQuestion: false
         }
 
-        this.props.jeopardyController.setJeopardyBoard(this);
+        this.props.jeopardyController.setJeffpardyBoard(this);
     }
 
     public onCategoriesLoaded = (categories: ICategory[]) => {
@@ -80,11 +80,11 @@ export class JeopardyBoard extends React.Component<IJeopardyBoardProps, IJeopard
             var keyCounter: number = 0;
             for (var i: number = 0; i < this.state.categories.length; i++) {
                 let category: ICategory = this.state.categories[i];
-                boardGridElements.push(<div className="jeopardyCategory" key={ keyCounter++ } style={ { gridRow: 1, gridColumn: i + 1 } }><JeopardyCategory category={ category } jeopardyBoard={ this } /></div>);
+                boardGridElements.push(<div className="jeopardyCategory" key={ keyCounter++ } style={ { gridRow: 1, gridColumn: i + 1 } }><JeffpardyCategory category={ category } jeopardyBoard={ this } /></div>);
 
                 for (var j: number = 0; j < category.questions.length; j++) {
                     let clue: IClue = category.questions[j];
-                    boardGridElements.push(<div className="jeopardyClue" key={ keyCounter++ } style={ { gridRow: j + 2, gridColumn: i + 1 } }><JeopardyClue jeopardyBoard={ this } category={ category } clue={ clue } /></div>);
+                    boardGridElements.push(<div className="jeopardyClue" key={ keyCounter++ } style={ { gridRow: j + 2, gridColumn: i + 1 } }><JeffpardyClue jeopardyBoard={ this } category={ category } clue={ clue } /></div>);
                 }
             }
         }

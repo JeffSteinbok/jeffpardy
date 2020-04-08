@@ -3,7 +3,7 @@ import { ScoreboardEntry, ScoreboardEntryBuzzerState } from "./ScoreboardEntry";
 import * as signalR from "@microsoft/signalr";
 import { Logger } from "../../utilities/Logger";
 import { IPlayer } from "../../../interfaces/IPlayer";
-import { JeopardyController } from "../../JeopardyController";
+import { JeffpardyController } from "../../JeffpardyController";
 import { Key, SpecialKey } from "../../utilities/Key";
 import { timingSafeEqual } from "crypto";
 
@@ -26,7 +26,7 @@ enum GameBoardState {
 }
 
 export interface IScoreboardProps {
-    jeopardyController: JeopardyController;
+    jeopardyController: JeffpardyController;
 }
 
 export interface IScoreboardState {

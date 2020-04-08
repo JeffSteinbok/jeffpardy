@@ -187,7 +187,7 @@ export class Buzzer extends React.Component<any, IPlayerPageState> {
 
 
             <div id="buzzerView">
-                <div className="buzzerViewTitle">JS Jeopardy Buzzer</div>
+                <div className="buzzerViewTitle">Jeffpardy! Buzzer</div>
 
                 <div className="buzzerCurrentUserView">
                     { this.state.connected == false &&

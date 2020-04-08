@@ -12,7 +12,7 @@ export class StartPage extends React.Component<any, any> {
     public render() {
         return (
             <div id="startPage">
-                <div className="title">JS Jeopardy</div>
+                <div className="title">Jeffpardy!</div>
                 <div><a href="/host">Host a Game</a></div>
                 <div><a href="/player">Join a Game as a Player</a></div>
             </div>

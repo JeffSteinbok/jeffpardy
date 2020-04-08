@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 using Microsoft.AspNetCore.SignalR;
-using Jeopardy;
+using Jeffpardy;
 
-namespace Jeopardy.Hubs
+namespace Jeffpardy.Hubs
 {
     public class BuzzerHub : Hub
     {

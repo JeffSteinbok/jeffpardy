@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
-    <AssemblyName>Jeopardy</AssemblyName>
-    <RootNamespace>Jeopardy</RootNamespace>
+    <AssemblyName>Jeffpardy</AssemblyName>
+    <RootNamespace>Jeffpardy</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

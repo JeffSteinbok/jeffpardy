@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Jeopardy
+namespace Jeffpardy
 {
     public class CategoryCache
     {

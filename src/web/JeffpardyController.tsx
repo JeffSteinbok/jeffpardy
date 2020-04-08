@@ -1,8 +1,8 @@
-import { IJeopardyBoard } from "./components/gameBoard/JeopardyBoard";
+import { IJeffpardyBoard } from "./components/gameBoard/JeffpardyBoard";
 import { Logger } from "./utilities/Logger";
 import { IScoreboard } from "./components/scoreboard/Scoreboard";
 import { WebServerApiManager, IApiExecutionContext } from "./utilities/WebServerApiManager";
-import { JeopardyClue } from "./components/gameBoard/JeopardyClue";
+import { JeffpardyClue } from "./components/gameBoard/JeffpardyClue";
 
 export interface IClue {
     clue: string;
@@ -22,9 +22,9 @@ export interface ICategory {
  * This class is to be passed down to pages and components so they can interact with
  * global state in a type-safe manner.
  */
-export class JeopardyController {
+export class JeffpardyController {
 
-    jeopardyBoard: IJeopardyBoard;
+    jeopardyBoard: IJeffpardyBoard;
     scoreboard: IScoreboard;
 
     public loadCategories() {
@@ -54,7 +54,7 @@ export class JeopardyController {
         wsam.executeApi(context);
     }
 
-    public setJeopardyBoard(board: IJeopardyBoard) {
+    public setJeffpardyBoard(board: IJeffpardyBoard) {
         this.jeopardyBoard = board;
     }
 

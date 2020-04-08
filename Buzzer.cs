@@ -1,4 +1,4 @@
-﻿using Jeopardy.Hubs;
+﻿using Jeffpardy.Hubs;
 using System;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace Jeopardy
+namespace Jeffpardy
 {
     public class BuzzerUser
     {

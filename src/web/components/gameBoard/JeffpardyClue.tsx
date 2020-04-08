@@ -1,23 +1,23 @@
 import * as React from "react";
-import { IClue, ICategory } from "../../JeopardyController";
+import { IClue, ICategory } from "../../JeffpardyController";
 import { Logger } from "../../utilities/Logger";
-import { IJeopardyBoard } from "./JeopardyBoard";
+import { IJeffpardyBoard } from "./JeffpardyBoard";
 
-export interface IJeopardyClueState {
+export interface IJeffpardyClueState {
     isAsked: boolean;
 }
 
-export interface IJeopardyClueProps {
-    jeopardyBoard: IJeopardyBoard;
+export interface IJeffpardyClueProps {
+    jeopardyBoard: IJeffpardyBoard;
     category: ICategory;
     clue: IClue;
 }
 
-export class JeopardyClue extends React.Component<IJeopardyClueProps, IJeopardyClueState> {
+export class JeffpardyClue extends React.Component<IJeffpardyClueProps, IJeffpardyClueState> {
 
     private contextMenuTarget: any;
 
-    constructor(props: IJeopardyClueProps) {
+    constructor(props: IJeffpardyClueProps) {
         Logger.debug("ClueConst");
         super(props);
 
