@@ -78,7 +78,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
     resetBuzzer = () => {
         if (this.state.buzzerActive) {
             this.state.hubConnection
-                .invoke('resetBuzzer')
+                .invoke('resetBuzzer', "FOOBAR")
                 .catch(err => console.error(err));
         }
     };
@@ -88,7 +88,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         if (this.state.gameBoardState == GameBoardState.Clue && !this.state.buzzerActive) {
 
             this.state.hubConnection
-                .invoke('activateBuzzer')
+                .invoke('activateBuzzer', "FOOBAR")
                 .catch(err => console.error(err));
             this.setState({ message: '' });
         }
@@ -102,7 +102,8 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
     };
 
     showQuestion = () => {
-        if (this.state.gameBoardState == GameBoardState.Clue) {
+        if ((this.state.gameBoardState == GameBoardState.Clue) &&
+            this.state.buzzerActive) {
             this.props.jeopardyController.showQuestion();
             this.setState({ gameBoardState: GameBoardState.Question });
         }
@@ -183,6 +184,9 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                 .start()
                 .then(() => {
                     console.log('Connection started!');
+
+                    this.state.hubConnection
+                        .invoke('connectHost', "FOOBAR");
                 })
                 .catch(err => console.log('Error while establishing connection :('));
 

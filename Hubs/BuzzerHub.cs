@@ -17,36 +17,35 @@ namespace Jeopardy.Hubs
             this.buzzer = buzzer;
         }
 
-        public override async Task OnConnectedAsync()
-        {
-            await this.buzzer.ConnectAsync(Context.ConnectionId);
-            await base.OnConnectedAsync();
-        }
-
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             await this.buzzer.RemoveUserAsync(Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
         }
 
-        public async void ConnectUser(string team, string name)
+        public async void ConnectHost(string gameCode)
         {
-            await this.buzzer.ConnectUserAsync(Context.ConnectionId, team, name);
+            await this.buzzer.ConnectHostAsync(Context.ConnectionId, gameCode);
         }
 
-        public async void ResetBuzzer()
+        public async void ConnectUser(string gameCode, string team, string name)
         {
-            await this.buzzer.ResetBuzzerAsync();
+            await this.buzzer.ConnectUserAsync(Context.ConnectionId, gameCode, team, name);
         }
 
-        public async void ActivateBuzzer()
+        public async void ResetBuzzer(string gameCode)
         {
-            await this.buzzer.ActivateBuzzerAsync();
+            await this.buzzer.ResetBuzzerAsync(gameCode);
         }
 
-        public void BuzzIn(int timeInMillisenconds)
+        public async void ActivateBuzzer(string gameCode)
         {
-            buzzer.BuzzIn(Context.ConnectionId, timeInMillisenconds);
+            await this.buzzer.ActivateBuzzerAsync(gameCode);
+        }
+
+        public void BuzzIn(string gameCode, int timeInMillisenconds)
+        {
+            buzzer.BuzzIn(gameCode, Context.ConnectionId, timeInMillisenconds);
         }
 
     }

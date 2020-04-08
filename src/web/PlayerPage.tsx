@@ -131,7 +131,7 @@ export class Buzzer extends React.Component<any, IPlayerPageState> {
 
     registerPlayer = () => {
         this.state.hubConnection
-            .invoke('connectUser', this.state.team, this.state.name)
+            .invoke('connectUser', "FOOBAR", this.state.team, this.state.name)
             .then(() => this.setState({ connected: true }))
             .catch(err => console.error(err));
     }
@@ -145,7 +145,7 @@ export class Buzzer extends React.Component<any, IPlayerPageState> {
         } else if (this.state.buzzerActive) {
             Logger.debug("Buzzer clicked when active. Time:", new Date().getTime());
             this.state.hubConnection
-                .invoke('buzzIn', new Date().getTime() - this.buzzerActivateTime.getTime())
+                .invoke('buzzIn', "FOOBAR", new Date().getTime() - this.buzzerActivateTime.getTime())
                 .catch(err => console.error(err));
             this.setState({ buzzed: true });
         } else {
