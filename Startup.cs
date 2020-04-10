@@ -19,8 +19,7 @@ namespace Jeffpardy
             Configuration = configuration;
 
             // Load the category cache
-            CategoryCache cc = CategoryCache.Instance;
-            
+            AzureFilesCategoryLoader.Instance.PopulateSeasonManifest(SeasonManifestCache.Instance);
         }
 
         public IConfiguration Configuration { get; }

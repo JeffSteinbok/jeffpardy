@@ -37,6 +37,7 @@ export interface IPlayerPageState {
     buzzed: boolean;
     buzzedInUser: IPlayer;
     isWinner: boolean;
+    isTeamWinner: boolean;
 }
 
 /**
@@ -62,7 +63,8 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             buzzerLocked: false,
             buzzed: false,
             buzzedInUser: null,
-            isWinner: false
+            isWinner: false,
+            isTeamWinner: false
         };
     }
 
@@ -115,6 +117,10 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                 } else {
                     this.setState({ buzzerLocked: true });
                 }
+
+                if (this.state.team == user.team) {
+                    this.setState({ isTeamWinner: true });
+                }
             });
 
             this.state.hubConnection.on('resetBuzzer', (nick, receivedMessage) => {
@@ -123,13 +129,19 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                     buzzerActive: false,
                     buzzerLocked: false,
                     buzzedInUser: null,
-                    isWinner: false
+                    isWinner: false,
+                    isTeamWinner: false,
                 })
             });
 
             this.state.hubConnection.on('activateBuzzer', (nick, receivedMessage) => {
                 this.buzzerActivateTime = new Date();
                 Logger.debug("Buzzer activated at " + this.buzzerActivateTime.getTime())
+                if (!this.state.isTeamWinner) {
+                    this.setState({ buzzed: false });
+                    this.setState({ buzzerLocked: false });
+                    this.setState({ buzzedInUser: null });
+                }
                 this.setState({ buzzerActive: true });
             });
         });

@@ -16,6 +16,6 @@ namespace Jeffpardy
     {
         public string Title { get; set; }
 
-        public CategoryQuestion[] Questions { get; set; }
+        public CategoryQuestion[] Clues { get; set; }
     }
 }

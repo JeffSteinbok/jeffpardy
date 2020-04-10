@@ -22,7 +22,9 @@ connection.on("messageReceived", (username: string, message: string) => {
 
 enum GameBoardState {
     Normal,
-    Clue,
+    ClueGiven,
+    ClueGivenBuzzerActive,
+    ClueAnswered,
     Question
 }
 
@@ -35,15 +37,14 @@ export interface IScoreboardState {
     users: IPlayer[];
     teams: { [key: string]: IPlayer[] };
     scores: { [key: string]: number };
+    teamCount: number;
     logMessages: string[];
     hubConnection: signalR.HubConnection;
     connected: boolean;
-    buzzerActive: boolean;
-    buzzerLocked: boolean;
-    buzzed: boolean;
     buzzedInUser: IPlayer;
     gameBoardState: GameBoardState;
     activeClueValue: number;
+    numResponses: number;
 }
 
 export interface IScoreboard {
@@ -63,58 +64,65 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
             message: '',
             users: [],
             teams: {},
+            teamCount: 0,
             scores: {},
             logMessages: [],
             hubConnection: null,
             connected: false,
-            buzzerActive: false,
-            buzzerLocked: false,
-            buzzed: false,
             buzzedInUser: null,
             gameBoardState: GameBoardState.Normal,
-            activeClueValue: 0
+            activeClueValue: 0,
+            numResponses: 0
         };
     }
 
     resetBuzzer = () => {
-        if (this.state.buzzerActive) {
-            this.state.hubConnection
-                .invoke('resetBuzzer', "FOOBAR")
-                .catch(err => console.error(err));
-        }
+        this.state.hubConnection
+            .invoke('resetBuzzer', "FOOBAR")
+            .catch(err => console.error(err));
+        this.setState({
+            numResponses: 0
+        });
     };
 
     activateBuzzer = () => {
-
-        if (this.state.gameBoardState == GameBoardState.Clue && !this.state.buzzerActive) {
+        Logger.debug("Scoreboard:activateBuzzer", this.state.gameBoardState)
+        if (this.state.gameBoardState == GameBoardState.ClueGiven) {
 
             this.state.hubConnection
                 .invoke('activateBuzzer', "FOOBAR")
                 .catch(err => console.error(err));
-            this.setState({ message: '' });
+            this.setState({
+                gameBoardState: GameBoardState.ClueGivenBuzzerActive,
+                buzzedInUser: null
+            });
         }
     };
 
     onClueShown = (clueValue: number) => {
         this.setState({
-            gameBoardState: GameBoardState.Clue,
+            gameBoardState: GameBoardState.ClueGiven,
             activeClueValue: clueValue
         });
     };
 
     showQuestion = () => {
-        if ((this.state.gameBoardState == GameBoardState.Clue) &&
-            this.state.buzzerActive) {
+        if ((this.state.gameBoardState == GameBoardState.ClueGivenBuzzerActive) ||
+            (this.state.gameBoardState == GameBoardState.ClueAnswered)) {
             this.props.jeffpardyController.showQuestion();
             this.setState({ gameBoardState: GameBoardState.Question });
+            this.resetBuzzer();
         }
-        this.resetBuzzer();
     };
 
     showBoard = () => {
         if (this.state.gameBoardState == GameBoardState.Question) {
             this.props.jeffpardyController.showBoard();
-            this.setState({ gameBoardState: GameBoardState.Normal });
+            this.setState({
+                gameBoardState: GameBoardState.Normal,
+                buzzedInUser: null
+            });
+            this.resetBuzzer();
         }
     };
 
@@ -128,7 +136,8 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
     processResponse = (responseCorrect: Boolean) => {
 
-        if ((this.state.buzzedInUser != null) && (this.state.activeClueValue != 0)) {
+        if (this.state.gameBoardState == GameBoardState.ClueAnswered) {
+
             let oldScore: number = 0;
             if (this.state.scores[this.state.buzzedInUser.team] != null) {
                 oldScore = this.state.scores[this.state.buzzedInUser.team];
@@ -137,10 +146,17 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
             if (responseCorrect) {
                 this.showQuestion();
-            }
-            else {
-                this.resetBuzzer();
+            } else {
                 adjustment *= -1;
+
+                if (this.state.numResponses == this.state.teamCount) {
+                    this.showQuestion();
+                } else {
+                    this.setState({
+                        gameBoardState: GameBoardState.ClueGiven
+                    });
+                }
+
             }
 
             this.state.scores[this.state.buzzedInUser.team] = oldScore + adjustment;
@@ -152,13 +168,11 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
     handleKeyDown = (event: KeyboardEvent) => {
         switch (event.keyCode) {
             case SpecialKey.SPACE:
-                if (this.state.gameBoardState == GameBoardState.Clue)
+                if ((this.state.gameBoardState == GameBoardState.ClueGivenBuzzerActive) ||
+                    (this.state.gameBoardState == GameBoardState.ClueAnswered))
                     this.showQuestion();
                 else if (this.state.gameBoardState == GameBoardState.Question)
                     this.showBoard();
-                break;
-            case Key.R:
-                this.resetBuzzer();
                 break;
             case Key.A:
                 this.activateBuzzer();
@@ -209,43 +223,29 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
 
                     let scores: { [key: string]: number } = {};
-
+                    let teamCount: number = 0;
                     for (var key in teams) {
                         if (teams.hasOwnProperty(key)) {
                             scores[key] = 0;
+                            teamCount++;
                         }
                     }
 
                     this.setState({
                         teams: teams,
-                        scores: scores
+                        scores: scores,
+                        teamCount: teamCount
                     });
 
                 }
             });
 
             this.state.hubConnection.on('assignWinner', (user) => {
-                this.setState({ buzzedInUser: user });
-                // If I'm the winner, leave the buzzer at buzzed.
-                // If not the winner, show it as locked out.
-                if (this.state.hubConnection.connectionId == user.connectionId) {
-
-                } else {
-                    this.setState({ buzzerLocked: true });
-                }
-            });
-
-            this.state.hubConnection.on('resetBuzzer', (nick, receivedMessage) => {
                 this.setState({
-                    buzzed: false,
-                    buzzerActive: false,
-                    buzzerLocked: false,
-                    buzzedInUser: null
-                })
-            });
-
-            this.state.hubConnection.on('activateBuzzer', (nick, receivedMessage) => {
-                this.setState({ buzzerActive: true });
+                    gameBoardState: GameBoardState.ClueAnswered,
+                    buzzedInUser: user,
+                    numResponses: this.state.numResponses + 1
+                });
             });
         });
     }
@@ -262,18 +262,17 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                 <div id="hostControls">
                     <div>Board:</div>
                     <div>
-                        <button disabled={ this.state.gameBoardState != GameBoardState.Clue || !this.state.buzzerActive } onClick={ this.showQuestion }>Answer (sp)</button>
+                        <button disabled={ (this.state.gameBoardState != GameBoardState.ClueGivenBuzzerActive) && (this.state.gameBoardState != GameBoardState.ClueAnswered) } onClick={ this.showQuestion }>Answer (sp)</button>
                         <button disabled={ this.state.gameBoardState != GameBoardState.Question } onClick={ this.showBoard }>Cont (sp)</button>
                     </div>
                     <div>Buzzer:</div>
                     <div>
-                        <button disabled={ (this.state.gameBoardState != GameBoardState.Clue) || this.state.buzzerActive } onClick={ this.activateBuzzer }>Activate (a)</button>
-                        <button disabled={ !this.state.buzzerActive } onClick={ this.resetBuzzer }>Reset (r)</button>
+                        <button disabled={ (this.state.gameBoardState != GameBoardState.ClueGiven) } onClick={ this.activateBuzzer }>Activate (a)</button>
                     </div>
                     <div>Response:</div>
                     <div>
-                        <button disabled={ this.state.buzzedInUser == null } onClick={ this.correctResponse }>Right (z)</button>
-                        <button disabled={ this.state.buzzedInUser == null } onClick={ this.incorrectResponse }>Wrong (x)</button>
+                        <button disabled={ this.state.gameBoardState != GameBoardState.ClueAnswered } onClick={ this.correctResponse }>Right (z)</button>
+                        <button disabled={ this.state.gameBoardState != GameBoardState.ClueAnswered } onClick={ this.incorrectResponse }>Wrong (x)</button>
                     </div>
                     <div>Host Tools:</div>
                     <div>
@@ -285,7 +284,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                     { Object.keys(this.state.teams).sort().map((teamName, index) => {
                         let buzzerState = ScoreboardEntryBuzzerState.Off;
                         let buzzedInUserName = "";
-                        if (this.state.buzzerActive) { buzzerState = ScoreboardEntryBuzzerState.Active }
+                        if (this.state.gameBoardState == GameBoardState.ClueGivenBuzzerActive) { buzzerState = ScoreboardEntryBuzzerState.Active }
                         if (this.state.buzzedInUser != null && this.state.buzzedInUser.team == teamName) {
                             buzzerState = ScoreboardEntryBuzzerState.BuzzedIn;
                             buzzedInUserName = this.state.buzzedInUser.name;

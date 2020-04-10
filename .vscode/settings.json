@@ -1,0 +1,38 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "files.exclude": {
+        "wwwroot/*/dist": true,
+        "bin": true,
+    },
+    "search.exclude": {
+        "coverage": true,
+        "dist": true,
+        "drop": true,
+        "intl": true,
+        "lib": true,
+        "src/**/*.event.ts": true,
+        "src/**/*.resx.ts": true,
+        "temp": true,
+        "bin": true
+    },
+    "editor.insertSpaces": true,
+    "editor.renderWhitespace": "boundary",
+    "editor.tabSize": 4,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "tslint.configFile": "./node_modules/@ms/onedrive-buildtools/gulp-onejs-build/tslint.json",
+    "tslint.rulesDirectory": "./node_modules/@ms/onedrive-buildtools/release/tsLintRules/",
+    "typescript.tsdk": "./node_modules/typescript/lib",
+    "json.schemas": [
+        {
+            "fileMatch": [
+                "/*.event.json"
+            ],
+            "url": "./node_modules/@ms/onedrive-buildtools/src/jsLogData/Event.schema.json"
+        }
+    ],
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces": true,
+    "editor.formatOnSave": true,
+    "tslint.autoFixOnSave": true,
+    "html.format.enable": false
+}

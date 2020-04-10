@@ -12,18 +12,22 @@ namespace Jeffpardy
     [Route("api/Categories")]
     public class CategoriesController : Controller
     {
-        // GET: api/categories
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return CategoryCache.Instance.CategoryDictionary.Keys.Select(key => key);
-        }
+        Random rand = new Random();
 
         [Route("[action]")]
         [HttpGet]
         public Category[] GetGameBoard(int count)
         {
-            return CategoryCache.Instance.CategoryDictionary.Values.Take(6).ToArray();
+            int categoryCount = SeasonManifestCache.Instance.JeopardyCategoryList.Count;
+            int startCategoryIndex = rand.Next(0, categoryCount - 6);
+            List<Category> categories = new List<Category>();
+
+            for (int i = startCategoryIndex; i < startCategoryIndex + 6; i++)
+            {
+                Category cat = AzureFilesCategoryLoader.Instance.LoadCategory(SeasonManifestCache.Instance.JeopardyCategoryList[i]);
+                categories.Add(cat);
+            }
+            return categories.ToArray();
         }
 
 

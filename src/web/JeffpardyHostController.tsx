@@ -14,7 +14,7 @@ export interface IClue {
 export interface ICategory {
     title: string;
     // Need to change the JSON format to fix this
-    questions: IClue[];
+    clues: IClue[];
     isAsked: boolean;
 }
 
@@ -43,8 +43,8 @@ export class JeffpardyHostController {
                 let scores: { [key: string]: number } = {};
 
                 results.forEach((category: ICategory) => {
-                    for (var i: number = 0; i < category.questions.length; i++) {
-                        category.questions[i].value = (i + 1) * 100;
+                    for (var i: number = 0; i < category.clues.length; i++) {
+                        category.clues[i].value = (i + 1) * 100;
                     }
                 });
 

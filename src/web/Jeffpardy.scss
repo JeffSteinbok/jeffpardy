@@ -306,7 +306,6 @@ div#buzzerView div.buzzerCurrentUserView div.buzzedInUser {
     background-color: orangered;
 }
 
-
 div#buzzerView div.buzzerCurrentUserView div.buzzedInUser.buzzedInWinner {
     background-color: green;
 }
@@ -340,10 +339,19 @@ button#buzzer:focus {
     outline:0;
 }
 
-
 button#buzzer.active {
     border: 1px solid green;
     background-color: green;
+}
+
+button#buzzer.active:hover {
+    border: 1px solid darken(green, 10);
+    background-color:darken(green, 10);
+}
+
+button#buzzer.active:active {
+    border: 1px solid darken(green, 20);
+    background-color:darken(green, 20);
 }
 
 button#buzzer.inactive {

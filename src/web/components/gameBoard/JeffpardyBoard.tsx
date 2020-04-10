@@ -79,8 +79,8 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                 let category: ICategory = this.props.categories[i];
                 boardGridElements.push(<div className="jeffpardyCategory" key={ keyCounter++ } style={ { gridRow: 1, gridColumn: i + 1 } }><JeffpardyCategory category={ category } jeffpardyBoard={ this } /></div>);
 
-                for (var j: number = 0; j < category.questions.length; j++) {
-                    let clue: IClue = category.questions[j];
+                for (var j: number = 0; j < category.clues.length; j++) {
+                    let clue: IClue = category.clues[j];
                     boardGridElements.push(<div className="jeffpardyClue" key={ keyCounter++ } style={ { gridRow: j + 2, gridColumn: i + 1 } }><JeffpardyClue jeffpardyBoard={ this } category={ category } clue={ clue } /></div>);
                 }
             }

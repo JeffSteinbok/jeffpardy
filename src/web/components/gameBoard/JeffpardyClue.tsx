@@ -30,7 +30,7 @@ export class JeffpardyClue extends React.Component<IJeffpardyClueProps, IJeffpar
         this.props.clue.isAsked = true;
 
         let isCategoryAsked: boolean = true;
-        this.props.category.questions.forEach((clue: IClue) => {
+        this.props.category.clues.forEach((clue: IClue) => {
             if (!clue.isAsked) {
                 isCategoryAsked = false;
             }
