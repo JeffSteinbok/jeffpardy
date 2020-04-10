@@ -29,7 +29,7 @@ namespace Jeffpardy
         private AzureFilesCategoryLoader()
         {
             CloudStorageAccount storageAccount =
-                CloudStorageAccount.Parse("BlobEndpoint=https://jeffpardy.blob.core.windows.net/;QueueEndpoint=https://jeffpardy.queue.core.windows.net/;FileEndpoint=https://jeffpardy.file.core.windows.net/;TableEndpoint=https://jeffpardy.table.core.windows.net/;SharedAccessSignature=sv=2019-02-02&ss=bfqt&srt=sco&sp=rwdlacup&se=2020-04-10T14:41:21Z&st=2020-04-10T06:41:21Z&spr=https&sig=lAo5iv3I5GRFHhYZ379suzdCmJJDOl%2BD2DTpOQLZ0Rc%3D");
+                CloudStorageAccount.Parse("BlobEndpoint=https://jeffpardy.blob.core.windows.net/;QueueEndpoint=https://jeffpardy.queue.core.windows.net/;FileEndpoint=https://jeffpardy.file.core.windows.net/;TableEndpoint=https://jeffpardy.table.core.windows.net/;SharedAccessSignature=sv=2019-02-02&ss=f&srt=co&sp=rl&se=2020-04-14T15:55:58Z&st=2020-04-10T07:55:58Z&spr=https&sig=MGFKiRXTQ%2FlT2iT4134KOnV7LPq00Ws1SsITagNeQzQ%3D");
 
             // Create a CloudFileClient object for credentialed access to Azure Files.
             this.fileClient = storageAccount.CreateCloudFileClient();
