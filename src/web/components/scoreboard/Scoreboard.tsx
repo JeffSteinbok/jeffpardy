@@ -30,6 +30,7 @@ enum GameBoardState {
 
 export interface IScoreboardProps {
     jeffpardyController: JeffpardyHostController;
+    gameCode: string;
 }
 
 export interface IScoreboardState {
@@ -78,7 +79,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
     resetBuzzer = () => {
         this.state.hubConnection
-            .invoke('resetBuzzer', "FOOBAR")
+            .invoke('resetBuzzer', this.props.gameCode)
             .catch(err => console.error(err));
         this.setState({
             numResponses: 0
@@ -90,7 +91,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         if (this.state.gameBoardState == GameBoardState.ClueGiven) {
 
             this.state.hubConnection
-                .invoke('activateBuzzer', "FOOBAR")
+                .invoke('activateBuzzer', this.props.gameCode)
                 .catch(err => console.error(err));
             this.setState({
                 gameBoardState: GameBoardState.ClueGivenBuzzerActive,
@@ -201,7 +202,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                     console.log('Connection started!');
 
                     this.state.hubConnection
-                        .invoke('connectHost', "FOOBAR");
+                        .invoke('connectHost', this.props.gameCode);
                 })
                 .catch(err => console.log('Error while establishing connection :('));
 

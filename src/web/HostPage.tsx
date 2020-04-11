@@ -32,6 +32,7 @@ export interface IHostPage {
 export class HostPage extends React.Component<any, any> {
 
     jeffpardyHostController: JeffpardyHostController;
+    gameCode: string;
 
     constructor(props: any) {
         super(props);
@@ -42,6 +43,21 @@ export class HostPage extends React.Component<any, any> {
             viewMode: HostPageViewMode.Normal,
             categories: []
         }
+
+        // Create a GameID
+        this.gameCode = this.makeGameCode();
+
+    }
+
+    private makeGameCode(): string {
+        let length: number = 6;
+        var result = '';
+        var characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
+        var charactersLength = characters.length;
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
     }
 
     public componentDidMount() {
@@ -71,11 +87,13 @@ export class HostPage extends React.Component<any, any> {
             <div>
                 <div className="topPageNormal" style={ style } >
                     <div className="topSection">
+                        <div className="title">Jeffardy!</div>
+                        <div className="gameCode">Use game code: { this.gameCode }</div>
                     </div>
                     <div className="middleSection">
                         <div id="pageContent" className="pageContent">
                             <JeffpardyBoard jeffpardyController={ this.jeffpardyHostController } categories={ this.state.categories }></JeffpardyBoard>
-                            <Scoreboard jeffpardyController={ this.jeffpardyHostController } ></Scoreboard>
+                            <Scoreboard jeffpardyController={ this.jeffpardyHostController } gameCode={ this.gameCode } ></Scoreboard>
                         </div>
                     </div>
                     <div className="bottomSection">
@@ -96,7 +114,7 @@ export class HostPage extends React.Component<any, any> {
                     this.state.viewMode == HostPageViewMode.HostCheatSheet &&
                     <HostCheatSheet jeffpardyController={ this.jeffpardyHostController } categories={ this.state.categories } />
                 }
-            </div>
+            </div >
         );
     }
 }

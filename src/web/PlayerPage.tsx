@@ -20,18 +20,24 @@ connection.on("messageReceived", (username: string, message: string) => {
 
 connection.start().catch(err => document.write(err));
 
+enum PlayerPageState {
+    FrontPage,
+    Lobby,
+    Buzzer
+}
+
 export interface IPlayerPageProps {
 }
 
 export interface IPlayerPageState {
-    message: string;
+    gameCode: string;
     users: IPlayer[];
     teams: { [key: string]: IPlayer[] };
     logMessages: string[];
     hubConnection: signalR.HubConnection;
     name: string;
     team: string;
-    connected: boolean;
+    playerPageState: PlayerPageState;
     buzzerActive: boolean;
     buzzerLocked: boolean;
     buzzed: boolean;
@@ -46,19 +52,19 @@ export interface IPlayerPageState {
 export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageState> {
 
     buzzerActivateTime: Date;
-
+    gameCodeTemp: string = '';
     constructor(props: any) {
         super(props);
 
         this.state = {
-            message: '',
+            gameCode: '',
             users: [],
             teams: {},
             logMessages: [],
             hubConnection: null,
             name: '',
             team: '',
-            connected: false,
+            playerPageState: PlayerPageState.FrontPage,
             buzzerActive: false,
             buzzerLocked: false,
             buzzed: false,
@@ -80,14 +86,11 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                 .start()
                 .then(() => {
                     console.log('Connection started!');
-
-                    this.state.hubConnection
-                        .invoke('connectPlayerLobby', "FOOBAR");
                 })
                 .catch(err => console.log('Error while establishing connection :('));
 
             this.state.hubConnection.on('updateUsers', (users: IPlayer[]) => {
-                Logger.debug(JSON.stringify(users));
+                Logger.debug("Update Users: " + JSON.stringify(users));
                 this.setState({ "users": users });
 
 
@@ -154,10 +157,28 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         }
 
         this.state.hubConnection
-            .invoke('connectPlayer', "FOOBAR", this.state.team, this.state.name)
-            .then(() => this.setState({ connected: true }))
+            .invoke('connectPlayer', this.state.gameCode, this.state.team, this.state.name)
+            .then(() => this.setState({ playerPageState: PlayerPageState.Buzzer }))
             .catch(err => console.error(err));
     }
+
+
+    setGameCode = () => {
+        if (this.gameCodeTemp.length != 6) {
+            alert("Please enter a 6 character game code.");
+            return;
+        }
+
+        this.state.hubConnection
+            .invoke('connectPlayerLobby', this.gameCodeTemp)
+            .then(() => this.setState({
+                gameCode: this.gameCodeTemp,
+                playerPageState: PlayerPageState.Lobby
+            }))
+            .catch(err => console.error(err));
+    }
+
+
 
     buzzIn = () => {
 
@@ -168,7 +189,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         } else if (this.state.buzzerActive) {
             Logger.debug("Buzzer clicked when active. Time:", new Date().getTime());
             this.state.hubConnection
-                .invoke('buzzIn', "FOOBAR", new Date().getTime() - this.buzzerActivateTime.getTime())
+                .invoke('buzzIn', this.state.gameCode, new Date().getTime() - this.buzzerActivateTime.getTime())
                 .catch(err => console.error(err));
             this.setState({ buzzed: true });
         } else {
@@ -211,56 +232,75 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
             <div id="buzzerView">
                 <div className="buzzerViewTitle">Jeffpardy! Buzzer</div>
+                <div className="buzzerViewTitleGameCode">{ this.state.gameCode }</div>
 
-                <div className="buzzerCurrentUserView">
-                    { this.state.connected == false &&
-                        <div>
-                            <h1>Register</h1>
-                            <div className="buzzerRegistration">
-                                <div>Team Name</div>
-                                <input
-                                    type="text"
-                                    value={ this.state.team }
-                                    onChange={ e => this.setState({ team: e.target.value }) }
-                                />
-                                <p />
-                                <div>Player Name</div>
-                                <input
-                                    type="text"
-                                    value={ this.state.name }
-                                    onChange={ e => this.setState({ name: e.target.value }) }
-                                />
-                                <p />
-                                <button onClick={ this.registerPlayer }>Start</button>
-                            </div>
-                        </div>
-                    }
-                    { this.state.connected == true &&
-                        <div>
-                            <h1>{ this.state.name }</h1>
-                            <h2>Team: { this.state.team }</h2>
-
-                            <div><i>Wait for the button to turn green before buzzing in.</i></div>
-
-                            <button id="buzzer" className={ buzzerClassName } onClick={ this.buzzIn }>Buzz</button>
-
-                            { this.state.buzzedInUser != null &&
-                                <div className={ "buzzedInUser " + (this.state.buzzedInUser.name == this.state.name ? " buzzedInWinner" : "") }>
-                                    <div className="buzzedInUserTitle">Buzzed-in User</div>
-                                    <div className="buzzedInUserName">{ this.state.buzzedInUser.name }</div>
-                                    <div className="buzzedInUserTeam">Team: { this.state.buzzedInUser.team }</div>
-                                </div>
-                            }
-                        </div>
-                    }
-                </div>
-                <div className="buzzerUserListView">
-                    <h1>Current Players</h1>
+                { this.state.playerPageState == PlayerPageState.FrontPage &&
                     <div>
-                        <PlayerList teams={ this.state.teams } />
+                        <h1>Enter Game Code</h1>
+                        <div className="buzzerRegistration">
+                            <input
+                                type="text"
+                                maxLength={ 6 }
+                                onChange={ e => this.gameCodeTemp = e.target.value }
+                            />
+                            <p />
+                            <button onClick={ this.setGameCode }>Start</button>
+                        </div>
                     </div>
-                </div>
-            </div >
+                }
+                { this.state.playerPageState != PlayerPageState.FrontPage &&
+                    <div className="buzzerCurrentUserView">
+                        { this.state.playerPageState == PlayerPageState.Lobby &&
+                            <div>
+                                <h1>Register</h1>
+                                <div className="buzzerRegistration">
+                                    <div>Team Name</div>
+                                    <input
+                                        type="text"
+                                        value={ this.state.team }
+                                        onChange={ e => this.setState({ team: e.target.value }) }
+                                    />
+                                    <p />
+                                    <div>Player Name</div>
+                                    <input
+                                        type="text"
+                                        value={ this.state.name }
+                                        onChange={ e => this.setState({ name: e.target.value }) }
+                                    />
+                                    <p />
+                                    <button onClick={ this.registerPlayer }>Start</button>
+                                </div>
+                            </div>
+                        }
+                        { this.state.playerPageState == PlayerPageState.Buzzer &&
+                            <div>
+                                <h1>{ this.state.name }</h1>
+                                <h2>Team: { this.state.team }</h2>
+
+                                <div><i>Wait for the button to turn green before buzzing in.</i></div>
+
+                                <button id="buzzer" className={ buzzerClassName } onClick={ this.buzzIn }>Buzz</button>
+
+                                { this.state.buzzedInUser != null &&
+                                    <div className={ "buzzedInUser " + (this.state.buzzedInUser.name == this.state.name ? " buzzedInWinner" : "") }>
+                                        <div className="buzzedInUserTitle">Buzzed-in User</div>
+                                        <div className="buzzedInUserName">{ this.state.buzzedInUser.name }</div>
+                                        <div className="buzzedInUserTeam">Team: { this.state.buzzedInUser.team }</div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+                { this.state.playerPageState != PlayerPageState.FrontPage &&
+                    <div className="buzzerUserListView">
+                        <h1>Current Players</h1>
+                        <div>
+                            <PlayerList teams={ this.state.teams } />
+                        </div>
+                    </div>
+                }
+            </div>
 
         );
     }

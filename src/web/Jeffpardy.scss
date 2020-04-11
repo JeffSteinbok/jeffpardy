@@ -249,7 +249,7 @@ div#buzzerView
     color:white;
     display:grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 50px auto;
+    grid-template-rows: 50px 50px auto;
     flex-direction: row;
     height:100%;
     box-sizing: border-box;
@@ -260,6 +260,14 @@ div#buzzerView div.buzzerViewTitle
     @extend %jeffpardyMainFont;
 
     font-size:3em;
+    grid-column-start: span 2;
+    text-align: center;
+}
+
+div#buzzerView div.buzzerViewTitleGameCode
+{
+    @extend %jeffpardyMainFont;
+
     grid-column-start: span 2;
     text-align: center;
 }
@@ -544,16 +552,28 @@ div#header {
 
 /*   topSection container ===========================  */
 .topSection {
+    @extend %jeffpardyMainFont;
+
     top: 0;
     left: 0;
     right: 0;
-    height: 40px;
+    padding-top:5px;
+    height: 70px;
+    color:white;
     background-color:$colorBrown;
+    display:flex;
+    flex-direction: column;
+    align-content: center;
 }
 
-/* Home section */
-.topSection .home {
-    width: 180px;
+.topSection .title {
+    font-size: 2.5em;
+    text-align: center;
+}
+
+.topSection .gameCode {
+    font-size: 1em;
+    text-align: center;
 }
 
 .spinnerVisible {
