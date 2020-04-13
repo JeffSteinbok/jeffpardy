@@ -39,7 +39,7 @@ namespace Jeffpardy
             {
                 
                 var tokenProvider = new AzureServiceTokenProvider();
-                string accessToken = tokenProvider.GetAccessTokenAsync("https://jeffpardy.file.core.windows.net", "504100e4-0ce1-432d-8514-d778be5b51f5").Result;
+                string accessToken = tokenProvider.GetAccessTokenAsync("https://storage.azure.com", "504100e4-0ce1-432d-8514-d778be5b51f5").Result;
                 var tokenCredentials = new TokenCredential(accessToken);
                 var storageCredentials = new StorageCredentials(tokenCredentials);
                 
