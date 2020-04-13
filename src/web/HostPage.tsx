@@ -36,17 +36,16 @@ export class HostPage extends React.Component<any, any> {
 
     constructor(props: any) {
         super(props);
-        this.jeffpardyHostController = new JeffpardyHostController();
+
+        this.gameCode = this.makeGameCode();
+
+        this.jeffpardyHostController = new JeffpardyHostController(this.gameCode);
         this.jeffpardyHostController.hostPage = this;
 
         this.state = {
             viewMode: HostPageViewMode.Normal,
             categories: []
         }
-
-        // Create a GameID
-        this.gameCode = this.makeGameCode();
-
     }
 
     private makeGameCode(): string {
@@ -92,8 +91,8 @@ export class HostPage extends React.Component<any, any> {
                     </div>
                     <div className="middleSection">
                         <div id="pageContent" className="pageContent">
-                            <JeffpardyBoard jeffpardyController={ this.jeffpardyHostController } categories={ this.state.categories }></JeffpardyBoard>
-                            <Scoreboard jeffpardyController={ this.jeffpardyHostController } gameCode={ this.gameCode } ></Scoreboard>
+                            <JeffpardyBoard jeffpardyHostController={ this.jeffpardyHostController } categories={ this.state.categories }></JeffpardyBoard>
+                            <Scoreboard jeffpardyHostController={ this.jeffpardyHostController } ></Scoreboard>
                         </div>
                     </div>
                     <div className="bottomSection">

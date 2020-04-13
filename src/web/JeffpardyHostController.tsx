@@ -3,6 +3,14 @@ import { Logger } from "./utilities/Logger";
 import { IScoreboard } from "./components/scoreboard/Scoreboard";
 import { WebServerApiManager, IApiExecutionContext } from "./utilities/WebServerApiManager";
 import { IHostPage, HostPageViewMode } from "./HostPage";
+import { IHostSignalRClient, HostSignalRClient } from "./HostSignalRClient";
+import { IPlayer } from "./interfaces/IPlayer";
+
+export interface ITeam {
+    name: string;
+    score: number;
+    players: IPlayer[];
+}
 
 export interface IClue {
     clue: string;
@@ -28,7 +36,15 @@ export class JeffpardyHostController {
     jeffpardyBoard: IJeffpardyBoard;
     scoreboard: IScoreboard;
 
+    teams: { [key: string]: ITeam };
+    teamCount: number;
     categories: ICategory[];
+
+    hostSignalRClient: IHostSignalRClient;
+
+    constructor(gameCode: string) {
+        this.hostSignalRClient = new HostSignalRClient(this, gameCode)
+    }
 
     public loadCategories() {
         Logger.debug("JeffpardyHostController:loadCategories");
@@ -56,6 +72,55 @@ export class JeffpardyHostController {
 
         let wsam: WebServerApiManager = new WebServerApiManager();
         wsam.executeApi(context);
+    }
+
+    public updateUsers(users: IPlayer[]) {
+
+        let teams: { [key: string]: ITeam } = {};
+
+        if (users.length > 0) {
+            teams = users.reduce((acc, obj) => {
+                let k = obj.team;
+                if (!acc[k]) {
+                    acc[k] = []
+                }
+                acc[k].push(obj);
+                return acc
+            },
+                {});
+        }
+
+        let teamCount: number = 0;
+
+        for (var key in teams) {
+            if (teams.hasOwnProperty(key)) {
+
+                // Copy the score over to the new teams object
+                if (this.teams.hasOwnProperty(key)) {
+                    teams[key].score = this.teams[key].score;
+                }
+                else {
+                    teams[key].score = 0;
+                }
+                teamCount++;
+            }
+        }
+
+        this.teams = teams;
+        this.teamCount = teamCount;
+        this.scoreboard.onUpdateTeams(this.teams);
+    }
+
+    public resetBuzzer() {
+        this.hostSignalRClient.resetBuzzer();
+    }
+
+    public activateBuzzer() {
+        this.hostSignalRClient.activateBuzzer();
+    }
+
+    public assignBuzzedInUser(user: IPlayer) {
+        this.scoreboard.onAssignBuzzedInUser(user);
     }
 
     public setViewMode(viewMode: HostPageViewMode) {

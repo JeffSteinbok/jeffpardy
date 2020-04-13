@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IPlayer } from "../../../interfaces/IPlayer";
+import { IPlayer } from "../../interfaces/IPlayer";
 
 export interface IPlayerListProps {
     teams: { [key: string]: IPlayer[] }

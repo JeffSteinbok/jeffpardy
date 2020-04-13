@@ -2,7 +2,7 @@
 import * as ReactDOM from "react-dom";
 import * as signalR from "@microsoft/signalr";
 import { Logger } from "./utilities/Logger";
-import { IPlayer } from "../interfaces/IPlayer"
+import { IPlayer } from "./interfaces/IPlayer"
 import { PlayerList } from "./components/playerList/PlayerList";
 import { stringify } from "querystring";
 

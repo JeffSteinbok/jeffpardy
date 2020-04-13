@@ -39,6 +39,8 @@ namespace Jeffpardy
 
         }
 
+        public bool IsEmptyGame => this.buzzerUsers.Count == 0;
+
         public async Task ConnectAsync(string connectionId)
         {
             await this.SendUserListAsync(connectionId);

@@ -62,6 +62,10 @@ namespace Jeffpardy
 
             await buzzerGame.RemoveUserAsync(connectionId);
             connectionToGameDictionary.Remove(connectionId);
+            if (buzzerGame.IsEmptyGame)
+            {
+                this.buzzerGames.Remove(gameCode);
+            }
         }
 
         public async Task ResetBuzzerAsync(string gameCode)

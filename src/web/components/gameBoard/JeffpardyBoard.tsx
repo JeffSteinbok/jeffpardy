@@ -5,7 +5,7 @@ import { JeffpardyHostController, ICategory, IClue } from "../../JeffpardyHostCo
 import { JeffpardyClue } from "./JeffpardyClue"
 
 export interface IJeffpardyBoardProps {
-    jeffpardyController: JeffpardyHostController;
+    jeffpardyHostController: JeffpardyHostController;
     categories: ICategory[];
 }
 
@@ -39,7 +39,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             showQuestion: false
         }
 
-        this.props.jeffpardyController.setJeffpardyBoard(this);
+        this.props.jeffpardyHostController.setJeffpardyBoard(this);
     }
 
     public showClue = (category: ICategory, clue: IClue) => {
@@ -47,7 +47,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             activeClue: clue,
             activeCategory: category
         });
-        this.props.jeffpardyController.showClue(clue);
+        this.props.jeffpardyHostController.showClue(clue);
     }
 
     public showQuestion = () => {

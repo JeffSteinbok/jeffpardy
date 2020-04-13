@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Microsoft.Azure; // Namespace for Azure Configuration Manager
 using Microsoft.Azure.Storage; // Namespace for Storage Client Library
 using Microsoft.Azure.Storage.File; // Namespace for Azure Files
+using Microsoft.Azure.Services.AppAuthentication;
+using Microsoft.Azure.Storage.Auth;
 
 namespace Jeffpardy
 {
@@ -28,11 +30,28 @@ namespace Jeffpardy
 
         private AzureFilesCategoryLoader()
         {
-            CloudStorageAccount storageAccount =
-                CloudStorageAccount.Parse("BlobEndpoint=https://jeffpardy.blob.core.windows.net/;QueueEndpoint=https://jeffpardy.queue.core.windows.net/;FileEndpoint=https://jeffpardy.file.core.windows.net/;TableEndpoint=https://jeffpardy.table.core.windows.net/;SharedAccessSignature=sv=2019-02-02&ss=f&srt=co&sp=rl&se=2020-04-14T15:55:58Z&st=2020-04-10T07:55:58Z&spr=https&sig=MGFKiRXTQ%2FlT2iT4134KOnV7LPq00Ws1SsITagNeQzQ%3D");
+            // Old and new way to do this.  Dev box needs the old way still.
+            // Need to find a way to store this securely.
+            bool useMSI = true;
 
-            // Create a CloudFileClient object for credentialed access to Azure Files.
-            this.fileClient = storageAccount.CreateCloudFileClient();
+            if (useMSI)
+            {
+                var tokenProvider = new AzureServiceTokenProvider();
+                string accessToken = tokenProvider.GetAccessTokenAsync("https://jeffpardy.file.core.windows.net").Result;
+                var tokenCredentials = new TokenCredential(accessToken);
+                var storageCredentials = new StorageCredentials(tokenCredentials);
+              
+                // Create a CloudFileClient object for credentialed access to Azure Files.
+                this.fileClient = new CloudFileClient(new Uri("https://jeffpardy.file.core.windows.net"), storageCredentials);
+            }
+            else
+            {
+                CloudStorageAccount storageAccount =
+                    CloudStorageAccount.Parse("BlobEndpoint=https://jeffpardy.blob.core.windows.net/;QueueEndpoint=https://jeffpardy.queue.core.windows.net/;FileEndpoint=https://jeffpardy.file.core.windows.net/;TableEndpoint=https://jeffpardy.table.core.windows.net/;SharedAccessSignature=sv=2019-02-02&ss=f&srt=co&sp=rl&se=2020-04-14T15:55:58Z&st=2020-04-10T07:55:58Z&spr=https&sig=MGFKiRXTQ%2FlT2iT4134KOnV7LPq00Ws1SsITagNeQzQ%3D");
+
+                // Create a CloudFileClient object for credentialed access to Azure Files.
+                this.fileClient = storageAccount.CreateCloudFileClient();
+            }
         }
 
         public void PopulateSeasonManifest(ISeasonManifestCache seasonManifestCache)
