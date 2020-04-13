@@ -11,6 +11,7 @@ using Microsoft.Azure.Storage; // Namespace for Storage Client Library
 using Microsoft.Azure.Storage.File; // Namespace for Azure Files
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.Storage.Auth;
+using Azure.Identity;
 
 namespace Jeffpardy
 {
@@ -32,17 +33,19 @@ namespace Jeffpardy
         {
             // Old and new way to do this.  Dev box needs the old way still.
             // Need to find a way to store this securely.
-            bool useMSI = false;
+            bool useMSI = true;
 
             if (useMSI)
             {
+                
                 var tokenProvider = new AzureServiceTokenProvider();
-                string accessToken = tokenProvider.GetAccessTokenAsync("https://jeffpardy.file.core.windows.net").Result;
+                string accessToken = tokenProvider.GetAccessTokenAsync("https://jeffpardy.file.core.windows.net", "504100e4-0ce1-432d-8514-d778be5b51f5").Result;
                 var tokenCredentials = new TokenCredential(accessToken);
                 var storageCredentials = new StorageCredentials(tokenCredentials);
-              
+                
                 // Create a CloudFileClient object for credentialed access to Azure Files.
                 this.fileClient = new CloudFileClient(new Uri("https://jeffpardy.file.core.windows.net"), storageCredentials);
+                
             }
             else
             {
