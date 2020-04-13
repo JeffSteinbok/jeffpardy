@@ -32,7 +32,7 @@ namespace Jeffpardy
         {
             // Old and new way to do this.  Dev box needs the old way still.
             // Need to find a way to store this securely.
-            bool useMSI = true;
+            bool useMSI = false;
 
             if (useMSI)
             {
