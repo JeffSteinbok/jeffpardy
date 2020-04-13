@@ -86,7 +86,7 @@ export class HostPage extends React.Component<any, any> {
             <div>
                 <div className="topPageNormal" style={ style } >
                     <div className="topSection">
-                        <div className="title">Jeffardy!</div>
+                        <div className="title">Jeffpardy!</div>
                         <div className="gameCode">Use game code: { this.gameCode }</div>
                     </div>
                     <div className="middleSection">
