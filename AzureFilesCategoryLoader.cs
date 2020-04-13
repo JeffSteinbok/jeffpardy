@@ -56,7 +56,7 @@ namespace Jeffpardy
                 this.fileClient = storageAccount.CreateCloudFileClient();
             }
         }
-
+        
         public void PopulateSeasonManifest(ISeasonManifestCache seasonManifestCache)
         {
             // Get a reference to the file share we created previously.

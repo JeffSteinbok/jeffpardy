@@ -40,7 +40,8 @@ export class HostCheatSheet extends React.Component<IHostCheatSheetProps, any> {
                     {
                         this.props.categories.map((category, index) => {
                             return (
-                                <li key={ index }>{ category.title }
+                                <li key={ index }>{ category.title }<br />
+                                    <i>{ category.comment }</i>
                                     <ul>
                                         {
                                             category.clues.map((clue, index) => {
