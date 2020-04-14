@@ -88,7 +88,7 @@ namespace Jeffpardy
             }
         }
 
-        public Category LoadCategory(ManifestCategory manifestCategory)
+        public async Task<Category> LoadCategoryAsync(ManifestCategory manifestCategory)
         {
             Category ret = null;
 
@@ -109,7 +109,7 @@ namespace Jeffpardy
                 // Ensure that the directory exists.
                 if (categoryFile.Exists())
                 {
-                    string content = categoryFile.DownloadTextAsync().Result;
+                    string content = await categoryFile.DownloadTextAsync();
                     ret = JsonConvert.DeserializeObject<Category>(content);
                     Debug.WriteLine("Loaded: {0}", categoryFile.Uri);
                 }

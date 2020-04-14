@@ -39,6 +39,7 @@ export interface IPlayerPageState {
     team: string;
     playerPageState: PlayerPageState;
     buzzerActive: boolean;
+    buzzerEarlyClickLock: boolean;
     buzzerLocked: boolean;
     buzzed: boolean;
     buzzedInUser: IPlayer;
@@ -66,6 +67,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             team: '',
             playerPageState: PlayerPageState.FrontPage,
             buzzerActive: false,
+            buzzerEarlyClickLock: false,
             buzzerLocked: false,
             buzzed: false,
             buzzedInUser: null,
@@ -131,6 +133,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                     buzzed: false,
                     buzzerActive: false,
                     buzzerLocked: false,
+                    buzzerEarlyClickLock: false,
                     buzzedInUser: null,
                     isWinner: false,
                     isTeamWinner: false,
@@ -184,7 +187,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
         if (this.state.buzzed) {
             Logger.debug("Buzzer clicked when already buzzed. Time:", new Date().getTime());
-        } else if (this.state.buzzerLocked) {
+        } else if (this.state.buzzerLocked || this.state.buzzerEarlyClickLock) {
             Logger.debug("Buzzer clicked when locked. Time:", new Date().getTime());
         } else if (this.state.buzzerActive) {
             Logger.debug("Buzzer clicked when active. Time:", new Date().getTime());
@@ -195,14 +198,14 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         } else {
             Logger.debug("Buzzer clicked when not active - applying lockout. Time:", new Date().getTime());
 
-            // If buzzer isn't active yet, apply a 500ms lockout
+            // If buzzer isn't active yet, apply a 1s (1000ms) lockout
             if (!this.state.buzzerActive) {
-                this.setState({ buzzerLocked: true });
+                this.setState({ buzzerEarlyClickLock: true });
 
                 setTimeout(() => {
                     Logger.debug("Lockout over. Time:", new Date().getTime());
-                    this.setState({ buzzerLocked: false });
-                }, 500);
+                    this.setState({ buzzerEarlyClickLock: false });
+                }, 1000);
             }
         }
     }
@@ -213,7 +216,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
     public render() {
         let buzzerClassName: string = "inactive";
-        if (this.state.buzzerLocked) {
+        if (this.state.buzzerLocked || this.state.buzzerEarlyClickLock) {
             buzzerClassName = "lockedout";
         } else if (this.state.buzzerActive) {
             if (this.state.buzzed) {

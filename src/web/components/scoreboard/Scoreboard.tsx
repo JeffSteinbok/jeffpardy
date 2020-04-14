@@ -12,20 +12,19 @@ enum GameBoardState {
     ClueGiven,
     ClueGivenBuzzerActive,
     ClueAnswered,
-    Question
+    Question,
+    Completed
 }
 
 export interface IScoreboardProps {
     jeffpardyHostController: JeffpardyHostController;
+    teams: { [key: string]: ITeam };
 }
 
 export interface IScoreboardState {
     message: string;
     users: IPlayer[];
-    teams: { [key: string]: ITeam };
-    teamCount: number;
     logMessages: string[];
-    connected: boolean;
     buzzedInUser: IPlayer;
     gameBoardState: GameBoardState;
     activeClueValue: number;
@@ -34,7 +33,7 @@ export interface IScoreboardState {
 
 export interface IScoreboard {
     onClueShown: (clueValue: number) => void;
-    onUpdateTeams: (teams: { [key: string]: ITeam }) => void;
+    onBuzzerTimeout: () => void;
     onAssignBuzzedInUser: (user: IPlayer) => void;
 }
 /**
@@ -42,18 +41,17 @@ export interface IScoreboard {
  */
 export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardState> implements IScoreboard {
 
+    private teamCount: number = 0;
     constructor(props: any) {
         super(props);
-
+        Logger.debug("Scoreboard:constructor");
         this.props.jeffpardyHostController.setScoreboard(this);
+
 
         this.state = {
             message: '',
             users: [],
-            teams: {},
-            teamCount: 0,
             logMessages: [],
-            connected: false,
             buzzedInUser: null,
             gameBoardState: GameBoardState.Normal,
             activeClueValue: 0,
@@ -87,25 +85,16 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         });
     };
 
-    onUpdateTeams = (teams: { [key: string]: ITeam }) => {
-        let teamCount: number = 0;
-
-        for (var key in teams) {
-            teamCount++;
-        }
-
-        this.setState({
-            teams: teams,
-            teamCount: teamCount
-        });
-    }
-
     onAssignBuzzedInUser = (user: IPlayer) => {
         this.setState({
             gameBoardState: GameBoardState.ClueAnswered,
             buzzedInUser: user,
             numResponses: this.state.numResponses + 1
         });
+    }
+
+    onBuzzerTimeout = () => {
+        this.showQuestion();
     }
 
     showQuestion = () => {
@@ -141,8 +130,8 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         if (this.state.gameBoardState == GameBoardState.ClueAnswered) {
 
             let oldScore: number = 0;
-            if (this.state.teams[this.state.buzzedInUser.team] != null) {
-                oldScore = this.state.teams[this.state.buzzedInUser.team].score;
+            if (this.props.teams[this.state.buzzedInUser.team] != null) {
+                oldScore = this.props.teams[this.state.buzzedInUser.team].score;
             }
             let adjustment: number = this.state.activeClueValue;
 
@@ -151,7 +140,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
             } else {
                 adjustment *= -1;
 
-                if (this.state.numResponses == this.state.teamCount) {
+                if (this.state.numResponses == this.teamCount) {
                     this.showQuestion();
                 } else {
                     this.setState({
@@ -161,8 +150,10 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
             }
 
-            this.state.teams[this.state.buzzedInUser.team].score = oldScore + adjustment;
-            this.setState({ teams: this.state.teams });
+            this.props.teams[this.state.buzzedInUser.team].score = oldScore + adjustment;
+            this.setState({
+                buzzedInUser: this.state.buzzedInUser
+            })
         };
     }
 
@@ -170,10 +161,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
     handleKeyDown = (event: KeyboardEvent) => {
         switch (event.keyCode) {
             case SpecialKey.SPACE:
-                if ((this.state.gameBoardState == GameBoardState.ClueGivenBuzzerActive) ||
-                    (this.state.gameBoardState == GameBoardState.ClueAnswered))
-                    this.showQuestion();
-                else if (this.state.gameBoardState == GameBoardState.Question)
+                if (this.state.gameBoardState == GameBoardState.Question)
                     this.showBoard();
                 break;
             case Key.A:
@@ -197,12 +185,17 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
     }
 
     public render() {
+
+        this.teamCount = 0;
+        for (var key in this.props.teams) {
+            this.teamCount++;
+        }
+
         return (
             <div id="scoreboard">
                 <div id="hostControls">
                     <div>Board:</div>
                     <div>
-                        <button disabled={ (this.state.gameBoardState != GameBoardState.ClueGivenBuzzerActive) && (this.state.gameBoardState != GameBoardState.ClueAnswered) } onClick={ this.showQuestion }>Answer (sp)</button>
                         <button disabled={ this.state.gameBoardState != GameBoardState.Question } onClick={ this.showBoard }>Cont (sp)</button>
                     </div>
                     <div>Buzzer:</div>
@@ -214,14 +207,10 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                         <button disabled={ this.state.gameBoardState != GameBoardState.ClueAnswered } onClick={ this.correctResponse }>Right (z)</button>
                         <button disabled={ this.state.gameBoardState != GameBoardState.ClueAnswered } onClick={ this.incorrectResponse }>Wrong (x)</button>
                     </div>
-                    <div>Host Tools:</div>
-                    <div>
-                        <button onClick={ () => this.props.jeffpardyHostController.setViewMode(HostPageViewMode.HostCheatSheet) }>Show Answer Key</button>
-                    </div>
                 </div>
 
                 <div className="scoreEntries">
-                    { Object.keys(this.state.teams).sort().map((teamName, index) => {
+                    { Object.keys(this.props.teams).sort().map((teamName, index) => {
                         let buzzerState = ScoreboardEntryBuzzerState.Off;
                         let buzzedInUserName = "";
                         if (this.state.gameBoardState == GameBoardState.ClueGivenBuzzerActive) { buzzerState = ScoreboardEntryBuzzerState.Active }
@@ -236,7 +225,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                                 teamName={ teamName }
                                 buzzerState={ buzzerState }
                                 buzzedInUserName={ buzzedInUserName }
-                                score={ this.state.teams[teamName].score } />
+                                score={ this.props.teams[teamName].score } />
                         )
                     }) }
                 </div>

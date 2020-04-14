@@ -93,6 +93,54 @@ div#startPage div.title {
     justify-content: center;
 }
 
+/* Host Start Page */
+/* --------------------------------------------------*/
+div#hostStartPage {
+    padding:10px;
+    background-color: $colorGameBoard;
+    color:white;
+    display:flex;
+    flex-direction: column;
+    height:100%;
+    box-sizing: border-box;
+    align-content: center;
+}
+
+div#hostStartPage div {
+    text-align: center;
+}
+
+div#hostStartPage button {
+    font-size:2em;
+}
+
+div#hostStartPage div.title {
+    @extend %jeffpardyMainFont;
+
+    background-color:$colorGameBoard;
+    font-size: 4em;
+    text-align: center;
+    margin:2px;
+    padding:10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 15%;
+}
+
+div#hostStartPage div.gameCode {
+    @extend %jeffpardyMainFont;
+    background-color:$colorGameBoard;
+    font-size: 2em;
+    text-align: center;
+    margin:2px;
+    padding:10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
 
 div#jeffpardyBoardFrame {
     width:100%;
@@ -242,6 +290,45 @@ div#jeffpardyBoard div.jeffpardyActiveClue .question
 
 }
 
+div#jeffpardyBoard div.timer {
+    height:10px;
+    width:100%;
+    display:flex;
+    flex-direction: row;
+}
+
+div#jeffpardyBoard div.timer div {
+    flex-grow:1;
+    background-color: $colorGameBoard;
+}
+
+div#jeffpardyBoard div.timer div.lit {
+    background-color:white;
+}
+
+div#jeffpardyBoard div.jeffpardyIntermission, div#jeffpardyBoard div.jeffpardyEnd {
+    background-color:$colorGameBoard;
+    color:white;
+    flex-direction:column;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    display:flex;
+    height:100%;
+    width:100%;
+    font-size:2em;
+}
+
+div#jeffpardyBoard div.jeffpardyIntermission div.title, div#jeffpardyBoard div.jeffpardyEnd div.title {
+    @extend %jeffpardyMainFont;
+    font-size: 3em;
+}
+
+div#jeffpardyBoard div.jeffpardyIntermission button, div#jeffpardyBoard div.jeffpardyEnd button {
+    font-size: 2em;
+}
+
+/*----------------------------------------------------------------------------*/
 div#buzzerView
 {
     padding:10px;
@@ -484,79 +571,10 @@ div.topPageNormal {
     height:100%;
 }
 
-div#header {
-    height: 40px;
-    background-color: rgb(9, 74, 178);
-}
-
-
-#logoButton {
-    font-family: 'Segoe UI Light', 'Segoe UI SemiLight', 'Segoe UI', 'Segoe UI Symbol', HelveticaNeue-Light, 'Helvetica Neue', Arial;
-    font-size:24px;
-    padding-left:45px;
-    height: 45px;
-    padding-bottom:2px;
-    padding-left: 10px;
-    padding-right: 20px;
-    margin-right: 0;
-    width:100% !important;
-}
-
-#logoButton.ms-Button.ms-Button--primary {
-    background-color: rgb(9, 74, 178);
-}
-
-#logoButton.ms-Button.ms-Button--primary:hover {
-    background-color: rgb(8, 65, 156);
-}
-
-#logoButton span.ms-Button-label {
-    font-weight: normal !important;
-}
-
-#logoButton div.ms-Button-flexContainer {
-    padding-left:0px;
-}
-
-.pageTitle {
-    margin-left: 20px;
-}
-
-/* model dialog */
-.modalWaiting {
-    cursor: wait;
-}
-
-.modalNormal {
-    cursor: auto;
-}
-
-/*page layout*/
-.topPageNormal {
-    cursor: auto;
-}
-
-.topPageWaiting {
-    cursor: wait;
-}
-
-/* Bread Crumb */
-.ms-Breadcrumb.root_9aa06c8f {
-    margin-top: 0;
-}
-
-#pageContent > div > div > div.ms-ResizeGroup > div > div > ol {
-    max-width: 100%;
-    overflow: inherit;
-}
-
 /*   topSection container ===========================  */
 .topSection {
     @extend %jeffpardyMainFont;
 
-    top: 0;
-    left: 0;
-    right: 0;
     padding-top:5px;
     height: 70px;
     color:white;
@@ -576,29 +594,6 @@ div#header {
     text-align: center;
 }
 
-.spinnerVisible {
-    position: fixed;
-    top: 6px;
-    left: 136px;
-    display:block
-}
-
-.spinnerHidden {
-    display:none
-}
-
-.appTitleBarPane {
-    position: fixed;
-    left: 180px;
-    height: 40px;
-    background-color: black;
-    padding-left: 5px;
-}
-
-
-/*   AppTitleBar  =========================  */
-
-
 /*   middleSection container =========================  */
 .middleSection {
     flex-grow: 1;
@@ -613,75 +608,3 @@ div#header {
     flex-direction: column;
 }
 
-/*   bottomSection Start =========================  */
-
-.bottomSection {
-
-}
-
-
-.DataFieldName  {
-    font-weight: bold;
-}
-
-/*   footer Start =========================  */
-
-#footerTable
-{
-    background-color: #fff;
-    border-top: 1px solid #ccc;
-    clear: both;
-    color: rgb(0, 0, 0);
-    font-size: 86%;
-    width: 100%;
-}
-
-#footerTable td
-{
-    padding: 0;
-    vertical-align: top;
-    float: right;
-}
-
-#footerTable ul
-{
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    padding-left: 10px;
-}
-
-#footerTable ul li
-{
-    float: left;
-    padding: 5px 10px;
-}
-
-#footerTable ul li a
-{
-    white-space: nowrap;
-}
-
-#footerTable ul li span
-{
-    color: #666;
-    white-space: nowrap;
-}
-
-#footerTable ul li span#confidential
-{
-    color: red;
-}
-
-.footerCell a
-{
-    color: #666!important;
-}
-.footerCell a:hover
-{
-    color: rgba(102,102,102,.8)!important;
-}
-.footerCell a:focus
-{
-    color: rgba(102,102,102,.6)!important;
-}

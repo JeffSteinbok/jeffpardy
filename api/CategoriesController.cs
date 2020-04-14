@@ -16,20 +16,45 @@ namespace Jeffpardy
 
         [Route("[action]")]
         [HttpGet]
-        public Category[] GetGameBoard(int count)
+        public async Task<GameData> GetGameData()
         {
-            int categoryCount = SeasonManifestCache.Instance.JeopardyCategoryList.Count;
+            var gd = new GameData()
+            {
+                Rounds = new GameRound[]
+                {
+                    new GameRound
+                    {
+                        Id = 0,
+                        Categories = await this.GetCategoriesAsync(SeasonManifestCache.Instance.JeopardyCategoryList)
+                    },
+                    new GameRound
+                    {
+                        Id = 1,
+                        Categories = await this.GetCategoriesAsync(SeasonManifestCache.Instance.DoubleJeopardyCategoryList)
+                    }
+                }
+            };
+            return gd;  
+        }
+
+        private async Task<Category[]> GetCategoriesAsync(IReadOnlyList<ManifestCategory> categoryList)
+        {
+            int categoryCount = categoryList.Count;
             int startCategoryIndex = rand.Next(0, categoryCount - 6);
-            List<Category> categories = new List<Category>();
+
+            List<ManifestCategory> manifestCategories = new List<ManifestCategory>();
 
             for (int i = startCategoryIndex; i < startCategoryIndex + 6; i++)
             {
-                Category cat = AzureFilesCategoryLoader.Instance.LoadCategory(SeasonManifestCache.Instance.JeopardyCategoryList[i]);
-                categories.Add(cat);
+                manifestCategories.Add(categoryList[i]);
             }
-            return categories.ToArray();
-        }
 
+            var categoryLoadTasks = manifestCategories.Select((mc) => AzureFilesCategoryLoader.Instance.LoadCategoryAsync(mc));
+
+            await Task.WhenAll(categoryLoadTasks);
+            
+            return categoryLoadTasks.Select((clt) => clt.Result).ToArray();
+        }
 
     }
 }

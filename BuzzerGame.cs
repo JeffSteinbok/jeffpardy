@@ -133,7 +133,7 @@ namespace Jeffpardy
                 {
                     buzzerWindowTimer.Start();
                 }
-                
+
                 if (timeInMilliseconds < this.winningBuzzerTimeInMilliseconds)
                 {
                     this.winningBuzzerTimeInMilliseconds = timeInMilliseconds;

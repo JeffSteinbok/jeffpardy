@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { JeffpardyHostController, ICategory } from "./JeffpardyHostController";
+import { JeffpardyHostController, ICategory, IGameData } from "./JeffpardyHostController";
 import { AppTitleBar } from "./components/appTitleBar/AppTitleBar";
 import { JeffpardyBoard, IJeffpardyBoard } from "./components/gameBoard/JeffpardyBoard";
 import { Scoreboard } from "./components/scoreboard/Scoreboard";
@@ -9,8 +9,9 @@ import { HostCheatSheet } from "./components/hostCheatSheet/HostCheatSheet";
 
 
 export enum HostPageViewMode {
-    Normal,
-    HostCheatSheet
+    Start,
+    Game,
+    AnswerKey
 }
 
 export interface IHostPageProps {
@@ -18,12 +19,15 @@ export interface IHostPageProps {
 
 export interface IHostPageState {
     viewMode: HostPageViewMode;
-    categories: ICategory[]
+    round: number,
+    categories: ICategory[];
 }
 
 export interface IHostPage {
     setViewMode: (viewMode: HostPageViewMode) => void;
-    onCategoriesLoaded: (categories: ICategory[]) => void;
+    startNewRound: () => void;
+    onGameDataLoaded: (gameData: IGameData) => void;
+    onUpdateTeams: (teams) => void;
 }
 
 /**
@@ -43,8 +47,9 @@ export class HostPage extends React.Component<any, any> {
         this.jeffpardyHostController.hostPage = this;
 
         this.state = {
-            viewMode: HostPageViewMode.Normal,
-            categories: []
+            viewMode: HostPageViewMode.Start,
+            round: 0,
+            categories: null
         }
     }
 
@@ -60,7 +65,27 @@ export class HostPage extends React.Component<any, any> {
     }
 
     public componentDidMount() {
-        this.jeffpardyHostController.loadCategories();
+        this.jeffpardyHostController.loadGameData();
+    }
+
+    public showAnswerKey = () => {
+        this.setState({
+            viewMode: HostPageViewMode.AnswerKey
+        });
+    }
+
+    public startGame = () => {
+        this.setState({
+            viewMode: HostPageViewMode.Game,
+            categories: this.state.gameData.rounds[0].categories
+        });
+    }
+
+    public startNewRound = () => {
+        this.setState({
+            round: this.state.round + 1,
+            categories: this.state.gameData.rounds[this.state.round + 1].categories
+        })
     }
 
     public setViewMode = (viewMode: HostPageViewMode) => {
@@ -69,49 +94,67 @@ export class HostPage extends React.Component<any, any> {
         })
     };
 
-    public onCategoriesLoaded = (categories: ICategory[]) => {
-        Logger.debug("PageLayout:onCategoriesLoaded", categories);
-        this.setState({ categories: categories })
+    public onGameDataLoaded = (gameData: IGameData) => {
+        Logger.debug("HostPage:onGameDataLoaded", gameData);
+        this.setState({
+            gameData: gameData,
+            categories: gameData.rounds[0].categories
+        })
+    }
+
+    public onUpdateTeams = (teams) => {
+        this.setState({
+            teams: teams
+        });
     }
 
     public render() {
-        Logger.debug("PageLayout:render", this.state.categories);
-
-        let style = {};
-        if (this.state.viewMode == HostPageViewMode.HostCheatSheet) {
-            style["display"] = "none";
-        }
+        Logger.debug("HostPage:render", this.state.gameData);
 
         return (
             <div>
-                <div className="topPageNormal" style={ style } >
-                    <div className="topSection">
+                {
+                    this.state.viewMode == HostPageViewMode.Start &&
+
+                    <div id="hostStartPage">
                         <div className="title">Jeffpardy!</div>
-                        <div className="gameCode">Use game code: { this.gameCode }</div>
+                        <div className="gameCode">Use Game Code: { this.gameCode }</div>
+
+                        { this.state.gameData == null &&
+                            <div>Finding some really great clues...</div>
+                        }
+                        { this.state.gameData != null &&
+                            <div>
+                                Give the above game code to the players.
+                                <p></p>
+                                Don't forget to save or print the answer key before you start. <br />
+                                If you don't, you won't be able to during the game.
+                                <p></p>
+                                <button onClick={ this.showAnswerKey }>Show Answers</button>
+                                <p />
+                                <button onClick={ this.startGame }>Start Game!</button>
+                            </div>
+                        }
                     </div>
-                    <div className="middleSection">
-                        <div id="pageContent" className="pageContent">
-                            <JeffpardyBoard jeffpardyHostController={ this.jeffpardyHostController } categories={ this.state.categories }></JeffpardyBoard>
-                            <Scoreboard jeffpardyHostController={ this.jeffpardyHostController } ></Scoreboard>
+                }
+                {
+                    this.state.viewMode == HostPageViewMode.AnswerKey &&
+                    <HostCheatSheet jeffpardyController={ this.jeffpardyHostController } gameData={ this.state.gameData } />
+                }
+                {
+                    this.state.viewMode == HostPageViewMode.Game &&
+                    <div className="topPageNormal" >
+                        <div className="topSection">
+                            <div className="title">Jeffpardy!</div>
+                            <div className="gameCode">Use game code: { this.gameCode }</div>
+                        </div>
+                        <div className="middleSection">
+                            <div id="pageContent" className="pageContent">
+                                <JeffpardyBoard jeffpardyHostController={ this.jeffpardyHostController } categories={ this.state.categories } round={ this.state.round }></JeffpardyBoard>
+                                <Scoreboard jeffpardyHostController={ this.jeffpardyHostController } teams={ this.state.teams }></Scoreboard>
+                            </div>
                         </div>
                     </div>
-                    <div className="bottomSection">
-                        <table id="footerTable">
-                            <tbody>
-                                <tr>
-                                    <td id="footer_left" className="footerCell resetWidth">
-                                        <ul>
-                                            <li><span>&copy; 2020 Jeff Steinbok</span></li>
-                                        </ul>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                {
-                    this.state.viewMode == HostPageViewMode.HostCheatSheet &&
-                    <HostCheatSheet jeffpardyController={ this.jeffpardyHostController } categories={ this.state.categories } />
                 }
             </div >
         );

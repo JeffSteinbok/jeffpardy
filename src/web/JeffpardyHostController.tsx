@@ -27,6 +27,15 @@ export interface ICategory {
     isAsked: boolean;
 }
 
+export interface IGameRound {
+    id: number;
+    categories: ICategory[];
+}
+
+export interface IGameData {
+    rounds: IGameRound[];
+}
+
 /**
  * This class is to be passed down to pages and components so they can interact with
  * global state in a type-safe manner.
@@ -39,6 +48,7 @@ export class JeffpardyHostController {
 
     teams: { [key: string]: ITeam };
     teamCount: number;
+    gameData: IGameData;
     categories: ICategory[];
 
     hostSignalRClient: IHostSignalRClient;
@@ -47,26 +57,26 @@ export class JeffpardyHostController {
         this.hostSignalRClient = new HostSignalRClient(this, gameCode)
     }
 
-    public loadCategories() {
-        Logger.debug("JeffpardyHostController:loadCategories");
+    public loadGameData() {
+        Logger.debug("JeffpardyHostController:loadGameData");
         let context: IApiExecutionContext = {
             showProgressIndicator: true,
-            apiName: "/api/Categories/GetGameBoard",
+            apiName: "/api/Categories/GetGameData",
             formData: {},
             json: true,
-            success: (results: ICategory[]) => {
+            success: (results: IGameData) => {
 
+                results.rounds.forEach((gameRound: IGameRound) => {
+                    gameRound.categories.forEach((category: ICategory) => {
+                        for (var i: number = 0; i < category.clues.length; i++) {
+                            category.clues[i].value = (i + 1) * 100 * (gameRound.id + 1);
+                        }
+                    });
+                })
 
-                let scores: { [key: string]: number } = {};
+                this.gameData = results;
 
-                results.forEach((category: ICategory) => {
-                    for (var i: number = 0; i < category.clues.length; i++) {
-                        category.clues[i].value = (i + 1) * 100;
-                    }
-                });
-
-                this.categories = results;
-                this.hostPage.onCategoriesLoaded(this.categories);
+                this.hostPage.onGameDataLoaded(this.gameData);
             },
             error: null
         };
@@ -109,7 +119,7 @@ export class JeffpardyHostController {
 
         this.teams = teams;
         this.teamCount = teamCount;
-        this.scoreboard.onUpdateTeams(this.teams);
+        this.hostPage.onUpdateTeams(this.teams);
     }
 
     public resetBuzzer() {
@@ -117,10 +127,12 @@ export class JeffpardyHostController {
     }
 
     public activateBuzzer() {
+        this.jeffpardyBoard.startTimer();
         this.hostSignalRClient.activateBuzzer();
     }
 
     public assignBuzzedInUser(user: IPlayer) {
+        this.jeffpardyBoard.stopTimer();
         this.scoreboard.onAssignBuzzedInUser(user);
     }
 
@@ -144,8 +156,15 @@ export class JeffpardyHostController {
         this.jeffpardyBoard.showQuestion();
     }
 
-    public showBoard() {
-        this.jeffpardyBoard.hideClue();
+    public showBoard = () => {
+        this.jeffpardyBoard.showBoard();
     }
 
+    public startNewRound = () => {
+        this.hostPage.startNewRound();
+    }
+
+    public buzzerTimeout = () => {
+        this.scoreboard.onBuzzerTimeout();
+    }
 }
