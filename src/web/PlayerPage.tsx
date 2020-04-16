@@ -54,6 +54,8 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
     buzzerActivateTime: Date;
     gameCodeTemp: string = '';
+    focusInput: HTMLInputElement = null;
+
     constructor(props: any) {
         super(props);
 
@@ -77,7 +79,9 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     }
 
     componentDidMount = () => {
-
+        if (this.focusInput != null) {
+            this.focusInput.focus();
+        }
 
         const hubConnection: signalR.HubConnection = new signalR.HubConnectionBuilder()
             .withUrl('/hub/buzzer')
@@ -233,78 +237,89 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
 
 
-            <div id="buzzerView">
-                <div className="buzzerViewTitle">Jeffpardy! Buzzer</div>
-                <div className="buzzerViewTitleGameCode">{ this.state.gameCode }</div>
+            <div id="playerPage">
+                <div className="title">Jeffpardy! Buzzer</div>
+                <div className="gameCode">{ this.state.gameCode }</div>
 
                 { this.state.playerPageState == PlayerPageState.FrontPage &&
-                    <div>
+                    <div className="gameCodeEntry">
                         <h1>Enter Game Code</h1>
-                        <div className="buzzerRegistration">
-                            <input
-                                type="text"
-                                maxLength={ 6 }
-                                onChange={ e => this.gameCodeTemp = e.target.value }
-                            />
-                            <p />
-                            <button onClick={ this.setGameCode }>Start</button>
-                        </div>
+                        <input
+                            type="text"
+                            maxLength={ 6 }
+                            onChange={ e => this.gameCodeTemp = e.target.value }
+                            ref={ (input) => { this.focusInput = input; } }
+                        />
+                        <p />
+                        <button onClick={ this.setGameCode }>Start</button>
                     </div>
                 }
                 { this.state.playerPageState != PlayerPageState.FrontPage &&
-                    <div className="buzzerCurrentUserView">
-                        { this.state.playerPageState == PlayerPageState.Lobby &&
-                            <div>
-                                <h1>Register</h1>
-                                <div className="buzzerRegistration">
-                                    <div>Team Name</div>
-                                    <input
-                                        type="text"
-                                        value={ this.state.team }
-                                        onChange={ e => this.setState({ team: e.target.value }) }
-                                    />
-                                    <p />
-                                    <div>Player Name</div>
-                                    <input
-                                        type="text"
-                                        value={ this.state.name }
-                                        onChange={ e => this.setState({ name: e.target.value }) }
-                                    />
-                                    <p />
-                                    <button onClick={ this.registerPlayer }>Start</button>
-                                </div>
-                            </div>
-                        }
-                        { this.state.playerPageState == PlayerPageState.Buzzer &&
-                            <div>
-                                <h1>{ this.state.name }</h1>
-                                <h2>Team: { this.state.team }</h2>
+                    <div id="playerPageMain">
+                        <div className="buzzerCurrentUserView">
+                            { this.state.playerPageState == PlayerPageState.Lobby &&
+                                <div>
+                                    <h1>Register</h1>
+                                    <div className="buzzerRegistration">
+                                        <div>Team Name</div>
+                                        <input
+                                            type="text"
+                                            maxLength={ 10 }
+                                            value={ this.state.team }
+                                            list="dataListTeam"
+                                            ref={ (input) => { this.focusInput = input; } }
+                                            onChange={ e => this.setState({ team: e.target.value.toUpperCase() }) }
+                                        />
 
-                                <div><i>Wait for the button to turn green before buzzing in.</i></div>
+                                        <datalist id="dataListTeam">
+                                            { Object.keys(this.state.teams).sort().map((teamName, key) =>
+                                                <option key={ key } value={ teamName } />
+                                            ) }
+                                        </datalist>
 
-                                <button id="buzzer" className={ buzzerClassName } onClick={ this.buzzIn }>Buzz</button>
 
-                                { this.state.buzzedInUser != null &&
-                                    <div className={ "buzzedInUser " + (this.state.buzzedInUser.name == this.state.name ? " buzzedInWinner" : "") }>
-                                        <div className="buzzedInUserTitle">Buzzed-in User</div>
-                                        <div className="buzzedInUserName">{ this.state.buzzedInUser.name }</div>
-                                        <div className="buzzedInUserTeam">Team: { this.state.buzzedInUser.team }</div>
+                                        <p />
+                                        <div>Player Name</div>
+                                        <input
+                                            type="text"
+                                            maxLength={ 25 }
+                                            value={ this.state.name }
+                                            onChange={ e => this.setState({ name: e.target.value }) }
+                                        />
+                                        <p />
+                                        <button onClick={ this.registerPlayer }>Start</button>
                                     </div>
-                                }
+                                </div>
+                            }
+                            { this.state.playerPageState == PlayerPageState.Buzzer &&
+                                <div>
+                                    <h1>{ this.state.name }</h1>
+                                    <h2>Team: { this.state.team }</h2>
+
+                                    <div><i>Wait for the button to turn green before buzzing in.</i></div>
+
+                                    <button id="buzzer" className={ buzzerClassName } onClick={ this.buzzIn }>Buzz</button>
+
+                                    { this.state.buzzedInUser != null &&
+                                        <div className={ "buzzedInUser " + (this.state.buzzedInUser.name == this.state.name ? " buzzedInWinner" : "") }>
+                                            <div className="buzzedInUserTitle">Buzzed-in User</div>
+                                            <div className="buzzedInUserName">{ this.state.buzzedInUser.name }</div>
+                                            <div className="buzzedInUserTeam">Team: { this.state.buzzedInUser.team }</div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                        <div className="buzzerUserListView">
+                            <h1>Current Players</h1>
+                            <div>
+                                <PlayerList teams={ this.state.teams } />
                             </div>
-                        }
-                    </div>
-                }
-                { this.state.playerPageState != PlayerPageState.FrontPage &&
-                    <div className="buzzerUserListView">
-                        <h1>Current Players</h1>
-                        <div>
-                            <PlayerList teams={ this.state.teams } />
                         </div>
                     </div>
                 }
             </div>
-
         );
     }
 }

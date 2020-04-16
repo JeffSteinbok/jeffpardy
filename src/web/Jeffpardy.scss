@@ -329,14 +329,69 @@ div#jeffpardyBoard div.jeffpardyIntermission button, div#jeffpardyBoard div.jeff
 }
 
 /*----------------------------------------------------------------------------*/
-div#buzzerView
+div#playerPage
+{
+    padding:10px;
+    background-color: $colorGameBoard;
+    color:white;
+    display:flex;
+    flex-direction: column;
+    height:100%;
+    box-sizing: border-box;
+    align-content: center;
+}
+
+div#playerPage div.title {
+    @extend %jeffpardyMainFont;
+
+    background-color:$colorGameBoard;
+    font-size: 4em;
+    text-align: center;
+    margin:2px;
+    padding-top:10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+div#playerPage div.gameCode {
+    @extend %jeffpardyMainFont;
+    background-color:$colorGameBoard;
+    font-size: 2em;
+    text-align: center;
+    margin:2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+div#playerPage div.gameCodeEntry {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+div#playerPage div.gameCodeEntry input {
+    text-align: center;
+    font-size: 1.5em;
+    text-transform: uppercase;
+}
+
+div#playerPage div.gameCodeEntry button {
+    font-size:1.5em;
+    padding:5px 20px 5px 20px;
+}
+
+div#playerPageMain
 {
     padding:10px;
     background-color: $colorGameBoard;
     color:white;
     display:grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 50px 50px auto;
     flex-direction: row;
     height:100%;
     box-sizing: border-box;
@@ -359,7 +414,7 @@ div#buzzerView div.buzzerViewTitleGameCode
     text-align: center;
 }
 
-div#buzzerView div.buzzerCurrentUserView
+div#playerPage div.buzzerCurrentUserView
 {
     display:flex;
     flex-direction: column;
@@ -367,54 +422,55 @@ div#buzzerView div.buzzerCurrentUserView
     text-align: center;
 }
 
-div#buzzerView div.buzzerCurrentUserView h1 {
+div#playerPage div.buzzerCurrentUserView h1 {
     margin-bottom:0px;
 }
 
-div#buzzerView div.buzzerCurrentUserView h2 {
+div#playerPage div.buzzerCurrentUserView h2 {
     margin-top:0px;
 }
 
-div#buzzerView div.buzzerCurrentUserView div.buzzerRegistration
+
+
+div.buzzerRegistration
 {
     font-size:1.5em;
 }
 
-div#buzzerView div.buzzerCurrentUserView div.buzzerRegistration input[type="text"] {
+div.buzzerRegistration input[type="text"] {
     font-size:0.8em;
-    text-align: center;
 }
 
-div#buzzerView div.buzzerCurrentUserView div.buzzerRegistration button {
+div#playerPage div.buzzerCurrentUserView div.buzzerRegistration button {
     font-size:1em;
     padding:5px 20px 5px 20px;
 }
 
-div#buzzerView div.buzzerCurrentUserView div.playerName {
+div#playerPage div.buzzerCurrentUserView div.playerName {
     font-size:1.5em;
     margin-bottom: 20px;
 }
 
-div#buzzerView div.buzzerCurrentUserView div.buzzedInUser {
+div#playerPage div.buzzerCurrentUserView div.buzzedInUser {
     margin-top:20px;
     padding:10px 30px 10px 30px;
     background-color: orangered;
 }
 
-div#buzzerView div.buzzerCurrentUserView div.buzzedInUser.buzzedInWinner {
+div#playerPage div.buzzerCurrentUserView div.buzzedInUser.buzzedInWinner {
     background-color: green;
 }
 
 
-div#buzzerView div.buzzerCurrentUserView div.buzzedInUser div.buzzedInUserTitle{
+div#playerPage div.buzzerCurrentUserView div.buzzedInUser div.buzzedInUserTitle{
 
 }
 
-div#buzzerView div.buzzerCurrentUserView div.buzzedInUser div.buzzedInUserName{
+div#playerPage div.buzzerCurrentUserView div.buzzedInUser div.buzzedInUserName{
     font-size:2em;
 }
 
-div#buzzerView div.userList
+div#playerPage div.userList
 {
 
 }
@@ -545,9 +601,16 @@ div#scoreboard .scoreboardEntry .score{
 }
 
 
+div.buzzerUserListView {
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 div.buzzerUserListView ul.playerList {
     list-style: none;
     padding-left:0px;
+    text-align:center;
 }
 
 div.buzzerUserListView ul.playerList li {
@@ -555,7 +618,7 @@ div.buzzerUserListView ul.playerList li {
 }
 
 div.buzzerUserListView ul.playerList ul {
-    padding-left:10px;
+    padding-left:0;
 }
 
 div.buzzerUserListView ul.playerList ul li {
