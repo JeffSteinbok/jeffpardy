@@ -22,6 +22,7 @@ export interface IClue {
 export interface ICategory {
     title: string;
     comment: string;
+    airDate: string;
     // Need to change the JSON format to fix this
     clues: IClue[];
     isAsked: boolean;

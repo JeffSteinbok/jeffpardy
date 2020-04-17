@@ -46,9 +46,11 @@ export class HostCheatSheet extends React.Component<IHostCheatSheetProps, any> {
                                 <ul>
                                     {
                                         round.categories.map((category, index) => {
+                                            let airDate: Date = new Date(category.airDate);
 
                                             return (
                                                 <li key={ index }>{ category.title }<br />
+                                                    This category was asked on Jeopardy on: { airDate.getMonth() + 1 + "/" + airDate.getDay() + "/" + airDate.getFullYear() } <br />
                                                     <i>{ category.comment }</i>
                                                     <ul>
                                                         {
