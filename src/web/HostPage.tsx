@@ -10,6 +10,7 @@ import { HostCheatSheet } from "./components/hostCheatSheet/HostCheatSheet";
 
 export enum HostPageViewMode {
     Start,
+    Intro,
     Game,
     AnswerKey
 }
@@ -74,6 +75,12 @@ export class HostPage extends React.Component<any, any> {
         });
     }
 
+    public startIntro = () => {
+        this.setState({
+            viewMode: HostPageViewMode.Intro,
+        });
+    }
+
     public startGame = () => {
         this.setState({
             viewMode: HostPageViewMode.Game,
@@ -133,7 +140,7 @@ export class HostPage extends React.Component<any, any> {
                                 <p></p>
                                 <button onClick={ this.showAnswerKey }>Show Answers</button>
                                 <p />
-                                <button onClick={ this.startGame }>Start Game!</button>
+                                <button onClick={ this.startIntro }>Start Game!</button>
                             </div>
                         }
                     </div>
@@ -141,6 +148,14 @@ export class HostPage extends React.Component<any, any> {
                 {
                     this.state.viewMode == HostPageViewMode.AnswerKey &&
                     <HostCheatSheet jeffpardyController={ this.jeffpardyHostController } gameData={ this.state.gameData } />
+                }
+                {
+                    this.state.viewMode == HostPageViewMode.Intro &&
+                    <div id="introVideo">
+                        <video autoPlay onEnded={ this.startGame }>
+                            <source src="/IntroVideo.mp4" type="video/mp4" />
+                        </video>
+                    </div>
                 }
                 {
                     this.state.viewMode == HostPageViewMode.Game &&

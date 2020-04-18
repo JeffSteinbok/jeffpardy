@@ -146,7 +146,17 @@ div#hostStartPage div.gameCode {
     justify-content: center;
 }
 
+div#introVideo {
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: black;
+    height:100%;
+}
 
+div#introVideo video {
+    width:100%;
+}
 
 div#jeffpardyBoardFrame {
     width:100%;
