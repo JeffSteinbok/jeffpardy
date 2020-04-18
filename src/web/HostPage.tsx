@@ -126,7 +126,7 @@ export class HostPage extends React.Component<any, any> {
                             <div>
                                 <div className="gameCode">Use Game Code: { this.gameCode }</div>
                                 Give the above game code to the players or give them this direct link:<br />
-                                <a target="#" href="/player#LUHMKD">https://{ window.location.hostname }{ window.location.port != "443" ? ":" + window.location.port : "" }/player#{ this.gameCode }</a>
+                                <a target="#" href="/player#LUHMKD">https://{ window.location.hostname }{ window.location.port != "" ? ":" + window.location.port : "" }/player#{ this.gameCode }</a>
                                 <p></p>
                                 Don't forget to save or print the answer key before you start. <br />
                                 If you don't, you won't be able to during the game.
