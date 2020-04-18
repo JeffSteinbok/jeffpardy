@@ -88,6 +88,8 @@ namespace Jeffpardy
 
         private BuzzerGame GetBuzzerGame(string gameCode)
         {
+            gameCode = gameCode.ToUpperInvariant();
+
             BuzzerGame buzzerGame = null;
 
             if (buzzerGames.ContainsKey(gameCode))
