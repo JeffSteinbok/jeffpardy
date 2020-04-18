@@ -3,6 +3,7 @@
     "files.exclude": {
         "wwwroot/*/dist": true,
         "bin": true,
+        "node_modules": true,
     },
     "search.exclude": {
         "coverage": true,
@@ -13,7 +14,7 @@
         "src/**/*.event.ts": true,
         "src/**/*.resx.ts": true,
         "temp": true,
-        "bin": true
+        "bin": true,
     },
     "editor.insertSpaces": true,
     "editor.renderWhitespace": "boundary",

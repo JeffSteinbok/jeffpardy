@@ -92,6 +92,11 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                 .start()
                 .then(() => {
                     console.log('Connection started!');
+
+                    if (window.location.hash.length == 7) {
+                        this.gameCodeTemp = window.location.hash.substr(1);
+                        this.setGameCode();
+                    }
                 })
                 .catch(err => console.log('Error while establishing connection :('));
 
