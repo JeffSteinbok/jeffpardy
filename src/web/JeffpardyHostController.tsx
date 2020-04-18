@@ -86,6 +86,11 @@ export class JeffpardyHostController {
         wsam.executeApi(context);
     }
 
+    public setCustomGameData(gameData: IGameData) {
+        this.gameData = gameData;
+        this.hostPage.onGameDataLoaded(gameData);
+    }
+
     public updateUsers(users: IPlayer[]) {
 
         let teams: { [key: string]: ITeam } = {};

@@ -6,7 +6,14 @@ import { JeffpardyBoard, IJeffpardyBoard } from "./components/gameBoard/Jeffpard
 import { Scoreboard } from "./components/scoreboard/Scoreboard";
 import { Logger } from "./utilities/Logger";
 import { HostCheatSheet } from "./components/hostCheatSheet/HostCheatSheet";
-
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Slide from '@material-ui/core/Slide';
+import { TextField } from "@material-ui/core";
 
 export enum HostPageViewMode {
     Start,
@@ -22,6 +29,7 @@ export interface IHostPageState {
     viewMode: HostPageViewMode;
     round: number,
     categories: ICategory[];
+    isCustomCategoryDialogOpen: boolean;
 }
 
 export interface IHostPage {
@@ -38,6 +46,7 @@ export class HostPage extends React.Component<any, any> {
 
     jeffpardyHostController: JeffpardyHostController;
     gameCode: string;
+    customCategoryJSON: string;
 
     constructor(props: any) {
         super(props);
@@ -50,7 +59,8 @@ export class HostPage extends React.Component<any, any> {
         this.state = {
             viewMode: HostPageViewMode.Start,
             round: 0,
-            categories: null
+            categories: null,
+            isCustomCategoryDialogOpen: false
         }
     }
 
@@ -67,6 +77,13 @@ export class HostPage extends React.Component<any, any> {
 
     public componentDidMount() {
         this.jeffpardyHostController.loadGameData();
+    }
+
+    public loadCustomCategories = () => {
+
+        this.setState({ isCustomCategoryDialogOpen: false })
+        this.jeffpardyHostController.setCustomGameData(JSON.parse(this.customCategoryJSON));
+        alert("Please check the answer key to see if this loaded correctly.")
     }
 
     public showAnswerKey = () => {
@@ -138,9 +155,35 @@ export class HostPage extends React.Component<any, any> {
                                 Don't forget to save or print the answer key before you start. <br />
                                 If you don't, you won't be able to during the game.
                                 <p></p>
+                                <span style={ { color: "red" } }>NEW: Use your own categories!</span><br />
+                                <button onClick={ () => { this.setState({ isCustomCategoryDialogOpen: true }) } }>Use Custom Categories</button>
+                                <p></p>
                                 <button onClick={ this.showAnswerKey }>Show Answers</button>
                                 <p />
                                 <button onClick={ this.startIntro }>Start Game!</button>
+                                <Dialog
+                                    open={ this.state.isCustomCategoryDialogOpen }
+                                    keepMounted
+                                    fullWidth
+                                >
+                                    <DialogTitle id="alert-dialog-slide-title">{ "Modify this JSON" }</DialogTitle>
+                                    <DialogContent>
+                                        <TextField id="alert-dialog-slide-description"
+                                            style={ { fontSize: "0.8em", fontFamily: "Courier" } }
+                                            fullWidth
+                                            multiline
+                                            defaultValue={ JSON.stringify(this.jeffpardyHostController.gameData, null, 4) }
+                                            onChange={ (event) => this.customCategoryJSON = event.target.value } />
+                                    </DialogContent>
+                                    <DialogActions>
+                                        <Button onClick={ () => { this.setState({ isCustomCategoryDialogOpen: false }) } }>
+                                            Cancel
+                                    </Button>
+                                        <Button onClick={ this.loadCustomCategories } color="primary">
+                                            Load
+                                    </Button>
+                                    </DialogActions>
+                                </Dialog>
                             </div>
                         }
                     </div>
