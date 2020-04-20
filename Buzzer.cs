@@ -51,7 +51,7 @@ namespace Jeffpardy
             BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
 
             connectionToGameDictionary[connectionId] = gameCode;
-            await this.buzzerHubContext.Groups.AddToGroupAsync(connectionId, gameCode);
+            await this.buzzerHubContext.Groups.AddToGroupAsync(connectionId, gameCode.ToUpperInvariant());
             await buzzerGame.ConnectUserAsync(connectionId, team, name);
         }
 

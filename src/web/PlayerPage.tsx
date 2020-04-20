@@ -184,7 +184,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         this.state.hubConnection
             .invoke('connectPlayerLobby', this.gameCodeTemp)
             .then(() => this.setState({
-                gameCode: this.gameCodeTemp,
+                gameCode: this.gameCodeTemp.toUpperCase(),
                 playerPageState: PlayerPageState.Lobby
             }))
             .catch(err => console.error(err));
