@@ -641,6 +641,52 @@ div.buzzerUserListView ul.playerList ul li {
     font-weight:normal;
 }
 
+div.hostCheatSheetRound {
+    page-break-after: always;
+}
+
+div.hostCheatSheetRound div.hostCheatSheetClues {
+    display:grid;
+    background-color: black;
+    -webkit-print-color-adjust: exact;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    //grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+    width:100%;
+    box-sizing: border-box;
+    grid-column-gap: 2px;
+    grid-row-gap: 2px;
+    padding:2px;
+    font-size:9pt;
+
+}
+
+div.hostCheatSheetRound div.hostCheatSheetCategory {
+    text-align: center;
+    background-color: white;
+    padding:2px;
+    margin-bottom:2px;
+}
+
+div.hostCheatSheetRound div.hostCheatSheetCategory div.title {
+    font-weight: bold;
+}
+
+
+div.hostCheatSheetRound div.hostCheatSheetClue {
+    text-align: center;
+    background-color: white;
+    padding:2px;
+}
+
+div.hostCheatSheetRound div.hostCheatSheetClue div.value {
+    font-weight: bold;
+}
+
+div.hostCheatSheetRound div.hostCheatSheetClue div.clue {
+    border-bottom:1px solid black;
+}
+
+
 
 /* main layout
 ----------------------------------------------------------*/
