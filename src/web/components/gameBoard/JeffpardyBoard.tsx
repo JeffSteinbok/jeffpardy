@@ -7,6 +7,7 @@ import { Timer } from "./Timer"
 
 export enum JeopardyBoardView {
     Board,
+    DailyDouble,
     Clue,
     Question,
     Intermission,
@@ -57,12 +58,22 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
     }
 
     public showClue = (category: ICategory, clue: IClue) => {
-        this.setState({
-            activeClue: clue,
-            activeCategory: category,
-            jeopardyBoardView: JeopardyBoardView.Clue
-        });
-        this.props.jeffpardyHostController.showClue(clue);
+        if (clue.isDailyDouble) {
+            if (this.state.jeopardyBoardView == JeopardyBoardView.Board) {
+                this.setState({
+                    activeClue: clue,
+                    activeCategory: category,
+                    jeopardyBoardView: JeopardyBoardView.DailyDouble
+                });
+            }
+        } else {
+            this.setState({
+                activeClue: clue,
+                activeCategory: category,
+                jeopardyBoardView: JeopardyBoardView.Clue
+            });
+            this.props.jeffpardyHostController.showClue(clue);
+        }
     }
 
     public showQuestion = () => {
@@ -173,6 +184,12 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                                     <div className="question">{ this.state.activeClue.question }</div>
                                 }
                                 <Timer percentageRemaining={ this.state.timerPercentageRemaining }></Timer>
+                            </div>
+                        }
+                        { (this.state.jeopardyBoardView == JeopardyBoardView.DailyDouble) &&
+                            <div className="jeffpardyActiveClue">
+                                <div className="header">{ this.state.activeCategory.title }</div>
+                                <div>Wager amount: </div>
                             </div>
                         }
                         { this.state.jeopardyBoardView == JeopardyBoardView.Intermission &&

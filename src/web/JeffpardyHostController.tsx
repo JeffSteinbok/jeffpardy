@@ -5,6 +5,7 @@ import { WebServerApiManager, IApiExecutionContext } from "./utilities/WebServer
 import { IHostPage, HostPageViewMode } from "./HostPage";
 import { IHostSignalRClient, HostSignalRClient } from "./HostSignalRClient";
 import { IPlayer } from "./interfaces/IPlayer";
+import { Debug, DebugFlags } from "./utilities/Debug";
 
 export interface ITeam {
     name: string;
@@ -17,6 +18,7 @@ export interface IClue {
     question: string;
     value: number;
     isAsked: boolean;
+    isDailyDouble: boolean;
 }
 
 export interface ICategory {
@@ -26,6 +28,7 @@ export interface ICategory {
     // Need to change the JSON format to fix this
     clues: IClue[];
     isAsked: boolean;
+    hasDailyDouble: boolean;
 }
 
 export interface IGameRound {
@@ -60,30 +63,77 @@ export class JeffpardyHostController {
 
     public loadGameData() {
         Logger.debug("JeffpardyHostController:loadGameData");
-        let context: IApiExecutionContext = {
-            showProgressIndicator: true,
-            apiName: "/api/Categories/GetGameData",
-            formData: {},
-            json: true,
-            success: (results: IGameData) => {
 
-                results.rounds.forEach((gameRound: IGameRound) => {
-                    gameRound.categories.forEach((category: ICategory) => {
-                        for (var i: number = 0; i < category.clues.length; i++) {
-                            category.clues[i].value = (i + 1) * 100 * (gameRound.id + 1);
-                        }
-                    });
-                })
+        if (!Debug.IsFlagSet(DebugFlags.LocalCategories)) {
+            let context: IApiExecutionContext = {
+                showProgressIndicator: true,
+                apiName: "/api/Categories/GetGameData",
+                formData: {},
+                json: true,
+                success: (results: IGameData) => {
+                    this.onGameDataLoaded(results);
+                },
+                error: null
+            };
 
-                this.gameData = results;
+            let wsam: WebServerApiManager = new WebServerApiManager();
+            wsam.executeApi(context);
+        }
+        else {
+            this.onGameDataLoaded(Debug.GameData);
+        }
+    }
 
-                this.hostPage.onGameDataLoaded(this.gameData);
-            },
-            error: null
-        };
+    public onGameDataLoaded = (gameData: IGameData) => {
+        // Assign the scores
+        gameData.rounds.forEach((gameRound: IGameRound) => {
+            gameRound.categories.forEach((category: ICategory) => {
+                for (var i: number = 0; i < category.clues.length; i++) {
+                    category.clues[i].value = (i + 1) * 100 * (gameRound.id + 1);
+                }
+            });
+        });
 
-        let wsam: WebServerApiManager = new WebServerApiManager();
-        wsam.executeApi(context);
+        // Assign the daily doubles - 2 ^ roundIndex
+        // We're going to make sure there is only one per category
+        // We're going to weight them towards the bottom 3 rows.
+        // There are actually 30 spots on the board.  We're going
+        // to triple the weight of the bottom 3 rows.
+        if (!Debug.IsFlagSet(DebugFlags.DailyDouble00)) {
+            for (var i: number = 0; i < gameData.rounds.length; i++) {
+                let round: IGameRound = gameData.rounds[i];
+                let numDDs = Math.pow(2, i);
+
+                for (var dd: number = 0; dd < numDDs; dd++) {
+                    let ddCat: number;
+
+                    // Pick a category randomly
+                    do {
+                        ddCat = Math.floor(Math.random() * 6);
+                    } while (round.categories[ddCat].hasDailyDouble);
+                    round.categories[ddCat].hasDailyDouble = true;
+
+                    // Pick a clue randomly, but weight towards the bottom.
+                    // So, pick from 11.
+                    // If the number is > 8, reduce by 6
+                    // If the number is > 5, reduce by 3
+                    let ddClue: number;
+                    do {
+                        ddClue = Math.floor(Math.random() * 11);
+                        if (ddClue > 8) { ddClue -= 6 }
+                        if (ddClue > 5) { ddClue -= 3 }
+                    } while (round.categories[ddCat].clues[ddClue].isDailyDouble);
+                    round.categories[ddCat].clues[ddClue].isDailyDouble = true;
+                }
+            }
+        } else {
+            gameData.rounds[0].categories[0].hasDailyDouble = true;
+            gameData.rounds[0].categories[0].clues[0].isDailyDouble = true;
+        }
+
+        this.gameData = gameData;
+
+        this.hostPage.onGameDataLoaded(this.gameData);
     }
 
     public setCustomGameData(gameData: IGameData) {

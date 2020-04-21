@@ -137,6 +137,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
             if (responseCorrect) {
                 this.showQuestion();
+                // TODO:  Set who has control
             } else {
                 adjustment *= -1;
 

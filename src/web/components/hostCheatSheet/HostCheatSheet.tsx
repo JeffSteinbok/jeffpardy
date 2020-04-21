@@ -54,7 +54,7 @@ export class HostCheatSheet extends React.Component<IHostCheatSheetProps, any> {
                     let clue: IClue = category.clues[j];
                     boardGridElements.push(
                         <div className="hostCheatSheetClue" key={ keyCounter++ } style={ { gridRow: j + 2, gridColumn: i + 1 } }>
-                            <div className="value">{ clue.value }</div>
+                            <div className="value">{ clue.value }{ clue.isDailyDouble ? " - DD" : "" }</div>
                             <div className="clue">{ clue.clue }</div>
                             <div className="question">{ clue.question }</div>
                         </div>

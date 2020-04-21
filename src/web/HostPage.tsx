@@ -14,6 +14,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 import { TextField } from "@material-ui/core";
+import { Debug, DebugFlags } from "./utilities/Debug";
 
 export enum HostPageViewMode {
     Start,
@@ -50,6 +51,12 @@ export class HostPage extends React.Component<any, any> {
 
     constructor(props: any) {
         super(props);
+
+        // Set Debug Flags
+        // TODO:  Base Class
+        const urlParams = new URLSearchParams(window.location.search);
+        const debugParam: string = urlParams.get('debugMode');
+        Debug.SetFlags(Number.parseInt(debugParam, 16));
 
         this.gameCode = this.makeGameCode();
 
@@ -93,6 +100,10 @@ export class HostPage extends React.Component<any, any> {
     }
 
     public startIntro = () => {
+        if (Debug.IsFlagSet(DebugFlags.SkipIntro)) {
+            this.startGame();
+            return;
+        }
         this.setState({
             viewMode: HostPageViewMode.Intro,
         });
