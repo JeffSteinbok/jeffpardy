@@ -29,6 +29,7 @@ export interface IScoreboardState {
     gameBoardState: GameBoardState;
     activeClueValue: number;
     numResponses: number;
+    controllingUser: IPlayer;
 }
 
 export interface IScoreboard {
@@ -55,7 +56,8 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
             buzzedInUser: null,
             gameBoardState: GameBoardState.Normal,
             activeClueValue: 0,
-            numResponses: 0
+            numResponses: 0,
+            controllingUser: null
         };
     }
 
@@ -138,6 +140,9 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
             if (responseCorrect) {
                 this.showQuestion();
                 // TODO:  Set who has control
+                this.setState({
+                    controllingUser: this.state.buzzedInUser
+                })
             } else {
                 adjustment *= -1;
 
@@ -186,7 +191,6 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
     }
 
     public render() {
-
         this.teamCount = 0;
         for (var key in this.props.teams) {
             this.teamCount++;
@@ -213,11 +217,21 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                 <div className="scoreEntries">
                     { Object.keys(this.props.teams).sort().map((teamName, index) => {
                         let buzzerState = ScoreboardEntryBuzzerState.Off;
-                        let buzzedInUserName = "";
+                        let userName = "";
+                        let isControllingTeam: boolean = false;
+
                         if (this.state.gameBoardState == GameBoardState.ClueGivenBuzzerActive) { buzzerState = ScoreboardEntryBuzzerState.Active }
                         if (this.state.buzzedInUser != null && this.state.buzzedInUser.team == teamName) {
                             buzzerState = ScoreboardEntryBuzzerState.BuzzedIn;
-                            buzzedInUserName = this.state.buzzedInUser.name;
+                            userName = this.state.buzzedInUser.name;
+                        }
+
+                        if (this.state.controllingUser != null &&
+                            this.state.controllingUser.team == teamName) {
+                            isControllingTeam = true;
+                            if (buzzerState == ScoreboardEntryBuzzerState.Off) {
+                                userName = this.state.controllingUser.name;
+                            }
                         }
 
                         return (
@@ -225,8 +239,9 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                                 key={ index }
                                 teamName={ teamName }
                                 buzzerState={ buzzerState }
-                                buzzedInUserName={ buzzedInUserName }
-                                score={ this.props.teams[teamName].score } />
+                                userName={ userName }
+                                score={ this.props.teams[teamName].score }
+                                isControllingTeam={ isControllingTeam } />
                         )
                     }) }
                 </div>

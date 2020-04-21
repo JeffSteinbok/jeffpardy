@@ -28,6 +28,7 @@ export class HostSignalRClient implements IHostSignalRClient {
 
         this.hubConnection = new signalR.HubConnectionBuilder()
             .withUrl('/hub/buzzer')
+            .configureLogging(signalR.LogLevel.Trace)
             .build();
 
         this.hubConnection
@@ -43,7 +44,7 @@ export class HostSignalRClient implements IHostSignalRClient {
 
 
         this.hubConnection.on('updateUsers', (users: IPlayer[]) => {
-            Logger.debug(JSON.stringify(users));
+            Logger.debug("on updateUsers", JSON.stringify(users));
             this.jeffpardyHostController.updateUsers(users);
         });
 

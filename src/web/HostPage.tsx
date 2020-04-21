@@ -58,7 +58,11 @@ export class HostPage extends React.Component<any, any> {
         const debugParam: string = urlParams.get('debugMode');
         Debug.SetFlags(Number.parseInt(debugParam, 16));
 
-        this.gameCode = this.makeGameCode();
+        if (!Debug.IsFlagSet(DebugFlags.FixedGameCode)) {
+            this.gameCode = this.makeGameCode();
+        } else {
+            this.gameCode = "AAAAAA";
+        }
 
         this.jeffpardyHostController = new JeffpardyHostController(this.gameCode);
         this.jeffpardyHostController.hostPage = this;
@@ -138,6 +142,7 @@ export class HostPage extends React.Component<any, any> {
     }
 
     public onUpdateTeams = (teams) => {
+        Logger.debug("HostPage:onUpdateTeams", teams);
         this.setState({
             teams: teams
         });

@@ -50,7 +50,7 @@ export class JeffpardyHostController {
     jeffpardyBoard: IJeffpardyBoard;
     scoreboard: IScoreboard;
 
-    teams: { [key: string]: ITeam };
+    teams: { [key: string]: ITeam } = {};
     teamCount: number;
     gameData: IGameData;
     categories: ICategory[];
@@ -85,6 +85,8 @@ export class JeffpardyHostController {
     }
 
     public onGameDataLoaded = (gameData: IGameData) => {
+        Logger.debug("JeffpardyHostController:onGameDataLoaded");
+
         // Assign the scores
         gameData.rounds.forEach((gameRound: IGameRound) => {
             gameRound.categories.forEach((category: ICategory) => {
@@ -142,6 +144,7 @@ export class JeffpardyHostController {
     }
 
     public updateUsers(users: IPlayer[]) {
+        Logger.debug("JeffpardyHostController:updateUsers", users);
 
         let teams: { [key: string]: ITeam } = {};
 

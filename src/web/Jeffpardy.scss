@@ -583,10 +583,15 @@ div#scoreboard .scoreboardEntry {
     @extend %jeffpardyMainFont;
 
     width: 200px;
-    background-color:#060CE9;
+    background-color:$colorGameBoard;
     box-shadow: 0px 0px 20px rgb(50, 50, 50);
-    border:2px solid black;
+    border:1px solid black;
     margin-right:10px;
+}
+
+
+div#scoreboard .scoreboardEntry.controllingTeam{
+    background-color:lighten($colorGameBoard, 10)
 }
 
 div#scoreboard .scoreboardEntry .buzzerIndicator{

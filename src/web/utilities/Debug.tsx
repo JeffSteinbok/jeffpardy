@@ -7,6 +7,7 @@ export enum DebugFlags {
     LocalCategories = 1 << 1,
     SkipIntro = 1 << 2,
     DailyDouble00 = 1 << 3,
+    FixedGameCode = 1 << 4,
 }
 
 export class Debug {
