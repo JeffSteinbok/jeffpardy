@@ -322,6 +322,30 @@ div#jeffpardyBoard div.timer div.lit {
     background-color:white;
 }
 
+
+div#jeffpardyBoard div.jeffpardyActiveClue .dailyDouble
+{
+    flex-grow: 1;
+    background-color:#060CE9;
+    color: white;
+    font-size:2em;
+    display: flex;
+    flex-direction: column;
+    top:0;
+    left:0;
+    width:100%;
+    padding:10px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+div#jeffpardyBoard div.jeffpardyActiveClue .dailyDouble div.title {
+    @extend %jeffpardyMainFont;
+    font-size: 3em;
+}
+
 div#jeffpardyBoard div.jeffpardyIntermission, div#jeffpardyBoard div.jeffpardyEnd {
     background-color:$colorGameBoard;
     color:white;

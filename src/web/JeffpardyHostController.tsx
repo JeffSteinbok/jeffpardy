@@ -8,8 +8,12 @@ import { IPlayer } from "./interfaces/IPlayer";
 import { Debug, DebugFlags } from "./utilities/Debug";
 
 export interface ITeam {
+    // TODO: FIX THIS
+
     name: string;
     score: number;
+
+    // UNUSED - FIX THIS
     players: IPlayer[];
 }
 
@@ -163,6 +167,8 @@ export class JeffpardyHostController {
         let teamCount: number = 0;
 
         for (var key in teams) {
+            teams[key].name = teams[key][0].team;
+
             if (teams.hasOwnProperty(key)) {
 
                 // Copy the score over to the new teams object
@@ -207,8 +213,16 @@ export class JeffpardyHostController {
         this.scoreboard = scoreboard;
     }
 
+    public controllingTeamChange(team: ITeam) {
+        this.hostPage.onControllingTeamChange(team);
+    }
+
     public showClue(clue: IClue) {
-        this.scoreboard.onClueShown(clue.value);
+        this.scoreboard.onClueShown(clue);
+    }
+
+    public setDailyDoubleWager(wager: number) {
+        this.scoreboard.onSetDailyDoubleWager(wager);
     }
 
     public showQuestion() {

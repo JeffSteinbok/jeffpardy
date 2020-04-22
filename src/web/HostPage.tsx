@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { JeffpardyHostController, ICategory, IGameData } from "./JeffpardyHostController";
+import { JeffpardyHostController, ICategory, IGameData, ITeam } from "./JeffpardyHostController";
 import { AppTitleBar } from "./components/appTitleBar/AppTitleBar";
 import { JeffpardyBoard, IJeffpardyBoard } from "./components/gameBoard/JeffpardyBoard";
 import { Scoreboard } from "./components/scoreboard/Scoreboard";
@@ -15,6 +15,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 import { TextField } from "@material-ui/core";
 import { Debug, DebugFlags } from "./utilities/Debug";
+import { addListener } from "cluster";
 
 export enum HostPageViewMode {
     Start,
@@ -31,6 +32,9 @@ export interface IHostPageState {
     round: number,
     categories: ICategory[];
     isCustomCategoryDialogOpen: boolean;
+    controllingTeam: ITeam;
+    teams: { [key: string]: ITeam };
+    gameData: IGameData;
 }
 
 export interface IHostPage {
@@ -38,12 +42,13 @@ export interface IHostPage {
     startNewRound: () => void;
     onGameDataLoaded: (gameData: IGameData) => void;
     onUpdateTeams: (teams) => void;
+    onControllingTeamChange: (team: ITeam) => void;
 }
 
 /**
  * Root page for the host view, begins the rendering.
  */
-export class HostPage extends React.Component<any, any> {
+export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
 
     jeffpardyHostController: JeffpardyHostController;
     gameCode: string;
@@ -71,7 +76,10 @@ export class HostPage extends React.Component<any, any> {
             viewMode: HostPageViewMode.Start,
             round: 0,
             categories: null,
-            isCustomCategoryDialogOpen: false
+            isCustomCategoryDialogOpen: false,
+            controllingTeam: null,
+            teams: null,
+            gameData: null
         }
     }
 
@@ -84,6 +92,23 @@ export class HostPage extends React.Component<any, any> {
             result += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
         return result;
+    }
+
+    private getRandomTeam(teams: { [key: string]: ITeam }): ITeam {
+        let teamKeyArray: string[] = [];
+        let teamKey: string;
+
+        for (teamKey in teams) {
+            if (teams.hasOwnProperty(teamKey)) {
+                teamKeyArray.push(teamKey);
+            }
+        }
+
+        if (teamKeyArray.length === 0)
+            return null; // or whatever default return you want for an empty object
+
+        // return the actual value associated with the key:
+        return teams[teamKeyArray[Math.floor(Math.random() * teamKeyArray.length)]];
     }
 
     public componentDidMount() {
@@ -114,6 +139,10 @@ export class HostPage extends React.Component<any, any> {
     }
 
     public startGame = () => {
+
+        // TODO:  Set this randomly.
+        this.jeffpardyHostController.controllingTeamChange(this.getRandomTeam(this.state.teams));
+
         this.setState({
             viewMode: HostPageViewMode.Game,
             categories: this.state.gameData.rounds[0].categories
@@ -121,6 +150,9 @@ export class HostPage extends React.Component<any, any> {
     }
 
     public startNewRound = () => {
+
+        // TODO:  Set this to the lowest score...
+
         this.setState({
             round: this.state.round + 1,
             categories: this.state.gameData.rounds[this.state.round + 1].categories
@@ -143,8 +175,20 @@ export class HostPage extends React.Component<any, any> {
 
     public onUpdateTeams = (teams) => {
         Logger.debug("HostPage:onUpdateTeams", teams);
+
+        if (this.state.controllingTeam == null) {
+            this.onControllingTeamChange(this.getRandomTeam(this.state.teams));
+        }
+
         this.setState({
-            teams: teams
+            teams: teams,
+        });
+    }
+
+    public onControllingTeamChange = (team: ITeam) => {
+        Logger.debug("HostPage:onControllingTeamChange", team);
+        this.setState({
+            controllingTeam: team
         });
     }
 
@@ -225,8 +269,15 @@ export class HostPage extends React.Component<any, any> {
                         </div>
                         <div className="middleSection">
                             <div id="pageContent" className="pageContent">
-                                <JeffpardyBoard jeffpardyHostController={ this.jeffpardyHostController } categories={ this.state.categories } round={ this.state.round }></JeffpardyBoard>
-                                <Scoreboard jeffpardyHostController={ this.jeffpardyHostController } teams={ this.state.teams }></Scoreboard>
+                                <JeffpardyBoard
+                                    jeffpardyHostController={ this.jeffpardyHostController }
+                                    categories={ this.state.categories }
+                                    round={ this.state.round }
+                                    controllingTeam={ this.state.controllingTeam } />
+                                <Scoreboard
+                                    jeffpardyHostController={ this.jeffpardyHostController }
+                                    teams={ this.state.teams }
+                                    controllingTeam={ this.state.controllingTeam } />
                             </div>
                         </div>
                     </div>
