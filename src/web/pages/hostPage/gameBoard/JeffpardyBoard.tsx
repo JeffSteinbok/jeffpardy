@@ -172,11 +172,20 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             var keyCounter: number = 0;
             for (var i: number = 0; i < this.props.categories.length; i++) {
                 let category: ICategory = this.props.categories[i];
-                boardGridElements.push(<div className="jeffpardyCategory" key={ keyCounter++ } style={ { gridRow: 1, gridColumn: i + 1 } }><JeffpardyCategory category={ category } jeffpardyBoard={ this } /></div>);
+                boardGridElements.push(<JeffpardyCategory
+                    key={ keyCounter++ }
+                    style={ { gridRow: 1, gridColumn: i + 1 } }
+                    category={ category }
+                    jeffpardyBoard={ this } />);
 
                 for (var j: number = 0; j < category.clues.length; j++) {
                     let clue: IClue = category.clues[j];
-                    boardGridElements.push(<div className="jeffpardyClue" key={ keyCounter++ } style={ { gridRow: j + 2, gridColumn: i + 1 } }><JeffpardyClue jeffpardyBoard={ this } category={ category } clue={ clue } /></div>);
+                    boardGridElements.push(<JeffpardyClue
+                        key={ keyCounter++ }
+                        style={ { gridRow: j + 2, gridColumn: i + 1 } }
+                        jeffpardyBoard={ this }
+                        category={ category }
+                        clue={ clue } />);
                 }
             }
         }
@@ -184,8 +193,14 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
 
         if (this.state.activeClue != null &&
             this.state.activeClue.isDailyDouble) {
-            let currentTeamScore: number = this.props.controllingTeam.score;
-            dailyDoubleMaxBet = Math.max(currentTeamScore, 500 * (this.props.round + 1));
+
+            if (this.props.controllingTeam != null) {
+                let currentTeamScore: number = this.props.controllingTeam.score;
+                dailyDoubleMaxBet = Math.max(currentTeamScore, 2 * (500 * (this.props.round + 1)));
+            } else {
+                // Controlling team not here, but we're at the DD, so just to be safe, set to 0.
+                dailyDoubleMaxBet = 0;
+            }
         }
 
         return (
@@ -215,7 +230,12 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                                     <div className="title">Daily Double!</div>
                                     <div className="wager">
                                         Wager amount:<br />
-                                        <input type="text" onChange={ e => { this.dailyDoubleBetTemp = e.target.value } } />
+                                        <input
+                                            type="number"
+                                            min={ 0 }
+                                            max={ dailyDoubleMaxBet }
+                                            step={ 100 }
+                                            onChange={ e => { this.dailyDoubleBetTemp = e.target.value } } />
                                     </div>
                                     <div><i>Enter a value up to { dailyDoubleMaxBet }.</i></div>
                                     <p />

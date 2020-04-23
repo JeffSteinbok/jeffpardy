@@ -42,8 +42,11 @@ export class HostLobby extends React.Component<IHostLobbyProps, IHostLobbyState>
                     Give the above game code to the players or give them this direct link:<br />
                 <a target="#" href={ "/player#" + this.props.gameCode }>https://{ window.location.hostname }{ window.location.port != "" ? ":" + window.location.port : "" }/player#{ this.props.gameCode }</a>
 
-
-                <PlayerList teams={ this.props.teams } />
+                <div className="playerListBox">
+                    <div className="boxTitle">Teams &amp; Players</div>
+                    <i>When all players have joined, click the "Start Game" button below.</i>
+                    <PlayerList teams={ this.props.teams } />
+                </div>
                 <button onClick={ this.props.onStartGame }>Start Game</button>
             </div>
         );

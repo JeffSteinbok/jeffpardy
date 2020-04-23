@@ -3,9 +3,7 @@ import { ScoreboardEntry, ScoreboardEntryBuzzerState } from "./ScoreboardEntry";
 import { Logger } from "../../../utilities/Logger";
 import { JeffpardyHostController } from "../JeffpardyHostController";
 import { Key, SpecialKey } from "../../../utilities/Key";
-import { HostPageViewMode } from "../HostPage";
 import { IPlayer, TeamDictionary, ITeam } from "../../../Types";
-import { timingSafeEqual } from "crypto";
 import { IClue } from "../Types";
 
 
@@ -158,6 +156,13 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                 if (this.props.teams[this.state.buzzedInUser.team] != null) {
                     currentTeam = this.props.teams[this.state.buzzedInUser.team];
                 }
+            }
+
+            // There is an edge case the the current team is null; maybe they vanished?
+            // To prevent any errors, we're just going to bail out here.
+            if (currentTeam == null) {
+                this.showQuestion();
+                return;
             }
 
             let oldScore: number = currentTeam.score;

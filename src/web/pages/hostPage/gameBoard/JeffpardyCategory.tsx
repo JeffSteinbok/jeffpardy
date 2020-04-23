@@ -6,6 +6,7 @@ export interface IJeffpardyCategoryState {
 }
 
 export interface IJeffpardyCategoryProps {
+    style: React.CSSProperties;
     jeffpardyBoard: IJeffpardyBoard;
     category: ICategory
 }
@@ -21,7 +22,7 @@ export class JeffpardyCategory extends React.Component<IJeffpardyCategoryProps, 
 
     public render() {
         return (
-            <div>
+            <div className="jeffpardyCategory" style={ this.props.style }>
                 { !this.props.category.isAsked &&
                     this.props.category.title }
             </div>
