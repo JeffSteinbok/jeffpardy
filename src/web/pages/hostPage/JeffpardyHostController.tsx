@@ -1,48 +1,12 @@
-import { IJeffpardyBoard } from "./components/gameBoard/JeffpardyBoard";
-import { Logger } from "./utilities/Logger";
-import { IScoreboard } from "./components/scoreboard/Scoreboard";
-import { WebServerApiManager, IApiExecutionContext } from "./utilities/WebServerApiManager";
+import { IJeffpardyBoard } from "./gameBoard/JeffpardyBoard";
+import { Logger } from "../../utilities/Logger";
+import { IScoreboard } from "./scoreboard/Scoreboard";
+import { WebServerApiManager, IApiExecutionContext } from "../../utilities/WebServerApiManager";
 import { IHostPage, HostPageViewMode } from "./HostPage";
 import { IHostSignalRClient, HostSignalRClient } from "./HostSignalRClient";
-import { IPlayer } from "./interfaces/IPlayer";
-import { Debug, DebugFlags } from "./utilities/Debug";
-
-export interface ITeam {
-    // TODO: FIX THIS
-
-    name: string;
-    score: number;
-
-    // UNUSED - FIX THIS
-    players: IPlayer[];
-}
-
-export interface IClue {
-    clue: string;
-    question: string;
-    value: number;
-    isAsked: boolean;
-    isDailyDouble: boolean;
-}
-
-export interface ICategory {
-    title: string;
-    comment: string;
-    airDate: string;
-    // Need to change the JSON format to fix this
-    clues: IClue[];
-    isAsked: boolean;
-    hasDailyDouble: boolean;
-}
-
-export interface IGameRound {
-    id: number;
-    categories: ICategory[];
-}
-
-export interface IGameData {
-    rounds: IGameRound[];
-}
+import { IPlayer, TeamDictionary, ITeam } from "../../Types";
+import { Debug, DebugFlags } from "../../utilities/Debug";
+import { IGameData, ICategory, IGameRound, IClue } from "./Types";
 
 /**
  * This class is to be passed down to pages and components so they can interact with
@@ -54,7 +18,7 @@ export class JeffpardyHostController {
     jeffpardyBoard: IJeffpardyBoard;
     scoreboard: IScoreboard;
 
-    teams: { [key: string]: ITeam } = {};
+    teams: TeamDictionary = {};
     teamCount: number;
     gameData: IGameData;
     categories: ICategory[];
@@ -121,13 +85,13 @@ export class JeffpardyHostController {
 
                     // Pick a clue randomly, but weight towards the bottom.
                     // So, pick from 11.
-                    // If the number is > 8, reduce by 6
-                    // If the number is > 5, reduce by 3
+                    // If the number is >= 8, reduce by 6
+                    // If the number is >= 5, reduce by 3
                     let ddClue: number;
                     do {
                         ddClue = Math.floor(Math.random() * 11);
-                        if (ddClue > 8) { ddClue -= 6 }
-                        if (ddClue > 5) { ddClue -= 3 }
+                        if (ddClue >= 8) { ddClue -= 6 }
+                        if (ddClue >= 5) { ddClue -= 3 }
                     } while (round.categories[ddCat].clues[ddClue].isDailyDouble);
                     round.categories[ddCat].clues[ddClue].isDailyDouble = true;
                 }
@@ -147,28 +111,11 @@ export class JeffpardyHostController {
         this.hostPage.onGameDataLoaded(gameData);
     }
 
-    public updateUsers(users: IPlayer[]) {
-        Logger.debug("JeffpardyHostController:updateUsers", users);
-
-        let teams: { [key: string]: ITeam } = {};
-
-        if (users.length > 0) {
-            teams = users.reduce((acc, obj) => {
-                let k = obj.team;
-                if (!acc[k]) {
-                    acc[k] = []
-                }
-                acc[k].push(obj);
-                return acc
-            },
-                {});
-        }
-
+    public updateUsers(teams: TeamDictionary) {
+        Logger.debug("JeffpardyHostController:updateUsers", teams);
         let teamCount: number = 0;
 
         for (var key in teams) {
-            teams[key].name = teams[key][0].team;
-
             if (teams.hasOwnProperty(key)) {
 
                 // Copy the score over to the new teams object

@@ -8,13 +8,6 @@ using System.Timers;
 
 namespace Jeffpardy
 {
-    public class BuzzerUser
-    {
-        public string Team { get; set; }
-        public string Name { get; set; }
-        public string ConnectionId { get; set; }
-    }
-
     public class Buzzer
     {
         // Singleton instance

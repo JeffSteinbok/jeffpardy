@@ -1,10 +1,10 @@
 ﻿import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as signalR from "@microsoft/signalr";
-import { Logger } from "./utilities/Logger";
-import { IPlayer } from "./interfaces/IPlayer"
-import { PlayerList } from "./components/playerList/PlayerList";
-import { stringify } from "querystring";
+import { Logger } from "../../utilities/Logger";
+import { IPlayer, TeamDictionary } from "../../Types"
+import { PlayerList } from "../../components/playerList/PlayerList";
+import { ITeam } from "../../Types";
 
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/hub/buzzer")
@@ -31,8 +31,7 @@ export interface IPlayerPageProps {
 
 export interface IPlayerPageState {
     gameCode: string;
-    users: IPlayer[];
-    teams: { [key: string]: IPlayer[] };
+    teams: TeamDictionary;
     logMessages: string[];
     hubConnection: signalR.HubConnection;
     name: string;
@@ -43,12 +42,14 @@ export interface IPlayerPageState {
     buzzerLocked: boolean;
     buzzed: boolean;
     buzzedInUser: IPlayer;
+    buzzedInUserReactionTime: number;
     isWinner: boolean;
     isTeamWinner: boolean;
+    reactionTime: number;
 }
 
 /**
- * Root page for the application, begins the rendering.
+ * Root page for the player experience.
  */
 export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageState> {
 
@@ -61,7 +62,6 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
         this.state = {
             gameCode: '',
-            users: [],
             teams: {},
             logMessages: [],
             hubConnection: null,
@@ -73,8 +73,10 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             buzzerLocked: false,
             buzzed: false,
             buzzedInUser: null,
+            buzzedInUserReactionTime: 0,
             isWinner: false,
-            isTeamWinner: false
+            isTeamWinner: false,
+            reactionTime: 0
         };
     }
 
@@ -100,30 +102,18 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                 })
                 .catch(err => console.log('Error while establishing connection :('));
 
-            this.state.hubConnection.on('updateUsers', (users: IPlayer[]) => {
-                Logger.debug("Update Users: " + JSON.stringify(users));
-                this.setState({ "users": users });
-
-
-                if (this.state.users.length > 0) {
-                    let teams: { [key: string]: IPlayer[] } = this.state.users.reduce((acc, obj) => {
-                        let k = obj.team;
-                        if (!acc[k]) {
-                            acc[k] = []
-                        }
-                        acc[k].push(obj);
-                        return acc
-                    },
-                        {});
-
-                    this.setState({ teams: teams });
-                }
+            this.state.hubConnection.on('updateUsers', (teams: { [key: string]: ITeam }) => {
+                Logger.debug("Update Users: " + JSON.stringify(teams));
+                this.setState({ teams: teams });
             });
 
-            this.state.hubConnection.on('assignWinner', (user: IPlayer) => {
+            this.state.hubConnection.on('assignWinner', (user: IPlayer, reactionTime: number) => {
                 Logger.debug("Winner Assigned " + JSON.stringify(user));
 
-                this.setState({ buzzedInUser: user });
+                this.setState({
+                    buzzedInUser: user,
+                    buzzedInUserReactionTime: reactionTime
+                });
                 // If I'm the winner, leave the buzzer at buzzed.
                 // If not the winner, show it as locked out.
                 if (this.state.hubConnection.connectionId == user.connectionId) {
@@ -193,17 +183,22 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
 
     buzzIn = () => {
-
         if (this.state.buzzed) {
             Logger.debug("Buzzer clicked when already buzzed. Time:", new Date().getTime());
         } else if (this.state.buzzerLocked || this.state.buzzerEarlyClickLock) {
             Logger.debug("Buzzer clicked when locked. Time:", new Date().getTime());
         } else if (this.state.buzzerActive) {
             Logger.debug("Buzzer clicked when active. Time:", new Date().getTime());
+
+            let reactionTime: number = new Date().getTime() - this.buzzerActivateTime.getTime();
+
             this.state.hubConnection
-                .invoke('buzzIn', this.state.gameCode, new Date().getTime() - this.buzzerActivateTime.getTime())
+                .invoke('buzzIn', this.state.gameCode, reactionTime)
                 .catch(err => console.error(err));
-            this.setState({ buzzed: true });
+            this.setState({
+                buzzed: true,
+                reactionTime: reactionTime
+            });
         } else {
             Logger.debug("Buzzer clicked when not active - applying lockout. Time:", new Date().getTime());
 
@@ -224,12 +219,17 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     }
 
     public render() {
+        let buzzerButtonText: string = "Buzz";
         let buzzerClassName: string = "inactive";
+        let showBuzzerReactionTime: boolean = false;
+
         if (this.state.buzzerLocked || this.state.buzzerEarlyClickLock) {
             buzzerClassName = "lockedout";
         } else if (this.state.buzzerActive) {
             if (this.state.buzzed) {
                 buzzerClassName = "buzzed";
+                buzzerButtonText = "Buzzed";
+                showBuzzerReactionTime = true;
             } else {
                 buzzerClassName = "active";
             }
@@ -303,13 +303,17 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
                                     <div><i>Wait for the button to turn green before buzzing in.</i></div>
 
-                                    <button id="buzzer" className={ buzzerClassName } onClick={ this.buzzIn }>Buzz</button>
+                                    <button id="buzzer" className={ buzzerClassName } onClick={ this.buzzIn }>
+                                        <div>{ buzzerButtonText }</div>
+                                        { showBuzzerReactionTime && <div className="reactionTime">{ this.state.reactionTime } ms</div> }
+                                    </button>
 
                                     { this.state.buzzedInUser != null &&
                                         <div className={ "buzzedInUser " + (this.state.buzzedInUser.name == this.state.name ? " buzzedInWinner" : "") }>
                                             <div className="buzzedInUserTitle">Buzzed-in User</div>
                                             <div className="buzzedInUserName">{ this.state.buzzedInUser.name }</div>
                                             <div className="buzzedInUserTeam">Team: { this.state.buzzedInUser.team }</div>
+                                            <div className="buzzedInUserTeam">Reaction Time: { this.state.buzzedInUserReactionTime } ms</div>
                                         </div>
                                     }
                                 </div>

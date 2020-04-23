@@ -1,5 +1,5 @@
 import { Logger } from "./Logger";
-import { ICategory, IGameData, IClue } from "../JeffpardyHostController";
+import { ICategory, IGameData, IClue } from "../pages/hostPage/Types";
 
 export enum DebugFlags {
     None = 0,

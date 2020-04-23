@@ -1,7 +1,4 @@
 import * as React from "react";
-import { IClue, ICategory } from "../../JeffpardyHostController";
-import { Logger } from "../../utilities/Logger";
-import { IJeffpardyBoard } from "./JeffpardyBoard";
 
 export interface ITimerProps {
     percentageRemaining: number;

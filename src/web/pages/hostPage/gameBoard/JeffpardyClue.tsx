@@ -1,7 +1,7 @@
 import * as React from "react";
-import { IClue, ICategory } from "../../JeffpardyHostController";
-import { Logger } from "../../utilities/Logger";
+import { Logger } from "../../../utilities/Logger";
 import { IJeffpardyBoard } from "./JeffpardyBoard";
+import { ICategory, IClue } from "../Types";
 
 export interface IJeffpardyClueState {
     isAsked: boolean;

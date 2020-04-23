@@ -1,7 +1,6 @@
 import * as React from "react";
-import { ICategory } from "../../JeffpardyHostController";
-import { Logger } from "../../utilities/Logger";
 import { IJeffpardyBoard } from "./JeffpardyBoard";
+import { ICategory } from "../Types";
 
 export interface IJeffpardyCategoryState {
 }

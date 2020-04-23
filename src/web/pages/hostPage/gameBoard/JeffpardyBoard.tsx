@@ -1,9 +1,11 @@
 import * as React from "react";
 import { JeffpardyCategory } from "./JeffpardyCategory"
-import { Logger } from "../../utilities/Logger";
-import { JeffpardyHostController, ICategory, IClue, ITeam } from "../../JeffpardyHostController";
+import { Logger } from "../../../utilities/Logger";
+import { JeffpardyHostController } from "../JeffpardyHostController";
 import { JeffpardyClue } from "./JeffpardyClue"
 import { Timer } from "./Timer"
+import { ICategory, IClue } from "../Types";
+import { ITeam } from "../../../Types";
 
 export enum JeopardyBoardView {
     Board,
@@ -111,7 +113,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
 
     public validateAndSubmitDailyDoubleBet = (maxBet: number) => {
         let ddBet = Number.parseInt(this.dailyDoubleBetTemp, 10);
-        if (isNaN(ddBet) || ddBet > maxBet) {
+        if (isNaN(ddBet) || ddBet > maxBet || ddBet < 0) {
             alert("Please enter a wager between 0 and " + maxBet + ".");
             return;
         } else {

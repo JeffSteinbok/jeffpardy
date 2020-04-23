@@ -1,27 +1,21 @@
 ﻿import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { JeffpardyHostController, ICategory, IGameData, ITeam } from "./JeffpardyHostController";
-import { AppTitleBar } from "./components/appTitleBar/AppTitleBar";
-import { JeffpardyBoard, IJeffpardyBoard } from "./components/gameBoard/JeffpardyBoard";
-import { Scoreboard } from "./components/scoreboard/Scoreboard";
-import { Logger } from "./utilities/Logger";
-import { HostCheatSheet } from "./components/hostCheatSheet/HostCheatSheet";
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Slide from '@material-ui/core/Slide';
-import { TextField } from "@material-ui/core";
-import { Debug, DebugFlags } from "./utilities/Debug";
-import { addListener } from "cluster";
+import { JeffpardyHostController } from "./JeffpardyHostController";
+import { JeffpardyBoard } from "./gameBoard/JeffpardyBoard";
+import { Scoreboard } from "./scoreboard/Scoreboard";
+import { Logger } from "../../utilities/Logger";
+import { Debug, DebugFlags } from "../../utilities/Debug";
+import { HostStartScreen } from "./hostStartScreen/HostStartScreen";
+import { PlayerList } from "../../components/playerList/PlayerList";
+import { HostLobby } from "./HostLobby";
+import { ICategory, IGameData } from "./Types";
+import { ITeam, TeamDictionary } from "../../Types";
 
 export enum HostPageViewMode {
     Start,
+    Lobby,
     Intro,
     Game,
-    AnswerKey
 }
 
 export interface IHostPageProps {
@@ -31,9 +25,8 @@ export interface IHostPageState {
     viewMode: HostPageViewMode;
     round: number,
     categories: ICategory[];
-    isCustomCategoryDialogOpen: boolean;
     controllingTeam: ITeam;
-    teams: { [key: string]: ITeam };
+    teams: TeamDictionary;
     gameData: IGameData;
 }
 
@@ -76,9 +69,8 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
             viewMode: HostPageViewMode.Start,
             round: 0,
             categories: null,
-            isCustomCategoryDialogOpen: false,
             controllingTeam: null,
-            teams: null,
+            teams: {},
             gameData: null
         }
     }
@@ -113,19 +105,6 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
 
     public componentDidMount() {
         this.jeffpardyHostController.loadGameData();
-    }
-
-    public loadCustomCategories = () => {
-
-        this.setState({ isCustomCategoryDialogOpen: false })
-        this.jeffpardyHostController.setCustomGameData(JSON.parse(this.customCategoryJSON));
-        alert("Please check the answer key to see if this loaded correctly.")
-    }
-
-    public showAnswerKey = () => {
-        this.setState({
-            viewMode: HostPageViewMode.AnswerKey
-        });
     }
 
     public startIntro = () => {
@@ -173,12 +152,8 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
         })
     }
 
-    public onUpdateTeams = (teams) => {
+    public onUpdateTeams = (teams: { [key: string]: ITeam }) => {
         Logger.debug("HostPage:onUpdateTeams", teams);
-
-        if (this.state.controllingTeam == null) {
-            this.onControllingTeamChange(this.getRandomTeam(this.state.teams));
-        }
 
         this.setState({
             teams: teams,
@@ -199,58 +174,23 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
             <div>
                 {
                     this.state.viewMode == HostPageViewMode.Start &&
-
-                    <div id="hostStartPage">
-                        <div className="title">Jeffpardy!</div>
-
-                        { this.state.gameData == null &&
-                            <div>Finding some really great clues...</div>
-                        }
-                        { this.state.gameData != null &&
-                            <div>
-                                <div className="gameCode">Use Game Code: { this.gameCode }</div>
-                                Give the above game code to the players or give them this direct link:<br />
-                                <a target="#" href={ "/player#" + this.gameCode }>https://{ window.location.hostname }{ window.location.port != "" ? ":" + window.location.port : "" }/player#{ this.gameCode }</a>
-                                <p></p>
-                                Don't forget to save or print the answer key before you start. <br />
-                                If you don't, you won't be able to during the game.
-                                <p></p>
-                                <span style={ { color: "red" } }>NEW: Use your own categories!</span><br />
-                                <button onClick={ () => { this.setState({ isCustomCategoryDialogOpen: true }) } }>Use Custom Categories</button>
-                                <p></p>
-                                <button onClick={ this.showAnswerKey }>Show Answers</button>
-                                <p />
-                                <button onClick={ this.startIntro }>Start Game!</button>
-                                <Dialog
-                                    open={ this.state.isCustomCategoryDialogOpen }
-                                    keepMounted
-                                    fullWidth
-                                >
-                                    <DialogTitle id="alert-dialog-slide-title">{ "Modify this JSON" }</DialogTitle>
-                                    <DialogContent>
-                                        <TextField id="alert-dialog-slide-description"
-                                            style={ { fontSize: "0.8em", fontFamily: "Courier" } }
-                                            fullWidth
-                                            multiline
-                                            defaultValue={ JSON.stringify(this.jeffpardyHostController.gameData, null, 4) }
-                                            onChange={ (event) => this.customCategoryJSON = event.target.value } />
-                                    </DialogContent>
-                                    <DialogActions>
-                                        <Button onClick={ () => { this.setState({ isCustomCategoryDialogOpen: false }) } }>
-                                            Cancel
-                                    </Button>
-                                        <Button onClick={ this.loadCustomCategories } color="primary">
-                                            Load
-                                    </Button>
-                                    </DialogActions>
-                                </Dialog>
-                            </div>
-                        }
-                    </div>
+                    <HostStartScreen
+                        gameCode={ this.gameCode }
+                        gameData={ this.state.gameData }
+                        teams={ this.state.teams }
+                        onModifyGameData={ (gameData) => { this.jeffpardyHostController.setCustomGameData(gameData) } }
+                        onEnterLobby={ () => {
+                            this.setState({
+                                viewMode: HostPageViewMode.Lobby
+                            })
+                        } } />
                 }
                 {
-                    this.state.viewMode == HostPageViewMode.AnswerKey &&
-                    <HostCheatSheet jeffpardyController={ this.jeffpardyHostController } gameData={ this.state.gameData } />
+                    this.state.viewMode == HostPageViewMode.Lobby &&
+                    <HostLobby
+                        teams={ this.state.teams }
+                        gameCode={ this.gameCode }
+                        onStartGame={ this.startIntro } />
                 }
                 {
                     this.state.viewMode == HostPageViewMode.Intro &&

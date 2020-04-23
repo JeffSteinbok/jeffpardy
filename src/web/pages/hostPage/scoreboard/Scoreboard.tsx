@@ -1,11 +1,12 @@
 import * as React from "react";
 import { ScoreboardEntry, ScoreboardEntryBuzzerState } from "./ScoreboardEntry";
-import { Logger } from "../../utilities/Logger";
-import { JeffpardyHostController, ITeam, IClue } from "../../JeffpardyHostController";
-import { Key, SpecialKey } from "../../utilities/Key";
-import { HostPageViewMode } from "../../HostPage";
-import { IPlayer } from "../../interfaces/IPlayer";
+import { Logger } from "../../../utilities/Logger";
+import { JeffpardyHostController } from "../JeffpardyHostController";
+import { Key, SpecialKey } from "../../../utilities/Key";
+import { HostPageViewMode } from "../HostPage";
+import { IPlayer, TeamDictionary, ITeam } from "../../../Types";
 import { timingSafeEqual } from "crypto";
+import { IClue } from "../Types";
 
 
 enum GameBoardState {
@@ -19,7 +20,7 @@ enum GameBoardState {
 
 export interface IScoreboardProps {
     jeffpardyHostController: JeffpardyHostController;
-    teams: { [key: string]: ITeam };
+    teams: TeamDictionary;
     controllingTeam: ITeam;
 }
 

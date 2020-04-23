@@ -1,7 +1,7 @@
 import * as signalR from "@microsoft/signalr";
-import { Logger } from "./utilities/Logger";
+import { Logger } from "../../utilities/Logger";
 import { JeffpardyHostController } from "./JeffpardyHostController";
-import { IPlayer } from "./interfaces/IPlayer";
+import { IPlayer, TeamDictionary } from "../../Types";
 
 enum GameBoardState {
     Normal,
@@ -43,9 +43,9 @@ export class HostSignalRClient implements IHostSignalRClient {
             .catch(err => console.log('Error while establishing connection :('));
 
 
-        this.hubConnection.on('updateUsers', (users: IPlayer[]) => {
-            Logger.debug("on updateUsers", JSON.stringify(users));
-            this.jeffpardyHostController.updateUsers(users);
+        this.hubConnection.on('updateUsers', (teams: TeamDictionary) => {
+            Logger.debug("HostSignalRClient:on updateUsers", teams);
+            this.jeffpardyHostController.updateUsers(teams);
         });
 
         this.hubConnection.on('assignWinner', (user) => {
