@@ -1,10 +1,10 @@
 import * as React from "react";
 import { ScoreboardEntry, ScoreboardEntryBuzzerState } from "./ScoreboardEntry";
-import { Logger } from "../../utilities/Logger";
-import { JeffpardyHostController, ITeam } from "../../JeffpardyHostController";
-import { Key, SpecialKey } from "../../utilities/Key";
-import { HostPageViewMode } from "../../HostPage";
-import { IPlayer } from "../../interfaces/IPlayer";
+import { Logger } from "../../../utilities/Logger";
+import { JeffpardyHostController } from "../JeffpardyHostController";
+import { Key, SpecialKey } from "../../../utilities/Key";
+import { IPlayer, TeamDictionary, ITeam } from "../../../Types";
+import { IClue } from "../Types";
 
 
 enum GameBoardState {
@@ -18,7 +18,8 @@ enum GameBoardState {
 
 export interface IScoreboardProps {
     jeffpardyHostController: JeffpardyHostController;
-    teams: { [key: string]: ITeam };
+    teams: TeamDictionary;
+    controllingTeam: ITeam;
 }
 
 export interface IScoreboardState {
@@ -27,14 +28,17 @@ export interface IScoreboardState {
     logMessages: string[];
     buzzedInUser: IPlayer;
     gameBoardState: GameBoardState;
-    activeClueValue: number;
+    activeClue: IClue;
+    dailyDoubleWager: number;
     numResponses: number;
+    controllingUser: IPlayer;
 }
 
 export interface IScoreboard {
-    onClueShown: (clueValue: number) => void;
+    onClueShown: (clue: IClue) => void;
     onBuzzerTimeout: () => void;
     onAssignBuzzedInUser: (user: IPlayer) => void;
+    onSetDailyDoubleWager: (wager: number) => void;
 }
 /**
  * Top bar containing toolbar buttons and drop downs
@@ -42,6 +46,7 @@ export interface IScoreboard {
 export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardState> implements IScoreboard {
 
     private teamCount: number = 0;
+
     constructor(props: any) {
         super(props);
         Logger.debug("Scoreboard:constructor");
@@ -54,8 +59,10 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
             logMessages: [],
             buzzedInUser: null,
             gameBoardState: GameBoardState.Normal,
-            activeClueValue: 0,
-            numResponses: 0
+            activeClue: null,
+            dailyDoubleWager: 0,
+            numResponses: 0,
+            controllingUser: null
         };
     }
 
@@ -78,10 +85,10 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         }
     };
 
-    onClueShown = (clueValue: number) => {
+    onClueShown = (clue: IClue) => {
         this.setState({
-            gameBoardState: GameBoardState.ClueGiven,
-            activeClueValue: clueValue
+            gameBoardState: clue.isDailyDouble ? GameBoardState.ClueAnswered : GameBoardState.ClueGiven,
+            activeClue: clue
         });
     };
 
@@ -95,6 +102,13 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
     onBuzzerTimeout = () => {
         this.showQuestion();
+    }
+
+    onSetDailyDoubleWager = (wager: number) => {
+        Logger.debug("Scoreboard:onSetDailyDoubleWager", wager)
+        this.setState({
+            dailyDoubleWager: wager
+        });
     }
 
     showQuestion = () => {
@@ -129,18 +143,49 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
         if (this.state.gameBoardState == GameBoardState.ClueAnswered) {
 
-            let oldScore: number = 0;
-            if (this.props.teams[this.state.buzzedInUser.team] != null) {
-                oldScore = this.props.teams[this.state.buzzedInUser.team].score;
+            let currentTeam: ITeam;
+
+            // If it's a daily double, there is no buzzed in user.
+            if (this.state.activeClue.isDailyDouble) {
+                if (this.state.controllingUser != null) {
+                    currentTeam = this.props.teams[this.state.controllingUser.team];
+                } else {
+                    currentTeam = this.props.controllingTeam;
+                }
+            } else {
+                if (this.props.teams[this.state.buzzedInUser.team] != null) {
+                    currentTeam = this.props.teams[this.state.buzzedInUser.team];
+                }
             }
-            let adjustment: number = this.state.activeClueValue;
+
+            // There is an edge case the the current team is null; maybe they vanished?
+            // To prevent any errors, we're just going to bail out here.
+            if (currentTeam == null) {
+                this.showQuestion();
+                return;
+            }
+
+            let oldScore: number = currentTeam.score;
+
+            let adjustment: number = this.state.activeClue.value;
+            if (this.state.activeClue.isDailyDouble) {
+                adjustment = this.state.dailyDoubleWager;
+            }
 
             if (responseCorrect) {
                 this.showQuestion();
+
+                if (!this.state.activeClue.isDailyDouble) {
+
+                    this.setState({
+                        controllingUser: this.state.buzzedInUser
+                    });
+                    this.props.jeffpardyHostController.controllingTeamChange(this.props.teams[this.state.buzzedInUser.team]);
+                }
             } else {
                 adjustment *= -1;
 
-                if (this.state.numResponses == this.teamCount) {
+                if ((this.state.numResponses == this.teamCount) || this.state.activeClue.isDailyDouble) {
                     this.showQuestion();
                 } else {
                     this.setState({
@@ -150,7 +195,9 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
             }
 
-            this.props.teams[this.state.buzzedInUser.team].score = oldScore + adjustment;
+            currentTeam.score = oldScore + adjustment;
+
+            // Not sure why this is here...trigger re-draw?
             this.setState({
                 buzzedInUser: this.state.buzzedInUser
             })
@@ -185,7 +232,6 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
     }
 
     public render() {
-
         this.teamCount = 0;
         for (var key in this.props.teams) {
             this.teamCount++;
@@ -200,7 +246,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                     </div>
                     <div>Buzzer:</div>
                     <div>
-                        <button disabled={ (this.state.gameBoardState != GameBoardState.ClueGiven) } onClick={ this.activateBuzzer }>Activate (a)</button>
+                        <button disabled={ this.state.gameBoardState != GameBoardState.ClueGiven } onClick={ this.activateBuzzer }>Activate (a)</button>
                     </div>
                     <div>Response:</div>
                     <div>
@@ -212,11 +258,38 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                 <div className="scoreEntries">
                     { Object.keys(this.props.teams).sort().map((teamName, index) => {
                         let buzzerState = ScoreboardEntryBuzzerState.Off;
-                        let buzzedInUserName = "";
-                        if (this.state.gameBoardState == GameBoardState.ClueGivenBuzzerActive) { buzzerState = ScoreboardEntryBuzzerState.Active }
+                        let userName = "";
+                        let isControllingTeam: boolean = false;
+
+                        if (this.state.gameBoardState == GameBoardState.ClueGivenBuzzerActive) {
+                            buzzerState = ScoreboardEntryBuzzerState.Active
+                        }
+
+                        // If it's not a daily double and we're not in the normal mode, set the buzzer state
+                        // to OffNoControl
+                        if (this.state.activeClue &&
+                            !this.state.activeClue.isDailyDouble &&
+                            this.state.gameBoardState != GameBoardState.Normal) {
+                            buzzerState = ScoreboardEntryBuzzerState.OffNoControl;
+                        }
+
                         if (this.state.buzzedInUser != null && this.state.buzzedInUser.team == teamName) {
                             buzzerState = ScoreboardEntryBuzzerState.BuzzedIn;
-                            buzzedInUserName = this.state.buzzedInUser.name;
+                            userName = this.state.buzzedInUser.name;
+                        }
+
+                        if (this.state.controllingUser != null) {
+                            if (this.state.controllingUser.team == teamName) {
+                                isControllingTeam = true;
+                                if (buzzerState == ScoreboardEntryBuzzerState.Off) {
+                                    userName = this.state.controllingUser.name;
+                                }
+                            }
+                        } else {
+                            // Use the initial version from props.
+                            if (this.props.controllingTeam.name == teamName) {
+                                isControllingTeam = true;
+                            }
                         }
 
                         return (
@@ -224,12 +297,13 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                                 key={ index }
                                 teamName={ teamName }
                                 buzzerState={ buzzerState }
-                                buzzedInUserName={ buzzedInUserName }
-                                score={ this.props.teams[teamName].score } />
+                                userName={ userName }
+                                score={ this.props.teams[teamName].score }
+                                isControllingTeam={ isControllingTeam } />
                         )
                     }) }
                 </div>
-            </div>
+            </div >
         );
     }
 }

@@ -14,10 +14,27 @@ namespace Jeffpardy
 
         private readonly IHubContext<BuzzerHub> buzzerHubContext;
 
-        readonly Dictionary<string, BuzzerUser> buzzerUsers = new Dictionary<string, BuzzerUser>();
+        readonly Dictionary<string, Player> players = new Dictionary<string, Player>();
+
+        private Dictionary<string, Team> teamDictionary
+        {
+            get
+            {
+                var buzzerTeams = this.players.Values
+                                            .GroupBy(x => x.Team)
+                                            .OrderBy(p => p.Key.ToString())
+                                            .ToDictionary(x => x.Key,
+                                                          x => new Team()
+                                                          {
+                                                              Name = x.Key,
+                                                              Players = x.OrderBy(o => o.Name).ToList()
+                                                          });
+                return buzzerTeams;
+            }
+        }
 
         int winningBuzzerTimeInMilliseconds = int.MaxValue;
-        BuzzerUser winningBuzzerUser;
+        Player winningBuzzerUser;
 
         /// <summary>
         /// List of all winners for this session.  A team can win only once per session.
@@ -39,7 +56,7 @@ namespace Jeffpardy
 
         }
 
-        public bool IsEmptyGame => this.buzzerUsers.Count == 0;
+        public bool IsEmptyGame => this.players.Count == 0;
 
         public async Task ConnectAsync(string connectionId)
         {
@@ -50,34 +67,27 @@ namespace Jeffpardy
         {
             lock (this)
             {
-                this.buzzerUsers.Add(connectionId, new BuzzerUser()
+                this.players.Add(connectionId, new Player()
                 {
                     ConnectionId = connectionId,
                     Team = team,
                     Name = name
                 });
+
+                
             }
 
-            var buzzerTeams = this.buzzerUsers.Values
-                                                        .GroupBy(x => x.Team)
-                                                        .OrderBy(p => p.Key.ToString())
-                                                        .ToDictionary(x => x.Key, x => x.ToList().OrderBy(o => o.Name));
-
-            await this.buzzerHubContext.Clients.Group(this.GameCode).SendAsync("updateUsers", this.buzzerUsers.Values.ToList());
+            await this.SendUserListToAllClientsAsync();
         }
 
         public async Task RemoveUserAsync(string connectionId)
         {
-            if (this.buzzerUsers.ContainsKey(connectionId))
+            if (this.players.ContainsKey(connectionId))
             {
-                var item = this.buzzerUsers[connectionId];
+                var item = this.players[connectionId];
 
-                this.buzzerUsers.Remove(item.ConnectionId);
+                this.players.Remove(item.ConnectionId);
 
-                var buzzerTeams = this.buzzerUsers.Values
-                                                            .GroupBy(x => x.Team)
-                                                            .OrderBy(p => p.Key.ToString())
-                                                            .ToDictionary(x => x.Key, x => x.ToList().OrderBy(o => o.Name));
                 await SendUserListToAllClientsAsync();
 
             }
@@ -114,7 +124,7 @@ namespace Jeffpardy
                 this.buzzerWindowTimer.Stop();
                 this.buzzerWinnerTeams.Add(this.winningBuzzerUser.Team);
             }
-            await buzzerHubContext.Clients.Group(this.GameCode).SendAsync("assignWinner", this.winningBuzzerUser);
+            await buzzerHubContext.Clients.Group(this.GameCode).SendAsync("assignWinner", this.winningBuzzerUser, this.winningBuzzerTimeInMilliseconds);
 
         }
 
@@ -122,7 +132,7 @@ namespace Jeffpardy
         {
             lock (this)
             {
-                BuzzerUser buzzerUser = buzzerUsers[connectionId];
+                Player buzzerUser = players[connectionId];
                 if (this.buzzerWinnerTeams.Contains(buzzerUser.Team))
                 {
                     // This team already won this session and isn't eligible; ignore it.
@@ -144,13 +154,15 @@ namespace Jeffpardy
 
         private async Task SendUserListAsync(string connectionId)
         {
-            await buzzerHubContext.Clients.Client(connectionId).SendAsync("updateUsers", this.buzzerUsers.Values.ToList());
+            await buzzerHubContext.Clients.Client(connectionId).SendAsync("updateUsers", this.teamDictionary);
         }
 
         private async Task SendUserListToAllClientsAsync()
         {
-            await buzzerHubContext.Clients.Groups(this.GameCode).SendAsync("updateUsers", this.buzzerUsers.Values.ToList());
+            await buzzerHubContext.Clients.Groups(this.GameCode).SendAsync("updateUsers", this.teamDictionary);
         }
+        
+
     }
 
 }

@@ -3,13 +3,15 @@ import * as React from "react";
 export enum ScoreboardEntryBuzzerState {
     Off,
     Active,
-    BuzzedIn
+    BuzzedIn,
+    OffNoControl
 }
 
 export interface IScoreboardEntryProps {
     teamName: string;
     buzzerState: ScoreboardEntryBuzzerState;
-    buzzedInUserName: string;
+    userName: string;
+    isControllingTeam: boolean;
     score: number;
 }
 
@@ -30,9 +32,14 @@ export class ScoreboardEntry extends React.Component<IScoreboardEntryProps, any>
             buzzerIndicatorClass += ' buzzedIn'
         }
 
+        let scoreboardEntryClass = 'scoreboardEntry';
+        if (this.props.buzzerState == ScoreboardEntryBuzzerState.Off && this.props.isControllingTeam) {
+            scoreboardEntryClass += ' controllingTeam'
+        }
+
         return (
-            <div className="scoreboardEntry">
-                <div className={ buzzerIndicatorClass }>{ this.props.buzzedInUserName }</div>
+            <div className={ scoreboardEntryClass }>
+                <div className={ buzzerIndicatorClass }>{ this.props.userName }</div>
                 <div className="teamName">{ this.props.teamName } </div>
                 <div className="score">{ this.props.score }</div>
             </div>

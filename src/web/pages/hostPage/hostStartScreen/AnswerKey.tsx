@@ -1,15 +1,15 @@
 import * as React from "react";
-import { ICategory, JeffpardyHostController, IGameData, IGameRound, IClue } from "../../JeffpardyHostController";
-import { SpecialKey } from "../../utilities/Key";
-import { HostPageViewMode } from "../../HostPage";
-import { Logger } from "../../utilities/Logger";
+import { SpecialKey } from "../../../utilities/Key";
+import { HostPageViewMode } from "../HostPage";
+import { Logger } from "../../../utilities/Logger";
+import { IGameRound, ICategory, IClue, IGameData } from "../Types";
 
-export interface IHostCheatSheetProps {
-    jeffpardyController: JeffpardyHostController;
+export interface IAnswerKeyProps {
     gameData: IGameData;
+    onHide: () => void;
 }
 
-export class HostCheatSheet extends React.Component<IHostCheatSheetProps, any> {
+export class AnswerKey extends React.Component<IAnswerKeyProps, any> {
 
     constructor(props: any) {
         super(props);
@@ -27,7 +27,7 @@ export class HostCheatSheet extends React.Component<IHostCheatSheetProps, any> {
     handleKeyDown = (event: KeyboardEvent) => {
         switch (event.keyCode) {
             case SpecialKey.ESCAPE:
-                this.props.jeffpardyController.setViewMode(HostPageViewMode.Start);
+                this.props.onHide();
                 break;
         }
     }
@@ -44,7 +44,7 @@ export class HostCheatSheet extends React.Component<IHostCheatSheetProps, any> {
                 let category: ICategory = round.categories[i];
                 let airDate: Date = new Date(category.airDate);
                 boardGridElements.push(
-                    <div className="hostCheatSheetCategory" key={ keyCounter++ } style={ { gridRow: 1, gridColumn: i + 1 } }>
+                    <div className="answerKeyCategory" key={ keyCounter++ } style={ { gridRow: 1, gridColumn: i + 1 } }>
                         <div className="title">{ category.title }</div>
                         <div>{ category.comment }</div>
                         <div>{ airDate.getMonth() + 1 + "/" + airDate.getDay() + "/" + airDate.getFullYear() }</div>
@@ -53,8 +53,8 @@ export class HostCheatSheet extends React.Component<IHostCheatSheetProps, any> {
                 for (var j: number = 0; j < category.clues.length; j++) {
                     let clue: IClue = category.clues[j];
                     boardGridElements.push(
-                        <div className="hostCheatSheetClue" key={ keyCounter++ } style={ { gridRow: j + 2, gridColumn: i + 1 } }>
-                            <div className="value">{ clue.value }</div>
+                        <div className="answerKeyClue" key={ keyCounter++ } style={ { gridRow: j + 2, gridColumn: i + 1 } }>
+                            <div className="value">{ clue.value }{ clue.isDailyDouble ? " - DD" : "" }</div>
                             <div className="clue">{ clue.clue }</div>
                             <div className="question">{ clue.question }</div>
                         </div>
@@ -68,7 +68,7 @@ export class HostCheatSheet extends React.Component<IHostCheatSheetProps, any> {
 
 
     public render() {
-        Logger.debug("HostCheatSheet:render", this.props.gameData);
+        Logger.debug("AnswerKey:render", this.props.gameData);
 
         return (
             <div>
@@ -76,9 +76,9 @@ export class HostCheatSheet extends React.Component<IHostCheatSheetProps, any> {
                 {
                     this.props.gameData.rounds.map((round, index) => {
                         return (
-                            <div className="hostCheatSheetRound" key={ index }>
+                            <div className="answerKeyRound" key={ index }>
                                 <h1>Round { round.id + 1 }</h1>
-                                <div className="hostCheatSheetClues">
+                                <div className="answerKeyClues">
                                     { this.getRoundGrid(round)
                                     }
                                 </div>

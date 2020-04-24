@@ -1,12 +1,15 @@
 import * as React from "react";
 import { JeffpardyCategory } from "./JeffpardyCategory"
-import { Logger } from "../../utilities/Logger";
-import { JeffpardyHostController, ICategory, IClue } from "../../JeffpardyHostController";
+import { Logger } from "../../../utilities/Logger";
+import { JeffpardyHostController } from "../JeffpardyHostController";
 import { JeffpardyClue } from "./JeffpardyClue"
 import { Timer } from "./Timer"
+import { ICategory, IClue } from "../Types";
+import { ITeam } from "../../../Types";
 
 export enum JeopardyBoardView {
     Board,
+    DailyDouble,
     Clue,
     Question,
     Intermission,
@@ -17,6 +20,7 @@ export interface IJeffpardyBoardProps {
     jeffpardyHostController: JeffpardyHostController;
     round: number;
     categories: ICategory[];
+    controllingTeam: ITeam;
 }
 
 export interface IJeffpardyBoardState {
@@ -40,6 +44,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
     private categories: ICategory = null;
     private timerHandle;
     private timerRemainingDuration: number;
+    private dailyDoubleBetTemp: string;
 
     constructor(props: any) {
         super(props);
@@ -57,12 +62,20 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
     }
 
     public showClue = (category: ICategory, clue: IClue) => {
-        this.setState({
-            activeClue: clue,
-            activeCategory: category,
-            jeopardyBoardView: JeopardyBoardView.Clue
-        });
-        this.props.jeffpardyHostController.showClue(clue);
+        if (clue.isDailyDouble && this.state.jeopardyBoardView == JeopardyBoardView.Board) {
+            this.setState({
+                activeClue: clue,
+                activeCategory: category,
+                jeopardyBoardView: JeopardyBoardView.DailyDouble
+            });
+        } else {
+            this.setState({
+                activeClue: clue,
+                activeCategory: category,
+                jeopardyBoardView: JeopardyBoardView.Clue
+            });
+            this.props.jeffpardyHostController.showClue(clue);
+        }
     }
 
     public showQuestion = () => {
@@ -96,6 +109,17 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
         this.setState({
             jeopardyBoardView: JeopardyBoardView.Board
         })
+    }
+
+    public validateAndSubmitDailyDoubleBet = (maxBet: number) => {
+        let ddBet = Number.parseInt(this.dailyDoubleBetTemp, 10);
+        if (isNaN(ddBet) || ddBet > maxBet || ddBet < 0) {
+            alert("Please enter a wager between 0 and " + maxBet + ".");
+            return;
+        } else {
+            this.props.jeffpardyHostController.setDailyDoubleWager(ddBet);
+            this.showClue(this.state.activeCategory, this.state.activeClue);
+        }
     }
 
     public startTimer = () => {
@@ -139,6 +163,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
         Logger.debug("JeffpardyBoard:render", this.props.categories);
 
         let boardGridElements: JSX.Element[] = [];
+        let dailyDoubleMaxBet: number;
 
         if (this.props.categories && this.state.activeClue == null) {
             Logger.debug("Drawing Categories!", this.props.categories);
@@ -147,12 +172,34 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             var keyCounter: number = 0;
             for (var i: number = 0; i < this.props.categories.length; i++) {
                 let category: ICategory = this.props.categories[i];
-                boardGridElements.push(<div className="jeffpardyCategory" key={ keyCounter++ } style={ { gridRow: 1, gridColumn: i + 1 } }><JeffpardyCategory category={ category } jeffpardyBoard={ this } /></div>);
+                boardGridElements.push(<JeffpardyCategory
+                    key={ keyCounter++ }
+                    style={ { gridRow: 1, gridColumn: i + 1 } }
+                    category={ category }
+                    jeffpardyBoard={ this } />);
 
                 for (var j: number = 0; j < category.clues.length; j++) {
                     let clue: IClue = category.clues[j];
-                    boardGridElements.push(<div className="jeffpardyClue" key={ keyCounter++ } style={ { gridRow: j + 2, gridColumn: i + 1 } }><JeffpardyClue jeffpardyBoard={ this } category={ category } clue={ clue } /></div>);
+                    boardGridElements.push(<JeffpardyClue
+                        key={ keyCounter++ }
+                        style={ { gridRow: j + 2, gridColumn: i + 1 } }
+                        jeffpardyBoard={ this }
+                        category={ category }
+                        clue={ clue } />);
                 }
+            }
+        }
+
+
+        if (this.state.activeClue != null &&
+            this.state.activeClue.isDailyDouble) {
+
+            if (this.props.controllingTeam != null) {
+                let currentTeamScore: number = this.props.controllingTeam.score;
+                dailyDoubleMaxBet = Math.max(currentTeamScore, 2 * (500 * (this.props.round + 1)));
+            } else {
+                // Controlling team not here, but we're at the DD, so just to be safe, set to 0.
+                dailyDoubleMaxBet = 0;
             }
         }
 
@@ -173,6 +220,27 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                                     <div className="question">{ this.state.activeClue.question }</div>
                                 }
                                 <Timer percentageRemaining={ this.state.timerPercentageRemaining }></Timer>
+                            </div>
+                        }
+                        { (this.state.jeopardyBoardView == JeopardyBoardView.DailyDouble) &&
+                            <div className="jeffpardyActiveClue">
+                                <div className="header">{ this.state.activeCategory.title } for { this.state.activeClue.value }</div>
+                                <div className="dailyDouble">
+                                    <div>The answer is a....</div>
+                                    <div className="title">Daily Double!</div>
+                                    <div className="wager">
+                                        Wager amount:<br />
+                                        <input
+                                            type="number"
+                                            min={ 0 }
+                                            max={ dailyDoubleMaxBet }
+                                            step={ 100 }
+                                            onChange={ e => { this.dailyDoubleBetTemp = e.target.value } } />
+                                    </div>
+                                    <div><i>Enter a value up to { dailyDoubleMaxBet }.</i></div>
+                                    <p />
+                                    <button onClick={ () => { this.validateAndSubmitDailyDoubleBet(dailyDoubleMaxBet) } }>Submit</button>
+                                </div>
                             </div>
                         }
                         { this.state.jeopardyBoardView == JeopardyBoardView.Intermission &&

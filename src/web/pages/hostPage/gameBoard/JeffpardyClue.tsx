@@ -1,13 +1,14 @@
 import * as React from "react";
-import { IClue, ICategory } from "../../JeffpardyHostController";
-import { Logger } from "../../utilities/Logger";
+import { Logger } from "../../../utilities/Logger";
 import { IJeffpardyBoard } from "./JeffpardyBoard";
+import { ICategory, IClue } from "../Types";
 
 export interface IJeffpardyClueState {
     isAsked: boolean;
 }
 
 export interface IJeffpardyClueProps {
+    style: React.CSSProperties;
     jeffpardyBoard: IJeffpardyBoard;
     category: ICategory;
     clue: IClue;
@@ -42,7 +43,7 @@ export class JeffpardyClue extends React.Component<IJeffpardyClueProps, IJeffpar
 
     public render() {
         return (
-            <div>
+            <div className="jeffpardyClue" style={ this.props.style }>
                 { !this.props.clue.isAsked &&
                     <a href="#" onClick={ (e) => { this.clickClue(e); } }>{ this.props.clue.value }</a>
                 }
