@@ -261,7 +261,18 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                         let userName = "";
                         let isControllingTeam: boolean = false;
 
-                        if (this.state.gameBoardState == GameBoardState.ClueGivenBuzzerActive) { buzzerState = ScoreboardEntryBuzzerState.Active }
+                        if (this.state.gameBoardState == GameBoardState.ClueGivenBuzzerActive) {
+                            buzzerState = ScoreboardEntryBuzzerState.Active
+                        }
+
+                        // If it's not a daily double and we're not in the normal mode, set the buzzer state
+                        // to OffNoControl
+                        if (this.state.activeClue &&
+                            !this.state.activeClue.isDailyDouble &&
+                            this.state.gameBoardState != GameBoardState.Normal) {
+                            buzzerState = ScoreboardEntryBuzzerState.OffNoControl;
+                        }
+
                         if (this.state.buzzedInUser != null && this.state.buzzedInUser.team == teamName) {
                             buzzerState = ScoreboardEntryBuzzerState.BuzzedIn;
                             userName = this.state.buzzedInUser.name;

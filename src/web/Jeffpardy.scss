@@ -629,7 +629,7 @@ button#buzzer.buzzed, button#buzzer.buzzed:hover {
     background-color: blue;
 }
 
-button#buzzer.lockedout, button#buzzer.lockedout:hover {
+button#buzzer.lockedout, button#buzzer.lockedout:hover, button#buzzer.lockedout:active {
     border: 1px solid orangered;
     background-color: orangered;
 }

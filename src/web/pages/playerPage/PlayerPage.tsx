@@ -202,14 +202,14 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         } else {
             Logger.debug("Buzzer clicked when not active - applying lockout. Time:", new Date().getTime());
 
-            // If buzzer isn't active yet, apply a 1s (1000ms) lockout
+            // If buzzer isn't active yet, apply a 1s (2000ms) lockout
             if (!this.state.buzzerActive) {
                 this.setState({ buzzerEarlyClickLock: true });
 
                 setTimeout(() => {
                     Logger.debug("Lockout over. Time:", new Date().getTime());
                     this.setState({ buzzerEarlyClickLock: false });
-                }, 1000);
+                }, 2000);
             }
         }
     }
@@ -228,8 +228,6 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         } else if (this.state.buzzerActive) {
             if (this.state.buzzed) {
                 buzzerClassName = "buzzed";
-                buzzerButtonText = "Buzzed";
-                showBuzzerReactionTime = true;
             } else {
                 buzzerClassName = "active";
             }
@@ -237,6 +235,11 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             buzzerClassName = "inactive";
         }
 
+        // If the user buzzed in then....
+        if (this.state.buzzedInUserReactionTime != 0) {
+            buzzerButtonText = "Buzzed";
+            showBuzzerReactionTime = true;
+        }
 
         return (
 

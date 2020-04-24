@@ -3,7 +3,8 @@ import * as React from "react";
 export enum ScoreboardEntryBuzzerState {
     Off,
     Active,
-    BuzzedIn
+    BuzzedIn,
+    OffNoControl
 }
 
 export interface IScoreboardEntryProps {
@@ -32,7 +33,7 @@ export class ScoreboardEntry extends React.Component<IScoreboardEntryProps, any>
         }
 
         let scoreboardEntryClass = 'scoreboardEntry';
-        if (this.props.isControllingTeam) {
+        if (this.props.buzzerState == ScoreboardEntryBuzzerState.Off && this.props.isControllingTeam) {
             scoreboardEntryClass += ' controllingTeam'
         }
 

@@ -23,7 +23,9 @@
     "react-dom": "^16.13.1",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
-    "webpack-dev-middleware": "^3.7.2"
+    "webpack-dev-middleware": "^3.7.2",
+    "@types/qrcode.react": "^1.0.0",
+    "qrcode.react": "^1.0.0"
   },
   "scripts": {
     "build": "set NODE_ENV=development && webpack -d --color",
