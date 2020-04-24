@@ -101,6 +101,17 @@ export class JeffpardyHostController {
             gameData.rounds[0].categories[0].clues[0].isDailyDouble = true;
         }
 
+        if (Debug.IsFlagSet(DebugFlags.ShortRound)) {
+            gameData.rounds.forEach((gameRound: IGameRound) => {
+                gameRound.categories.forEach((category: ICategory) => {
+                    for (var i: number = 1; i < category.clues.length; i++) {
+                        category.clues[i].isAsked = true;
+                    }
+                });
+            });
+        }
+
+
         this.gameData = gameData;
 
         this.hostPage.onGameDataLoaded(this.gameData);

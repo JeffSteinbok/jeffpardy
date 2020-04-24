@@ -86,22 +86,48 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
         return result;
     }
 
-    private getRandomTeam(teams: { [key: string]: ITeam }): ITeam {
-        let teamKeyArray: string[] = [];
-        let teamKey: string;
+    private getRandomTeam(teams: TeamDictionary): ITeam {
+        let teamNameArray: string[] = [];
 
-        for (teamKey in teams) {
-            if (teams.hasOwnProperty(teamKey)) {
-                teamKeyArray.push(teamKey);
+        for (let teamName in teams) {
+            if (teams.hasOwnProperty(teamName)) {
+                teamNameArray.push(teamName);
             }
         }
 
-        if (teamKeyArray.length === 0)
+        if (teamNameArray.length === 0)
             return null; // or whatever default return you want for an empty object
 
         // return the actual value associated with the key:
-        return teams[teamKeyArray[Math.floor(Math.random() * teamKeyArray.length)]];
+        return teams[teamNameArray[Math.floor(Math.random() * teamNameArray.length)]];
     }
+
+    private getLowestScoringTeam(teams: TeamDictionary): ITeam {
+
+        let lowestScore: number = Number.MAX_SAFE_INTEGER;
+        let lowestScoreKeyArray: string[] = [];
+
+        for (let teamName in teams) {
+            if (teams.hasOwnProperty(teamName)) {
+
+                let team: ITeam = teams[teamName]
+
+                if (team.score < lowestScore) {
+                    lowestScoreKeyArray = [teamName]
+                    lowestScore = team.score;
+                } else if (team.score == lowestScore) {
+                    lowestScoreKeyArray.push(teamName)
+                }
+            }
+        }
+
+        if (lowestScoreKeyArray.length === 0)
+            return null; // or whatever default return you want for an empty object
+
+        // return the actual value associated with the key:
+        return teams[lowestScoreKeyArray[Math.floor(Math.random() * lowestScoreKeyArray.length)]];
+    }
+
 
     public componentDidMount() {
         this.jeffpardyHostController.loadGameData();
@@ -119,7 +145,6 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
 
     public startGame = () => {
 
-        // TODO:  Set this randomly.
         this.jeffpardyHostController.controllingTeamChange(this.getRandomTeam(this.state.teams));
 
         this.setState({
@@ -130,7 +155,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
 
     public startNewRound = () => {
 
-        // TODO:  Set this to the lowest score...
+        this.jeffpardyHostController.controllingTeamChange(this.getLowestScoringTeam(this.state.teams));
 
         this.setState({
             round: this.state.round + 1,

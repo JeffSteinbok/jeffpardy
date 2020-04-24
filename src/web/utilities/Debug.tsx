@@ -1,5 +1,6 @@
 import { Logger } from "./Logger";
 import { ICategory, IGameData, IClue } from "../pages/hostPage/Types";
+import { LoremIpsum } from "./LoremIpsum";
 
 export enum DebugFlags {
     None = 0,
@@ -8,7 +9,13 @@ export enum DebugFlags {
     SkipIntro = 1 << 2,
     DailyDouble00 = 1 << 3,
     FixedGameCode = 1 << 4,
+    ShortRound = 1 << 5,
+    ShortTimers = 1 << 6
 }
+
+// Some helpful values:
+// Skip Intro Only: 4
+// Skip Intro & Local Categories:  6
 
 export class Debug {
     static flags = DebugFlags.None;
@@ -22,53 +29,55 @@ export class Debug {
         return (Debug.flags & debugFlag) === debugFlag;
     }
 
-    // Lots of ugliness to avoid copy constructors
-    // TODO: Add copy constructors
-    // TODO: Customize questions.
-    public static GameDataClue: IClue = {
-        clue: "Sample Clue",
-        question: "Sample Question",
-        value: 0,
-        isAsked: false,
-        isDailyDouble: false
+    public static generateClue(): IClue {
+        return {
+            clue: LoremIpsum.generate(Math.floor(Math.random() * 8) + 2),
+            question: LoremIpsum.generate(Math.floor(Math.random() * 1) + 2),
+            value: 0,
+            isAsked: false,
+            isDailyDouble: false
+        }
     }
 
-    public static GameDataCategory: ICategory = {
-        title: "COMMON BONDS",
-        airDate: "1994-01-21T00:11:00",
-        comment: "Comment Here",
-        isAsked: false,
-        clues: [
-            JSON.parse(JSON.stringify(Debug.GameDataClue)),
-            JSON.parse(JSON.stringify(Debug.GameDataClue)),
-            JSON.parse(JSON.stringify(Debug.GameDataClue)),
-            JSON.parse(JSON.stringify(Debug.GameDataClue)),
-            JSON.parse(JSON.stringify(Debug.GameDataClue))],
-        hasDailyDouble: false
+    public static generateCategory(): ICategory {
+        return {
+            title: LoremIpsum.generate(Math.floor(Math.random() * 2) + 1),
+            airDate: "1994-01-21T00:11:00",
+            comment: LoremIpsum.generate(Math.floor(Math.random() * 10) + 6),
+            isAsked: false,
+            clues: [
+                Debug.generateClue(),
+                Debug.generateClue(),
+                Debug.generateClue(),
+                Debug.generateClue(),
+                Debug.generateClue()],
+            hasDailyDouble: false
+        }
     }
+
 
     public static GameData: IGameData = {
         rounds: [
             {
                 id: 0,
                 categories: [
-                    JSON.parse(JSON.stringify(Debug.GameDataCategory)),
-                    JSON.parse(JSON.stringify(Debug.GameDataCategory)),
-                    JSON.parse(JSON.stringify(Debug.GameDataCategory)),
-                    JSON.parse(JSON.stringify(Debug.GameDataCategory)),
-                    JSON.parse(JSON.stringify(Debug.GameDataCategory)),
-                    JSON.parse(JSON.stringify(Debug.GameDataCategory)),
+                    Debug.generateCategory(),
+                    Debug.generateCategory(),
+                    Debug.generateCategory(),
+                    Debug.generateCategory(),
+                    Debug.generateCategory(),
+                    Debug.generateCategory()
                 ],
             },
             {
                 id: 1,
                 categories: [
-                    JSON.parse(JSON.stringify(Debug.GameDataCategory)),
-                    JSON.parse(JSON.stringify(Debug.GameDataCategory)),
-                    JSON.parse(JSON.stringify(Debug.GameDataCategory)),
-                    JSON.parse(JSON.stringify(Debug.GameDataCategory)),
-                    JSON.parse(JSON.stringify(Debug.GameDataCategory)),
-                    JSON.parse(JSON.stringify(Debug.GameDataCategory)),
+                    Debug.generateCategory(),
+                    Debug.generateCategory(),
+                    Debug.generateCategory(),
+                    Debug.generateCategory(),
+                    Debug.generateCategory(),
+                    Debug.generateCategory()
                 ],
             }
         ]

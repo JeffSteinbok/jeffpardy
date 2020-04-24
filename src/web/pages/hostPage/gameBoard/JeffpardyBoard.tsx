@@ -6,6 +6,7 @@ import { JeffpardyClue } from "./JeffpardyClue"
 import { Timer } from "./Timer"
 import { ICategory, IClue } from "../Types";
 import { ITeam } from "../../../Types";
+import { Debug, DebugFlags } from "../../../utilities/Debug";
 
 export enum JeopardyBoardView {
     Board,
@@ -43,13 +44,19 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
     private contextMenuTarget: any;
     private categories: ICategory = null;
     private timerHandle;
-    private timerRemainingDuration: number;
+    private timerDurationInSeconds: number;
+    private timerRemainingDurationInSeconds: number;
     private dailyDoubleBetTemp: string;
 
     constructor(props: any) {
         super(props);
 
         Logger.debug("JeffpardyBoard:constructor", this.props.categories);
+
+        this.timerDurationInSeconds = 5;
+        if (Debug.IsFlagSet(DebugFlags.ShortTimers)) {
+            this.timerDurationInSeconds = 1;
+        }
 
         this.state = {
             jeopardyBoardView: JeopardyBoardView.Board,
@@ -123,9 +130,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
     }
 
     public startTimer = () => {
-        const timerDuration: number = 5;
-
-        this.timerRemainingDuration = timerDuration;
+        this.timerRemainingDurationInSeconds = this.timerDurationInSeconds;
         this.timerHandle = setTimeout(this.onTimerFire, 250);
     }
 
@@ -140,11 +145,9 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
     }
 
     public onTimerFire = () => {
-        // FIX
-        const timerDuration: number = 5;
 
-        this.timerRemainingDuration = this.timerRemainingDuration - 0.25;
-        let percentRemaing = (this.timerRemainingDuration) / timerDuration;
+        this.timerRemainingDurationInSeconds = this.timerRemainingDurationInSeconds - 0.25;
+        let percentRemaing = (this.timerRemainingDurationInSeconds) / this.timerDurationInSeconds;
         if (percentRemaing != this.state.timerPercentageRemaining) {
             this.setState({
                 timerPercentageRemaining: percentRemaing
