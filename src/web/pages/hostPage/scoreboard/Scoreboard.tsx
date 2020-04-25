@@ -339,7 +339,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                                         <input
                                             type="radio"
                                             name="controllingTeamName"
-                                            checked={ this.props.controllingTeam.name == teamName }
+                                            checked={ this.props.controllingTeam && this.props.controllingTeam.name == teamName }
                                             onChange={ e => this.props.jeffpardyHostController.controllingTeamChange(this.props.teams[teamName]) } />
                                         Team: { teamName }
                                         <input
