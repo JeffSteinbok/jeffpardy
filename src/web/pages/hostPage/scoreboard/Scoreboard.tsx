@@ -5,6 +5,7 @@ import { JeffpardyHostController } from "../JeffpardyHostController";
 import { Key, SpecialKey } from "../../../utilities/Key";
 import { IPlayer, TeamDictionary, ITeam } from "../../../Types";
 import { IClue } from "../Types";
+import { Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button } from "@material-ui/core";
 
 
 enum GameBoardState {
@@ -32,6 +33,7 @@ export interface IScoreboardState {
     dailyDoubleWager: number;
     numResponses: number;
     controllingUser: IPlayer;
+    isTeamFixupDialogShown: boolean;
 }
 
 export interface IScoreboard {
@@ -39,6 +41,7 @@ export interface IScoreboard {
     onBuzzerTimeout: () => void;
     onAssignBuzzedInUser: (user: IPlayer) => void;
     onSetDailyDoubleWager: (wager: number) => void;
+    clearControl: () => void;
 }
 /**
  * Top bar containing toolbar buttons and drop downs
@@ -62,7 +65,8 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
             activeClue: null,
             dailyDoubleWager: 0,
             numResponses: 0,
-            controllingUser: null
+            controllingUser: null,
+            isTeamFixupDialogShown: false
         };
     }
 
@@ -111,6 +115,12 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         });
     }
 
+    clearControl = () => {
+        this.setState({
+            controllingUser: null
+        })
+    }
+
     showQuestion = () => {
         if ((this.state.gameBoardState == GameBoardState.ClueGivenBuzzerActive) ||
             (this.state.gameBoardState == GameBoardState.ClueAnswered)) {
@@ -137,6 +147,12 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
     incorrectResponse = () => {
         this.processResponse(false);
+    }
+
+    adjustTeamInfo = () => {
+        this.setState({
+            isTeamFixupDialogShown: true
+        })
     }
 
     processResponse = (responseCorrect: Boolean) => {
@@ -253,6 +269,10 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                         <button disabled={ this.state.gameBoardState != GameBoardState.ClueAnswered } onClick={ this.correctResponse }>Right (z)</button>
                         <button disabled={ this.state.gameBoardState != GameBoardState.ClueAnswered } onClick={ this.incorrectResponse }>Wrong (x)</button>
                     </div>
+                    <div>Fixup:</div>
+                    <div>
+                        <button disabled={ this.state.gameBoardState != GameBoardState.Normal } onClick={ this.adjustTeamInfo }>Adjust Team Info</button>
+                    </div>
                 </div>
 
                 <div className="scoreEntries">
@@ -287,7 +307,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                             }
                         } else {
                             // Use the initial version from props.
-                            if (this.props.controllingTeam.name == teamName) {
+                            if (this.props.controllingTeam && this.props.controllingTeam.name == teamName) {
                                 isControllingTeam = true;
                             }
                         }
@@ -303,6 +323,41 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                         )
                     }) }
                 </div>
+
+                { this.state.isTeamFixupDialogShown &&
+                    <Dialog
+                        open={ this.state.isTeamFixupDialogShown }
+                        keepMounted
+                        fullWidth
+                    >
+                        <DialogTitle id="alert-dialog-slide-title">{ "Adjust Control & Scores" }</DialogTitle>
+                        <DialogContent>
+                            { Object.keys(this.props.teams).sort().map((teamName, index) => {
+                                let isControllingTeam: boolean = false;
+                                return (
+                                    <div>
+                                        <input
+                                            type="radio"
+                                            name="controllingTeamName"
+                                            checked={ this.props.controllingTeam.name == teamName }
+                                            onChange={ e => this.props.jeffpardyHostController.controllingTeamChange(this.props.teams[teamName]) } />
+                                        Team: { teamName }
+                                        <input
+                                            type="text"
+                                            defaultValue={ this.props.teams[teamName].score }
+                                            onChange={ e => this.props.teams[teamName].score = Number.parseInt(e.target.value, 10) } />
+                                    </div>
+                                )
+                            })
+                            }
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={ () => { this.setState({ isTeamFixupDialogShown: false }) } } color="primary">
+                                OK
+                        </Button>
+                        </DialogActions>
+                    </Dialog>
+                }
             </div >
         );
     }

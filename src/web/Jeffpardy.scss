@@ -352,6 +352,7 @@ div#jeffpardyBoard div.jeffpardyActiveClue .clue
     align-items: center;
     justify-content: center;
     text-align: center;
+    white-space: pre-line;
 }
 
 div#jeffpardyBoard div.jeffpardyActiveClue .question
@@ -370,7 +371,7 @@ div#jeffpardyBoard div.jeffpardyActiveClue .question
     align-items: center;
     justify-content: center;
     text-align: center;
-
+    white-space: pre-line;
 }
 
 div#jeffpardyBoard div.timer {
@@ -787,6 +788,7 @@ div.answerKeyRound div.answerKeyClue div.value {
 
 div.answerKeyRound div.answerKeyClue div.clue {
     border-bottom:1px solid black;
+    white-space: pre-line;
 }
 
 

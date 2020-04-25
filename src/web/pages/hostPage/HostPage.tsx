@@ -156,6 +156,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
     public startNewRound = () => {
 
         this.jeffpardyHostController.controllingTeamChange(this.getLowestScoringTeam(this.state.teams));
+        this.jeffpardyHostController.scoreboard.clearControl();
 
         this.setState({
             round: this.state.round + 1,

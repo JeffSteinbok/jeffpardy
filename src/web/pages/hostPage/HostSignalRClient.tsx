@@ -28,6 +28,7 @@ export class HostSignalRClient implements IHostSignalRClient {
 
         this.hubConnection = new signalR.HubConnectionBuilder()
             .withUrl('/hub/buzzer')
+            .withAutomaticReconnect()
             .configureLogging(signalR.LogLevel.Trace)
             .build();
 

@@ -111,10 +111,26 @@ namespace Jeffpardy
                 {
                     string content = await categoryFile.DownloadTextAsync();
                     ret = JsonConvert.DeserializeObject<Category>(content);
+
+                    // Perform some manual fix-up on categories and clues.  This is easier than
+                    // re-generating all the content, but as bugs are fixed, this fixup can be removed.
+                    foreach(var clue in ret.Clues)
+                    {
+                        clue.Clue = FixupJArchiveContent(clue.Clue);
+                        clue.Question = FixupJArchiveContent(clue.Question);
+                    }
+
                     Debug.WriteLine("Loaded: {0}", categoryFile.Uri);
                 }
             }
             return ret;
+        }
+
+        private string FixupJArchiveContent(string content)
+        {
+            return content.Replace("<br />", "\n")
+                          .Replace("\\'", "'")
+                          .Replace("&amp;", "&");
         }
     }
 }

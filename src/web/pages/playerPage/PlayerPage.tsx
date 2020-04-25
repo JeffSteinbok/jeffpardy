@@ -6,20 +6,6 @@ import { IPlayer, TeamDictionary } from "../../Types"
 import { PlayerList } from "../../components/playerList/PlayerList";
 import { ITeam } from "../../Types";
 
-const connection = new signalR.HubConnectionBuilder()
-    .withUrl("/hub/buzzer")
-    .build();
-
-connection.on("messageReceived", (username: string, message: string) => {
-    let m = document.createElement("div");
-
-    m.innerHTML =
-        `<div class="message-author">${username}</div><div>${message}</div>`;
-
-});
-
-connection.start().catch(err => document.write(err));
-
 enum PlayerPageState {
     FrontPage,
     Lobby,
@@ -87,6 +73,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
         const hubConnection: signalR.HubConnection = new signalR.HubConnectionBuilder()
             .withUrl('/hub/buzzer')
+            .withAutomaticReconnect()
             .build();
 
         this.setState({ hubConnection }, () => {
