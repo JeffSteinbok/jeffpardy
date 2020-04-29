@@ -293,7 +293,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
                                     <div><i>Wait for the button to turn green before buzzing in.</i></div>
 
-                                    <button id="buzzer" className={ buzzerClassName } onClick={ this.buzzIn }>
+                                    <button id="buzzer" className={ buzzerClassName } onMouseDown={ this.buzzIn }>
                                         <div>{ buzzerButtonText }</div>
                                         { showBuzzerReactionTime && <div className="reactionTime">{ this.state.reactionTime } ms</div> }
                                     </button>
