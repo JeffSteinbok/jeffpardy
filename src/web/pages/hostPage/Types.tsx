@@ -18,9 +18,11 @@ export interface ICategory {
 
 export interface IGameRound {
     id: number;
+    name: string;
     categories: ICategory[];
 }
 
 export interface IGameData {
     rounds: IGameRound[];
+    finalJeffpardyCategory: ICategory;
 }

@@ -55,11 +55,24 @@ export class Debug {
         }
     }
 
+    public static generateFinalCategory(): ICategory {
+        return {
+            title: LoremIpsum.generate(Math.floor(Math.random() * 2) + 1),
+            airDate: "1994-01-21T00:11:00",
+            comment: LoremIpsum.generate(Math.floor(Math.random() * 10) + 6),
+            isAsked: false,
+            clues: [
+                Debug.generateClue()],
+            hasDailyDouble: false
+        }
+    }
+
 
     public static GameData: IGameData = {
         rounds: [
             {
                 id: 0,
+                name: "Jeffpardy",
                 categories: [
                     Debug.generateCategory(),
                     Debug.generateCategory(),
@@ -71,6 +84,7 @@ export class Debug {
             },
             {
                 id: 1,
+                name: "Super Jeffpardy",
                 categories: [
                     Debug.generateCategory(),
                     Debug.generateCategory(),
@@ -80,6 +94,7 @@ export class Debug {
                     Debug.generateCategory()
                 ],
             }
-        ]
+        ],
+        finalJeffpardyCategory: Debug.generateFinalCategory()
     }
 }

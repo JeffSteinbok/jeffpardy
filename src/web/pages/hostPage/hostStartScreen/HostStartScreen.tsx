@@ -76,6 +76,14 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
     public render() {
         Logger.debug("HostStartScreen:render", this.props.gameData);
 
+        let finalCategory: ICategory;
+        let finalAirDate: Date;
+
+        if (this.props.gameData != null) {
+            finalCategory = this.props.gameData.finalJeffpardyCategory;
+            finalAirDate = new Date(finalCategory.airDate);
+        }
+
         return (
             <div>
                 {
@@ -101,7 +109,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                     {
                                         this.props.gameData.rounds.map((round, index) => {
                                             return (
-                                                <li key={ index }>Round: { round.id + 1 }
+                                                <li key={ index }>{ round.name }
                                                     <ul>
                                                         {
                                                             round.categories.map((category, index) => {
@@ -116,6 +124,14 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                             )
                                         })
                                     }
+                                </ul>
+                                <ul className="categoryList" style={ { columns: 1 } }>
+                                    <li>Final Jeffpardy
+                                        <ul>
+                                            <li> { finalCategory.title } - { finalAirDate.getMonth() + 1 + "/" + finalAirDate.getDay() + "/" + finalAirDate.getFullYear() }</li>
+                                        </ul>
+                                    </li>
+
                                 </ul>
 
                                 <span style={ { color: "red" } }>NEW: Edit these categories and clues.</span><br />

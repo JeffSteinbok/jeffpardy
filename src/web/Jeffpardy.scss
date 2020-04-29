@@ -29,6 +29,17 @@ $colorBrown: #2b0f01;
     unicode-range: U+0-FF,U+300-36F;
 }
 
+@media print{
+    .noprint{
+        display:none !important
+    }
+
+    .pageBreakAfter {
+        page-break-after: always;
+    }
+ }
+
+
 /* Core CSS */
 html
 {
@@ -745,10 +756,6 @@ div.buzzerUserListView ul.playerList ul li {
     font-weight:normal;
 }
 
-div.answerKeyRound {
-    page-break-after: always;
-}
-
 div.answerKeyRound div.answerKeyClues {
     display:grid;
     background-color: black;
@@ -760,7 +767,7 @@ div.answerKeyRound div.answerKeyClues {
     grid-column-gap: 2px;
     grid-row-gap: 2px;
     padding:2px;
-    font-size:9pt;
+    font-size:8pt;
 
 }
 

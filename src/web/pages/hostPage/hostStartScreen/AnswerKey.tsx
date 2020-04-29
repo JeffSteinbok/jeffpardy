@@ -70,14 +70,22 @@ export class AnswerKey extends React.Component<IAnswerKeyProps, any> {
     public render() {
         Logger.debug("AnswerKey:render", this.props.gameData);
 
+        let finalCategory: ICategory;
+        let finalAirDate: Date;
+
+        if (this.props.gameData != null) {
+            finalCategory = this.props.gameData.finalJeffpardyCategory;
+            finalAirDate = new Date(finalCategory.airDate);
+        }
+
         return (
             <div>
-                <i>Print or save this and press ESC to return to the game.</i>
+                <i className="noPrint">Print or save this and press ESC to return to the game.</i>
                 {
                     this.props.gameData.rounds.map((round, index) => {
                         return (
-                            <div className="answerKeyRound" key={ index }>
-                                <h1>Round { round.id + 1 }</h1>
+                            <div className={ "answerKeyRound" + (round.id == 0 ? " pageBreakAfter" : "") } key={ index }>
+                                <h1>{ round.name }</h1>
                                 <div className="answerKeyClues">
                                     { this.getRoundGrid(round)
                                     }
@@ -86,7 +94,14 @@ export class AnswerKey extends React.Component<IAnswerKeyProps, any> {
                         )
                     })
                 }
+                <h1>Final Jeffpardy</h1>
+                <div className="title">{ finalCategory.title }</div>
+                <div>{ finalCategory.comment }</div>
+                <div>{ finalAirDate.getMonth() + 1 + "/" + finalAirDate.getDay() + "/" + finalAirDate.getFullYear() }</div>
+                <div className="clue">{ finalCategory.clues[0].clue }</div>
+                <div className="question">{ finalCategory.clues[0].question }</div>
             </div>
         );
     }
 }
+

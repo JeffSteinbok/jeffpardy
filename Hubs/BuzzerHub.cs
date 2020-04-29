@@ -60,5 +60,15 @@ namespace Jeffpardy.Hubs
             buzzer.BuzzIn(gameCode, Context.ConnectionId, timeInMillisenconds);
         }
 
+        public async void SubmitWager(string gameCode, int wagerAmount)
+        {
+            if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
+            await buzzer.SubmitWagerAsync(gameCode, Context.ConnectionId, wagerAmount);
+        }
+        public async void SubmitAnswer(string gameCode, string answer)
+        {
+            if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
+            await buzzer.SubmitAnswerAsync(gameCode, Context.ConnectionId, answer);
+        }
     }
 }

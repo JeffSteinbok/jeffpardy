@@ -22,6 +22,11 @@ namespace Jeffpardy
             get;
         }
 
+        IReadOnlyList<ManifestCategory> FinalJeopardyCategoryList
+        {
+            get;
+        }
+
         void AddSeason(SeasonManifest seasonManifest);
     }
 }

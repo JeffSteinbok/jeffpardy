@@ -32,7 +32,9 @@ namespace Jeffpardy
                         Id = 1,
                         Categories = await this.GetCategoriesAsync(SeasonManifestCache.Instance.DoubleJeopardyCategoryList)
                     }
-                }
+                },
+                FinalJeffpardyCategory = await this.FinalCategoryAndClueAsync(SeasonManifestCache.Instance.FinalJeopardyCategoryList)
+               
             };
             return gd;  
         }
@@ -49,11 +51,22 @@ namespace Jeffpardy
                 manifestCategories.Add(categoryList[i]);
             }
 
-            var categoryLoadTasks = manifestCategories.Select((mc) => AzureFilesCategoryLoader.Instance.LoadCategoryAsync(mc));
+            var categoryLoadTasks = manifestCategories.Select((mc) => AzureBlobCategoryLoader.Instance.LoadCategoryAsync(mc));
 
             await Task.WhenAll(categoryLoadTasks);
             
             return categoryLoadTasks.Select((clt) => clt.Result).ToArray();
+        }
+
+        private async Task<Category> FinalCategoryAndClueAsync(IReadOnlyList<ManifestCategory> categoryList)
+        {
+            int categoryIndex = rand.Next(0, categoryList.Count);
+
+            ManifestCategory finalManifestCategory = categoryList[categoryIndex];
+
+            var finalCategory = await AzureBlobCategoryLoader.Instance.LoadCategoryAsync(finalManifestCategory);
+
+            return finalCategory;
         }
 
     }

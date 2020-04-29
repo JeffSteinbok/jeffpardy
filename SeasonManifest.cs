@@ -15,6 +15,8 @@ namespace Jeffpardy
         public List<ManifestCategory> JeopardyCategories { get; set; }
 
         public List<ManifestCategory> DoubleJeopardyCategories { get; set; }
+
+        public List<ManifestCategory> FinalJeopardyCategories { get; set; }
     }
 
     public class ManifestCategory

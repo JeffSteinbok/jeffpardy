@@ -14,6 +14,9 @@ export enum JeopardyBoardView {
     Clue,
     Question,
     Intermission,
+    FinalCategory,
+    FinalClue,
+    FinalTally,
     End
 }
 

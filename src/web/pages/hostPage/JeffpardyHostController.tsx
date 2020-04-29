@@ -57,6 +57,7 @@ export class JeffpardyHostController {
 
         // Assign the scores
         gameData.rounds.forEach((gameRound: IGameRound) => {
+            gameRound.name = gameRound.id == 0 ? "Jeffpardy" : "Super Jeffpardy";
             gameRound.categories.forEach((category: ICategory) => {
                 for (var i: number = 0; i < category.clues.length; i++) {
                     category.clues[i].value = (i + 1) * 100 * (gameRound.id + 1);
