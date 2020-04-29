@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace Jeffpardy
 {
     [ApiController]
@@ -34,15 +32,17 @@ namespace Jeffpardy
                     }
                 },
                 FinalJeffpardyCategory = await this.FinalCategoryAndClueAsync(SeasonManifestCache.Instance.FinalJeopardyCategoryList)
-               
+
             };
-            return gd;  
+            return gd;
         }
 
         private async Task<Category[]> GetCategoriesAsync(IReadOnlyList<ManifestCategory> categoryList)
         {
             int categoryCount = categoryList.Count;
-            int startCategoryIndex = rand.Next(0, categoryCount - 6);
+            int categorySegments = categoryCount / 6;
+
+            int startCategoryIndex = rand.Next(0, categorySegments) * 6;
 
             List<ManifestCategory> manifestCategories = new List<ManifestCategory>();
 
@@ -54,7 +54,7 @@ namespace Jeffpardy
             var categoryLoadTasks = manifestCategories.Select((mc) => AzureBlobCategoryLoader.Instance.LoadCategoryAsync(mc));
 
             await Task.WhenAll(categoryLoadTasks);
-            
+
             return categoryLoadTasks.Select((clt) => clt.Result).ToArray();
         }
 
