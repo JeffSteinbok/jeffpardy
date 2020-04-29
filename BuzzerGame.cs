@@ -60,11 +60,14 @@ namespace Jeffpardy
 
         public async Task ConnectAsync(string connectionId)
         {
+            await this.buzzerHubContext.Groups.AddToGroupAsync(connectionId, this.GameCode);
             await this.SendUserListAsync(connectionId);
         }
 
         public async Task ConnectUserAsync(string connectionId, string team, string name)
         {
+            await this.buzzerHubContext.Groups.AddToGroupAsync(connectionId, this.GameCode);
+
             lock (this)
             {
                 this.players.Add(connectionId, new Player()
@@ -92,7 +95,6 @@ namespace Jeffpardy
 
             }
         }
-
 
         public async Task ResetBuzzerAsync()
         {
