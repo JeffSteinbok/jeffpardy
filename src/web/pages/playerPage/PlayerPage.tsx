@@ -9,7 +9,8 @@ import { ITeam } from "../../Types";
 enum PlayerPageState {
     FrontPage,
     Lobby,
-    Buzzer
+    Buzzer,
+    FinalJeffpardy
 }
 
 export interface IPlayerPageProps {
@@ -32,6 +33,10 @@ export interface IPlayerPageState {
     isWinner: boolean;
     isTeamWinner: boolean;
     reactionTime: number;
+    finalJeffpardyWager: number;
+    finalJeffpardyAnswer: string;
+    finalJeffpardyWagerEnabled: boolean;
+    finalJeffpardyAnswerEnabled: boolean;
 }
 
 /**
@@ -43,6 +48,9 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     gameCodeTemp: string = '';
     focusInput: HTMLInputElement = null;
     handicap: number = 0;
+    finalJeffpardyWagerTemp: number = 0;
+    finalJeffpardyAnswerTemp: string = "";
+    finalJeffpardyClueShownTime: Date;
 
     constructor(props: any) {
         super(props);
@@ -63,7 +71,11 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             buzzedInUserReactionTime: 0,
             isWinner: false,
             isTeamWinner: false,
-            reactionTime: 0
+            reactionTime: 0,
+            finalJeffpardyWager: -1,
+            finalJeffpardyAnswer: null,
+            finalJeffpardyWagerEnabled: true,
+            finalJeffpardyAnswerEnabled: true,
         };
     }
 
@@ -137,6 +149,32 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                 }
                 this.setState({ buzzerActive: true });
             });
+
+
+            this.state.hubConnection.on('startFinalJeffpardy', () => {
+                Logger.debug("on startFinalJeffpardy");
+                this.setState({
+                    playerPageState: PlayerPageState.FinalJeffpardy
+                })
+            })
+
+            this.state.hubConnection.on('showFinalJeffpardyClue', () => {
+                this.finalJeffpardyClueShownTime = new Date();
+                Logger.debug("on showFinalJeffpardyClue");
+                this.setState({
+                    playerPageState: PlayerPageState.FinalJeffpardy,
+                    finalJeffpardyWagerEnabled: false
+                })
+            })
+
+            this.state.hubConnection.on('endFinalJeffpardy', () => {
+                Logger.debug("on endFinalJeffpardy");
+                this.setState({
+                    playerPageState: PlayerPageState.FinalJeffpardy,
+                    finalJeffpardyWagerEnabled: false,
+                    finalJeffpardyAnswerEnabled: false
+                })
+            })
         });
     }
 
@@ -201,6 +239,31 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                 }, 2000);
             }
         }
+    }
+
+    submitFinalJeffpardyWager = () => {
+
+        this.state.hubConnection
+            .invoke('submitWager', this.state.gameCode, this.finalJeffpardyWagerTemp)
+            .catch(err => console.error(err));
+
+        this.setState({
+            finalJeffpardyWager: this.finalJeffpardyWagerTemp,
+            finalJeffpardyWagerEnabled: false
+        })
+    }
+
+    submitFinalJeffpardyAnswer = () => {
+        let reactionTime: number = new Date().getTime() - this.finalJeffpardyClueShownTime.getTime();
+
+        this.state.hubConnection
+            .invoke('submitAnswer', this.state.gameCode, this.finalJeffpardyAnswerTemp, reactionTime)
+            .catch(err => console.error(err));
+
+        this.setState({
+            finalJeffpardyAnswer: this.finalJeffpardyAnswerTemp,
+            finalJeffpardyAnswerEnabled: false
+        })
     }
 
     componentWillUnmount() {
@@ -320,6 +383,43 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                             <div className="buzzedInUserName">{ this.state.buzzedInUser.name }</div>
                                             <div className="buzzedInUserTeam">Team: { this.state.buzzedInUser.team }</div>
                                             <div className="buzzedInUserTeam">Reaction Time: { this.state.buzzedInUserReactionTime } ms</div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            { this.state.playerPageState == PlayerPageState.FinalJeffpardy &&
+                                <div className="finalJeffpardy">
+                                    <h1>{ this.state.name }</h1>
+                                    <h2>Team: { this.state.team }</h2>
+                                    <div>Wager Amount</div>
+                                    <input
+                                        type="number"
+                                        min={ 0 }
+                                        max={ 1000000 }
+                                        step={ 100 }
+                                        onChange={ e => { this.finalJeffpardyWagerTemp = Number.parseInt(e.target.value, 10) } }
+                                        disabled={ !this.state.finalJeffpardyWagerEnabled } />
+                                    <br />
+                                    { this.state.finalJeffpardyWagerEnabled &&
+                                        <button onClick={ this.submitFinalJeffpardyWager }>Submit Wager</button>
+                                    }
+                                    { !this.state.finalJeffpardyWagerEnabled &&
+                                        <div>Wager Locked</div>
+                                    }
+                                    <p />
+                                    { this.state.finalJeffpardyWager >= 0 &&
+                                        <div>
+                                            <div>Answer</div>
+                                            <input
+                                                disabled={ !this.state.finalJeffpardyAnswerEnabled }
+                                                onChange={ e => { this.finalJeffpardyAnswerTemp = e.target.value } } />
+                                            <br />
+                                            { this.state.finalJeffpardyAnswerEnabled &&
+                                                <button onClick={ this.submitFinalJeffpardyAnswer }>Submit Answer</button>
+                                            }
+                                            { !this.state.finalJeffpardyAnswerEnabled &&
+                                                <div>Answer Submitted</div>
+                                            }
                                         </div>
                                     }
                                 </div>

@@ -79,16 +79,36 @@ namespace Jeffpardy
             buzzerGame.BuzzIn(connectionId, timeInMilliseconds);
         }
 
+        public async Task StartFinalJeffpardyAsync(string gameCode)
+        {
+            BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
+
+            // TODO: Send in max bets
+            await buzzerGame.StartFinalJeffpardyAsync();
+        }
+
         public async Task SubmitWagerAsync(string gameCode, string connectionId, int wager)
         {
             BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
             await buzzerGame.SubmitWagerAsync(connectionId, wager);
         }
 
-        public async Task SubmitAnswerAsync(string gameCode, string connectionId, string answer)
+        public async Task SubmitAnswerAsync(string gameCode, string connectionId, string answer, int timeInMilliseconds)
         {
             BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
-            await buzzerGame.SubmitAnswerAsync(connectionId, answer);
+            await buzzerGame.SubmitAnswerAsync(connectionId, answer, timeInMilliseconds);
+        }
+
+        public async Task ShowFinalJeffpardyClueAsync(string gameCode)
+        {
+            BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
+            await buzzerGame.ShowFinalJeffpardyClueAsync();
+        }
+
+        public async Task EndFinalJeffpardyAsync(string gameCode)
+        {
+            BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
+            await buzzerGame.EndFinalJeffpardyAsync();
         }
 
 

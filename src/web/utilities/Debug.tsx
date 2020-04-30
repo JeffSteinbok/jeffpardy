@@ -10,7 +10,8 @@ export enum DebugFlags {
     DailyDouble00 = 1 << 3,
     FixedGameCode = 1 << 4,
     ShortRound = 1 << 5,
-    ShortTimers = 1 << 6
+    ShortTimers = 1 << 6,
+    FinalJeffpardy = 1 << 7
 }
 
 // Some helpful values:

@@ -14,6 +14,9 @@ enum GameBoardState {
 export interface IHostSignalRClient {
     resetBuzzer: () => void;
     activateBuzzer: () => void;
+    startFinalJeffpardy: () => void;
+    showFinalJeffpardyClue: () => void;
+    endFinalJeffpardy: () => void;
 }
 
 export class HostSignalRClient implements IHostSignalRClient {
@@ -49,7 +52,15 @@ export class HostSignalRClient implements IHostSignalRClient {
             this.jeffpardyHostController.updateUsers(teams);
         });
 
-        this.hubConnection.on('assignWinner', (user) => {
+        this.hubConnection.on('submitWager', (user: IPlayer, wager: number) => {
+            this.jeffpardyHostController.submitWager(user, wager);
+        })
+
+        this.hubConnection.on('submitAnswer', (user: IPlayer, answer: string, responseTime: number) => {
+            this.jeffpardyHostController.submitAnswer(user, answer, responseTime);
+        })
+
+        this.hubConnection.on('assignWinner', (user: IPlayer) => {
             this.jeffpardyHostController.assignBuzzedInUser(user);
         });
     }
@@ -68,4 +79,28 @@ export class HostSignalRClient implements IHostSignalRClient {
             .invoke('activateBuzzer', this.gameCode)
             .catch(err => console.error(err));
     };
+
+    public startFinalJeffpardy = () => {
+        Logger.debug("HostSignalRClient:startFinalJeffpardy")
+
+        this.hubConnection
+            .invoke('startFinalJeffpardy', this.gameCode)
+            .catch(err => console.error(err));
+    }
+
+    public showFinalJeffpardyClue = () => {
+        Logger.debug("HostSignalRClient:showFinalJeffpardyClue")
+
+        this.hubConnection
+            .invoke('showFinalJeffpardyClue', this.gameCode)
+            .catch(err => console.error(err));
+    }
+
+    public endFinalJeffpardy = () => {
+        Logger.debug("HostSignalRClient:endFinalJeffpardy")
+
+        this.hubConnection
+            .invoke('endFinalJeffpardy', this.gameCode)
+            .catch(err => console.error(err));
+    }
 }

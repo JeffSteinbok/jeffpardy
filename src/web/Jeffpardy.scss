@@ -439,17 +439,39 @@ div#jeffpardyBoard div.jeffpardyActiveClue .dailyDouble input[type="number"] {
     text-align: center;
 }
 
-div#jeffpardyBoard div.jeffpardyIntermission, div#jeffpardyBoard div.jeffpardyEnd {
+div#jeffpardyBoard div.jeffpardyIntermission,
+div#jeffpardyBoard div.jeffpardyFinal {
     background-color:$colorGameBoard;
     color:white;
     flex-direction:column;
     text-align: center;
     align-items: center;
-    justify-content: center;
     display:flex;
     height:100%;
     width:100%;
     font-size:2rem;
+    padding-top:20px;
+    box-sizing: border-box;
+}
+
+div#jeffpardyBoard div.jeffpardyFinal div.category {
+    @extend %jeffpardyMainFont;
+    font-size:2.5rem;
+    padding:10px 0 0 0;
+}
+
+div#jeffpardyBoard div.jeffpardyFinalCategory,
+div#jeffpardyBoard div.jeffpardyFinalClue,
+div#jeffpardyBoard div.jeffpardyFinalTally {
+    width: 100%;
+    flex-grow: 1;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+div#jeffpardyBoard div.jeffpardyIntermission {
+    justify-content: center;
 }
 
 div#jeffpardyBoard div.jeffpardyIntermission div.title, div#jeffpardyBoard div.jeffpardyEnd div.title {
@@ -457,6 +479,40 @@ div#jeffpardyBoard div.jeffpardyIntermission div.title, div#jeffpardyBoard div.j
     font-size: 3em;
 }
 
+ul.finalJeffpardySubmissionList {
+    flex-grow:1; /* Needed to push the progress bar towards the bottom */
+}
+
+ul.finalJeffpardySubmissionList,
+ul.finalJeffpardyTally {
+    text-align: left;
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+ul.finalJeffpardySubmissionList li,
+ul.finalJeffpardyTally li{
+    width: 250px;
+}
+
+ul.finalJeffpardySubmissionList table,
+ul.finalJeffpardyTally table {
+    color: white;
+    width:100%;
+    border-spacing: 5px 0;
+}
+
+ul.finalJeffpardyTally table th {
+    font-weight:bold;
+    text-align: left;
+}
+
+ul.finalJeffpardyTally table td,
+ul.finalJeffpardyTally table td {
+    word-wrap: break-word;
+}
 
 /*----------------------------------------------------------------------------*/
 div#playerPage
@@ -563,14 +619,16 @@ div#playerPage div.buzzerCurrentUserView h2 {
     margin-top:0px;
 }
 
-div.buzzerRegistration
+div#playerPage input {
+    font-size:1.5rem;
+}
+
+div#playerPage div.buzzerRegistration,
+div#playerPage div.finalJeffpardy
 {
     font-size:1.5rem;
 }
 
-div.buzzerRegistration input[type="text"] {
-    font-size:1.5rem;
-}
 
 div#playerPage div.buzzerCurrentUserView div.playerName {
     font-size:1.5rem;

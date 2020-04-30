@@ -4,9 +4,11 @@ import { Logger } from "../../../utilities/Logger";
 import { JeffpardyHostController } from "../JeffpardyHostController";
 import { JeffpardyClue } from "./JeffpardyClue"
 import { Timer } from "./Timer"
-import { ICategory, IClue } from "../Types";
-import { ITeam } from "../../../Types";
+import { ICategory, IClue, FinalJeffpardyAnswerDictionary, FinalJeffpardyWagerDictionary } from "../Types";
+import { ITeam, TeamDictionary } from "../../../Types";
 import { Debug, DebugFlags } from "../../../utilities/Debug";
+import { FinalJeffpardySubmissionList } from "./FinalJeffpardySubmissionList";
+import { FinalJeffpardyTally } from "./FinalJeffpardyTally";
 
 export enum JeopardyBoardView {
     Board,
@@ -25,6 +27,10 @@ export interface IJeffpardyBoardProps {
     round: number;
     categories: ICategory[];
     controllingTeam: ITeam;
+    teams: TeamDictionary;
+    finalJeffpardyWagers: FinalJeffpardyWagerDictionary,
+    finalJeffpardyAnswers: FinalJeffpardyAnswerDictionary,
+    onScoreChange: (team: ITeam, newScore: number) => void
 }
 
 export interface IJeffpardyBoardState {
@@ -61,8 +67,15 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             this.timerDurationInSeconds = 1;
         }
 
+        // HACK HACK
+        let boardView: JeopardyBoardView = JeopardyBoardView.Board;
+        if (this.props.round == 2) {
+            boardView = JeopardyBoardView.FinalCategory;
+            this.props.jeffpardyHostController.startFinalJeffpardy();
+        }
+
         this.state = {
-            jeopardyBoardView: JeopardyBoardView.Board,
+            jeopardyBoardView: boardView,
             activeClue: null,
             activeCategory: null,
             timerPercentageRemaining: 1
@@ -107,10 +120,22 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             }
         }
 
+        let newBoardView: JeopardyBoardView = JeopardyBoardView.Board;
+        if (boardEmpty) {
+            if (this.props.round == 1) {
+                newBoardView = JeopardyBoardView.Intermission;
+            }
+            if (this.props.round == 1) {
+                this.props.jeffpardyHostController.startFinalJeffpardy();
+                newBoardView = JeopardyBoardView.FinalCategory;
+            }
+            if (this.props.round == 2) { newBoardView = JeopardyBoardView.End }
+        }
+
         this.setState({
             activeClue: null,
             activeCategory: null,
-            jeopardyBoardView: boardEmpty ? (this.props.round == 0 ? JeopardyBoardView.Intermission : JeopardyBoardView.End) : JeopardyBoardView.Board
+            jeopardyBoardView: newBoardView
         })
     };
 
@@ -119,6 +144,15 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
         this.setState({
             jeopardyBoardView: JeopardyBoardView.Board
         })
+    }
+
+    public showFinalJeffpardyClue = () => {
+        this.props.jeffpardyHostController.showFinalJeffpardyClue();
+        this.setState({
+            jeopardyBoardView: JeopardyBoardView.FinalClue
+        })
+        this.timerDurationInSeconds = 30;
+        this.startTimer();
     }
 
     public validateAndSubmitDailyDoubleBet = (maxBet: number) => {
@@ -160,8 +194,22 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             this.timerHandle = setTimeout(this.onTimerFire, 250);
         } else {
             // Time's up!
-            this.props.jeffpardyHostController.buzzerTimeout();
+            if (this.state.jeopardyBoardView == JeopardyBoardView.FinalClue) {
+                this.props.jeffpardyHostController.endFinalJeffpardy();
+                this.setState({
+                    jeopardyBoardView: JeopardyBoardView.FinalTally
+                });
+            } else {
+                this.props.jeffpardyHostController.buzzerTimeout();
+            }
         }
+    }
+
+    onTallyCompleted = () => {
+        Logger.debug("JeffpardyBoard:onTallyCompleted");
+        this.setState({
+            jeopardyBoardView: JeopardyBoardView.End
+        })
     }
 
     public render() {
@@ -258,12 +306,56 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                                 <button onClick={ this.startNewRound }>Start</button>
                             </div>
                         }
-                        { this.state.jeopardyBoardView == JeopardyBoardView.End &&
-                            <div className="jeffpardyEnd">
-                                Thank you for playing<br />
-                                <div className="title">Jeffpardy!</div>
-                                <p />
-                                Refresh your browser to start a new game.
+                        { (this.state.jeopardyBoardView == JeopardyBoardView.FinalCategory ||
+                            this.state.jeopardyBoardView == JeopardyBoardView.FinalClue ||
+                            this.state.jeopardyBoardView == JeopardyBoardView.FinalTally ||
+                            this.state.jeopardyBoardView == JeopardyBoardView.End) &&
+                            <div className="jeffpardyFinal">
+                                The category for Final Jeffpardy is:<br />
+                                <div className="category">{ this.props.categories[0].title }</div>
+
+                                { this.state.jeopardyBoardView == JeopardyBoardView.FinalCategory &&
+                                    <div className="jeffpardyFinalCategory">
+                                        <FinalJeffpardySubmissionList
+                                            teams={ this.props.teams }
+                                            submissions={ this.props.finalJeffpardyWagers }
+                                            waitingText="Waiting for Wager."
+                                            receivedText="Wager Locked" />
+
+                                        <button onClick={ this.showFinalJeffpardyClue }>Show Clue</button>
+                                    </div>
+                                }
+                                { this.state.jeopardyBoardView == JeopardyBoardView.FinalClue &&
+                                    <div className="jeffpardyFinalClue">
+                                        <FinalJeffpardySubmissionList
+                                            teams={ this.props.teams }
+                                            submissions={ this.props.finalJeffpardyAnswers }
+                                            waitingText="Waiting for Answer"
+                                            receivedText="Answer Locked" />
+                                        <Timer percentageRemaining={ this.state.timerPercentageRemaining }></Timer>
+                                    </div>
+                                }
+                                { (this.state.jeopardyBoardView == JeopardyBoardView.FinalTally ||
+                                    this.state.jeopardyBoardView == JeopardyBoardView.End) &&
+                                    <div className="jeffpardyFinalTally">
+                                        <FinalJeffpardyTally
+                                            teams={ this.props.teams }
+                                            wagers={ this.props.finalJeffpardyWagers }
+                                            answers={ this.props.finalJeffpardyAnswers }
+                                            onScoreChange={ this.props.onScoreChange }
+                                            onTallyCompleted={ this.onTallyCompleted }
+                                        />
+
+                                        { this.state.jeopardyBoardView == JeopardyBoardView.End &&
+                                            <div className="jeffpardyEnd">
+                                                Thank you for playing<br />
+                                                <div className="title">Jeffpardy!</div>
+                                                <p />
+                                                Refresh your browser to start a new game.
+                                            </div>
+                                        }
+                                    </div>
+                                }
                             </div>
                         }
                     </div>
