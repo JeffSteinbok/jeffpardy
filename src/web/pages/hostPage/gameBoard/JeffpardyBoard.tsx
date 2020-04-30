@@ -327,6 +327,11 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                                 }
                                 { this.state.jeopardyBoardView == JeopardyBoardView.FinalClue &&
                                     <div className="jeffpardyFinalClue">
+                                        <audio autoPlay>
+                                            <source src="/finalJeopardy.mp3" type="audio/mp3" />
+                                        </audio>
+                                        The clue:<br />
+                                        <div className="clue">{ this.props.categories[0].clues[0].question }</div>
                                         <FinalJeffpardySubmissionList
                                             teams={ this.props.teams }
                                             submissions={ this.props.finalJeffpardyAnswers }
@@ -338,6 +343,8 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                                 { (this.state.jeopardyBoardView == JeopardyBoardView.FinalTally ||
                                     this.state.jeopardyBoardView == JeopardyBoardView.End) &&
                                     <div className="jeffpardyFinalTally">
+                                        The clue:<br />
+                                        <div className="clue">{ this.props.categories[0].clues[0].question }</div>
                                         <FinalJeffpardyTally
                                             teams={ this.props.teams }
                                             wagers={ this.props.finalJeffpardyWagers }
