@@ -36,6 +36,7 @@ export interface IHostPageState {
 export interface IHostPage {
     setViewMode: (viewMode: HostPageViewMode) => void;
     startNewRound: () => void;
+    startFinalJeffpardy: () => void;
     onGameDataLoaded: (gameData: IGameData) => void;
     onUpdateTeams: (teams: TeamDictionary) => void;
     onUpdateFinalJeffpardy: (wagers: FinalJeffpardyWagerDictionary, answers: FinalJeffpardyAnswerDictionary) => void;
@@ -176,6 +177,13 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
         this.setState({
             round: this.state.round + 1,
             categories: this.state.gameData.rounds[this.state.round + 1].categories
+        })
+    }
+
+    public startFinalJeffpardy = () => {
+        this.setState({
+            round: this.state.round + 1,
+            categories: [this.state.gameData.finalJeffpardyCategory]
         })
     }
 

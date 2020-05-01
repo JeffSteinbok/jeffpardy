@@ -227,6 +227,7 @@ export class JeffpardyHostController {
         // This line should move most likely.
         this.controllingTeamChange(null);
         this.scoreboard.clearControl();
+        this.hostPage.startFinalJeffpardy();
 
         let scores: { [key: string]: number } = {};
 

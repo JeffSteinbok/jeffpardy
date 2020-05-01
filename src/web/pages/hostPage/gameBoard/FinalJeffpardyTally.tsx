@@ -44,11 +44,6 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
 
         Logger.debug("FinalJeffpardyTally:constructor", this.props.teams);
 
-        this.state = {
-            revealStep: 0,
-            currentTeamIndex: 0,
-            isTallyCompleted: false
-        }
 
         // Need to restructure the data to make it easier to render, and don't want to have
         // to re-compute it at render.
@@ -99,6 +94,12 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
             this.tallyTeams.sort((a: ITallyTeam, b: ITallyTeam): number => {
                 return a.score - b.score;
             })
+        }
+
+        this.state = {
+            revealStep: 0,
+            currentTeamIndex: 0,
+            isTallyCompleted: this.tallyTeams.length > 0 ? false : true
         }
     }
 

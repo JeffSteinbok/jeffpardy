@@ -39,6 +39,7 @@ export interface IJeffpardyBoardState {
     activeCategory: ICategory;
     jeopardyBoardView: JeopardyBoardView;
     timerPercentageRemaining: number;
+    finalJeffpardyTimerActive: boolean;
 }
 
 export interface IJeffpardyBoard {
@@ -78,7 +79,8 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             jeopardyBoardView: boardView,
             activeClue: null,
             activeCategory: null,
-            timerPercentageRemaining: 1
+            timerPercentageRemaining: 1,
+            finalJeffpardyTimerActive: false
         }
 
         this.props.jeffpardyHostController.setJeffpardyBoard(this);
@@ -149,10 +151,16 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
         }
     }
 
-    public showFinalJeffpardyClue = () => {
+    showFinalJeffpardyClue = () => {
         this.props.jeffpardyHostController.showFinalJeffpardyClue();
         this.setState({
             jeopardyBoardView: JeopardyBoardView.FinalClue
+        })
+    }
+
+    startFinalJeffpardyTimer = () => {
+        this.setState({
+            finalJeffpardyTimerActive: true
         })
         this.timerDurationInSeconds = Debug.IsFlagSet(DebugFlags.FastFinalJeffpardy) ? 5 : 30;
         this.startTimer();
@@ -200,7 +208,8 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             if (this.state.jeopardyBoardView == JeopardyBoardView.FinalClue) {
                 this.props.jeffpardyHostController.endFinalJeffpardy();
                 this.setState({
-                    jeopardyBoardView: JeopardyBoardView.FinalTally
+                    jeopardyBoardView: JeopardyBoardView.FinalTally,
+                    finalJeffpardyTimerActive: false
                 });
             } else {
                 this.props.jeffpardyHostController.buzzerTimeout();
@@ -223,7 +232,9 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
         let boardGridElements: JSX.Element[] = [];
         let dailyDoubleMaxBet: number;
 
-        if (this.props.categories && this.state.activeClue == null) {
+        if (this.state.jeopardyBoardView == JeopardyBoardView.Board &&
+            this.props.categories &&
+            this.state.activeClue == null) {
             Logger.debug("Drawing Categories!", this.props.categories);
             // Generate the grid of DIVs.  Doesn't work super-well in the below because they are not
             // nested.
@@ -334,15 +345,20 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                                 }
                                 { this.state.jeopardyBoardView == JeopardyBoardView.FinalClue &&
                                     <div className="jeffpardyFinalClue">
-                                        <audio autoPlay>
-                                            <source src="/finalJeopardy.mp3" type="audio/mp3" />
-                                        </audio>
+                                        { this.state.finalJeffpardyTimerActive &&
+                                            <audio autoPlay>
+                                                <source src="/finalJeopardy.mp3" type="audio/mp3" />
+                                            </audio>
+                                        }
                                         <div className="clue">{ this.props.categories[0].clues[0].clue }</div>
                                         <FinalJeffpardySubmissionList
                                             teams={ this.props.teams }
                                             submissions={ this.props.finalJeffpardyAnswers }
                                             waitingText="Waiting for Answer"
                                             receivedText="Answer Locked" />
+                                        { !this.state.finalJeffpardyTimerActive &&
+                                            <button onClick={ this.startFinalJeffpardyTimer }>Start Timer</button>
+                                        }
                                         <div className="flexGrowSpacer"></div>
                                         <Timer percentageRemaining={ this.state.timerPercentageRemaining }></Timer>
                                     </div>
