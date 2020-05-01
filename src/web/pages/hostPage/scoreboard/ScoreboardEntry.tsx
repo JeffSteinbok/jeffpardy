@@ -13,6 +13,7 @@ export interface IScoreboardEntryProps {
     userName: string;
     isControllingTeam: boolean;
     score: number;
+    isWinningTeam: boolean;
 }
 
 /**
@@ -35,6 +36,10 @@ export class ScoreboardEntry extends React.Component<IScoreboardEntryProps, any>
         let scoreboardEntryClass = 'scoreboardEntry';
         if (this.props.buzzerState == ScoreboardEntryBuzzerState.Off && this.props.isControllingTeam) {
             scoreboardEntryClass += ' controllingTeam'
+        }
+
+        if (this.props.buzzerState == ScoreboardEntryBuzzerState.Off && this.props.isWinningTeam) {
+            scoreboardEntryClass += ' winningTeam'
         }
 
         return (

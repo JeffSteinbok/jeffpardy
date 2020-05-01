@@ -17,6 +17,7 @@ export interface IFinalJeffpardyTallyProps {
 export interface IFinalJeffpardyTallyState {
     revealStep: number;
     currentTeamIndex: number;
+    isTallyCompleted: boolean;
 }
 
 interface ITallyPlayer {
@@ -45,7 +46,8 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
 
         this.state = {
             revealStep: 0,
-            currentTeamIndex: 0
+            currentTeamIndex: 0,
+            isTallyCompleted: false
         }
 
         // Need to restructure the data to make it easier to render, and don't want to have
@@ -135,6 +137,7 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
             maxWager = tallyTeam.players[tallyTeam.players.length - 1].wager;
         }
         let teamObject: ITeam = this.props.teams[tallyTeam.name];
+        tallyTeam.isCorrect = isCorrect;
 
         let adjustment: number = maxWager;
         if (!isCorrect) {
@@ -146,9 +149,10 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
         let newTeamIndex: number = this.state.currentTeamIndex + 1;
 
         if (newTeamIndex >= this.tallyTeams.length) {
-            this.props.onTallyCompleted();
+            this.setState({
+                isTallyCompleted: true
+            })
         }
-
         this.setState({
             currentTeamIndex: newTeamIndex,
             revealStep: 0
@@ -198,10 +202,11 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
                                                                 <td><div style={ shouldRender() ? visibleStyle : hiddenStyle }>
                                                                     { player.wager }
                                                                 </div></td>
-                                                                <td><div style={ shouldRender() ? visibleStyle : hiddenStyle }>
-                                                                    { player.answer != null ? player.answer : "[BLANK]" }
-                                                                    { player.answer != null ? " (" + player.responseTime + " ms)" : "" }
-                                                                </div></td>
+                                                                <td>
+                                                                    <div style={ shouldRender() ? visibleStyle : hiddenStyle }>
+                                                                        { player.answer != null ? player.answer : "[BLANK]" }
+                                                                    </div>
+                                                                </td>
                                                             </tr>
                                                         )
                                                     })
@@ -212,19 +217,27 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
                                     { this.state.currentTeamIndex == index &&
                                         this.state.revealStep >= tallyTeam.players.length * 2 &&
                                         <div>
-                                            <button onClick={ this.correctResponse }>Correct</button>
-                                            <button onClick={ this.incorrectResponse }>Incorrect</button>
+                                            <button onClick={ this.correctResponse }>Right</button>
+                                            <button onClick={ this.incorrectResponse }>Wrong</button>
                                         </div>
                                     }
                                     { this.state.currentTeamIndex > index &&
-                                        <div>{ tallyTeam.isCorrect ? "CORRECT" : "WRONG" }</div>
+                                        <div>{ tallyTeam.isCorrect ? "Right" : "Wrong" }</div>
                                     }
                                 </li>
                             )
                         })
                     }
                 </ul>
-            </div >
+                <div className="postTally">
+                    { !this.state.isTallyCompleted &&
+                        <i>Hit SPACE to reveal responses</i>
+                    }
+                    { this.state.isTallyCompleted &&
+                        <button onClick={ this.props.onTallyCompleted }>End Game</button>
+                    }
+                </div>
+            </div>
         );
     }
 }

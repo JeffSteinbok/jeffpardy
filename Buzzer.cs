@@ -79,12 +79,12 @@ namespace Jeffpardy
             buzzerGame.BuzzIn(connectionId, timeInMilliseconds);
         }
 
-        public async Task StartFinalJeffpardyAsync(string gameCode)
+        public async Task StartFinalJeffpardyAsync(string gameCode, Dictionary<string, int> scores)
         {
             BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
 
             // TODO: Send in max bets
-            await buzzerGame.StartFinalJeffpardyAsync();
+            await buzzerGame.StartFinalJeffpardyAsync(scores);
         }
 
         public async Task SubmitWagerAsync(string gameCode, string connectionId, int wager)

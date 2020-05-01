@@ -14,7 +14,7 @@ enum GameBoardState {
 export interface IHostSignalRClient {
     resetBuzzer: () => void;
     activateBuzzer: () => void;
-    startFinalJeffpardy: () => void;
+    startFinalJeffpardy: (scores: { [key: string]: number }) => void;
     showFinalJeffpardyClue: () => void;
     endFinalJeffpardy: () => void;
 }
@@ -80,11 +80,11 @@ export class HostSignalRClient implements IHostSignalRClient {
             .catch(err => console.error(err));
     };
 
-    public startFinalJeffpardy = () => {
+    public startFinalJeffpardy = (scores: { [key: string]: number }) => {
         Logger.debug("HostSignalRClient:startFinalJeffpardy")
 
         this.hubConnection
-            .invoke('startFinalJeffpardy', this.gameCode)
+            .invoke('startFinalJeffpardy', this.gameCode, scores)
             .catch(err => console.error(err));
     }
 

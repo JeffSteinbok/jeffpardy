@@ -60,10 +60,10 @@ namespace Jeffpardy.Hubs
             buzzer.BuzzIn(gameCode, Context.ConnectionId, timeInMillisenconds);
         }
 
-        public async void StartFinalJeffpardy(string gameCode)
+        public async void StartFinalJeffpardy(string gameCode, Dictionary<string, int> scores)
         {
             if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
-            await buzzer.StartFinalJeffpardyAsync(gameCode);
+            await buzzer.StartFinalJeffpardyAsync(gameCode, scores);
         }
 
         public async void SubmitWager(string gameCode, int wagerAmount)

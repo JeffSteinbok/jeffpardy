@@ -223,7 +223,15 @@ export class JeffpardyHostController {
     public startFinalJeffpardy = () => {
         // This line should move most likely.
         this.controllingTeamChange(null);
-        this.hostSignalRClient.startFinalJeffpardy();
+
+        let scores: { [key: string]: number } = {};
+
+        // Get all the scores
+        Object.keys(this.teams).map((teamName, index) => {
+            scores[teamName] = this.teams[teamName].score;
+        });
+
+        this.hostSignalRClient.startFinalJeffpardy(scores);
     }
 
     public showFinalJeffpardyClue = () => {

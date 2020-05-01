@@ -33,6 +33,7 @@ export interface IPlayerPageState {
     isWinner: boolean;
     isTeamWinner: boolean;
     reactionTime: number;
+    finalJeffpardyMaxWager: number;
     finalJeffpardyWager: number;
     finalJeffpardyAnswer: string;
     finalJeffpardyWagerEnabled: boolean;
@@ -72,6 +73,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             isWinner: false,
             isTeamWinner: false,
             reactionTime: 0,
+            finalJeffpardyMaxWager: 0,
             finalJeffpardyWager: -1,
             finalJeffpardyAnswer: null,
             finalJeffpardyWagerEnabled: true,
@@ -151,10 +153,16 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             });
 
 
-            this.state.hubConnection.on('startFinalJeffpardy', () => {
+            this.state.hubConnection.on('startFinalJeffpardy', (scores: { [key: string]: number }) => {
                 Logger.debug("on startFinalJeffpardy");
+
+                // Get the max wager for this team.
+                // If negative, then 0
+                let maxWager: number = Math.max(scores[this.state.team], 0);
+
                 this.setState({
-                    playerPageState: PlayerPageState.FinalJeffpardy
+                    playerPageState: PlayerPageState.FinalJeffpardy,
+                    finalJeffpardyMaxWager: maxWager
                 })
             })
 
@@ -243,17 +251,28 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
     submitFinalJeffpardyWager = () => {
 
-        this.state.hubConnection
-            .invoke('submitWager', this.state.gameCode, this.finalJeffpardyWagerTemp)
-            .catch(err => console.error(err));
+        let fjBet = this.finalJeffpardyWagerTemp;
+        if (isNaN(fjBet) || fjBet > this.state.finalJeffpardyMaxWager || fjBet < 0) {
+            alert("Please enter a wager between 0 and " + this.state.finalJeffpardyMaxWager + ".");
+            return;
+        } else {
+            this.state.hubConnection
+                .invoke('submitWager', this.state.gameCode, this.finalJeffpardyWagerTemp)
+                .catch(err => console.error(err));
 
-        this.setState({
-            finalJeffpardyWager: this.finalJeffpardyWagerTemp,
-            finalJeffpardyWagerEnabled: false
-        })
+            this.setState({
+                finalJeffpardyWager: this.finalJeffpardyWagerTemp,
+                finalJeffpardyWagerEnabled: false
+            })
+        }
     }
 
     submitFinalJeffpardyAnswer = () => {
+        if (this.finalJeffpardyClueShownTime == null) {
+            alert("You can't submit your answer before the clue is shown.");
+            return;
+        }
+
         let reactionTime: number = new Date().getTime() - this.finalJeffpardyClueShownTime.getTime();
 
         this.state.hubConnection
@@ -395,11 +414,11 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                     <input
                                         type="number"
                                         min={ 0 }
-                                        max={ 1000000 }
+                                        max={ this.state.finalJeffpardyMaxWager }
                                         step={ 100 }
                                         onChange={ e => { this.finalJeffpardyWagerTemp = Number.parseInt(e.target.value, 10) } }
                                         disabled={ !this.state.finalJeffpardyWagerEnabled } />
-                                    <br />
+                                    <div><i>Enter a value up to { this.state.finalJeffpardyMaxWager }.</i></div>
                                     { this.state.finalJeffpardyWagerEnabled &&
                                         <button onClick={ this.submitFinalJeffpardyWager }>Submit Wager</button>
                                     }

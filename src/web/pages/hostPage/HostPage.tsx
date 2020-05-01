@@ -16,8 +16,6 @@ export enum HostPageViewMode {
     Lobby,
     Intro,
     Game,
-    Intermission,
-    FinalJeffpardy,
     End
 }
 
@@ -158,7 +156,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
         if (Debug.IsFlagSet(DebugFlags.FinalJeffpardy)) {
             this.setState({
                 viewMode: HostPageViewMode.Game,
-                round: 2,
+                round: 1,
                 categories: [this.state.gameData.finalJeffpardyCategory],
                 controllingTeam: null
             });
@@ -261,7 +259,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                     </div>
                 }
                 {
-                    this.state.viewMode == HostPageViewMode.Game &&
+                    (this.state.viewMode == HostPageViewMode.Game || this.state.viewMode == HostPageViewMode.End) &&
                     <div className="topPageNormal" >
                         <div className="topSection">
                             <div className="title">Jeffpardy!</div>
@@ -281,7 +279,8 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                                 <Scoreboard
                                     jeffpardyHostController={ this.jeffpardyHostController }
                                     teams={ this.state.teams }
-                                    controllingTeam={ this.state.controllingTeam } />
+                                    controllingTeam={ this.state.controllingTeam }
+                                    hilightWinningTeams={ this.state.viewMode == HostPageViewMode.End } />
                             </div>
                         </div>
                     </div>

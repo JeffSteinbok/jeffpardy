@@ -161,9 +161,9 @@ namespace Jeffpardy
             }
         }
 
-        public async Task StartFinalJeffpardyAsync()
+        public async Task StartFinalJeffpardyAsync(Dictionary<string, int> scores)
         {
-            await buzzerHubContext.Clients.Group(this.GameCode).SendAsync("startFinalJeffpardy");
+            await buzzerHubContext.Clients.Group(this.GameCode).SendAsync("startFinalJeffpardy", scores);
         }
 
         public async Task SubmitWagerAsync(string connectionId, int wager)
