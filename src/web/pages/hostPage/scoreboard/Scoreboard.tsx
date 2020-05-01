@@ -115,7 +115,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         });
     }
 
-    clearControl = () => {
+    public clearControl = () => {
         this.setState({
             controllingUser: null
         })
@@ -248,6 +248,8 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
     }
 
     public render() {
+        Logger.debug("Scoreboard:render", this.props);
+
         this.teamCount = 0;
         let topScore: number = Number.MIN_SAFE_INTEGER;
 

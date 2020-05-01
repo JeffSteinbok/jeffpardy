@@ -108,10 +108,13 @@ export class JeffpardyHostController {
         if (Debug.IsFlagSet(DebugFlags.ShortRound)) {
             gameData.rounds.forEach((gameRound: IGameRound) => {
                 gameRound.categories.forEach((category: ICategory) => {
-                    for (var i: number = 1; i < category.clues.length; i++) {
+                    for (var i: number = 0; i < category.clues.length; i++) {
                         category.clues[i].isAsked = true;
                     }
+                    category.isAsked = true;
                 });
+                gameRound.categories[0].isAsked = false;
+                gameRound.categories[0].clues[0].isAsked = false;
             });
         }
 
@@ -223,6 +226,7 @@ export class JeffpardyHostController {
     public startFinalJeffpardy = () => {
         // This line should move most likely.
         this.controllingTeamChange(null);
+        this.scoreboard.clearControl();
 
         let scores: { [key: string]: number } = {};
 
