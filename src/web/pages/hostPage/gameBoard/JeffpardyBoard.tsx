@@ -162,7 +162,8 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
         this.setState({
             finalJeffpardyTimerActive: true
         })
-        this.timerDurationInSeconds = Debug.IsFlagSet(DebugFlags.FastFinalJeffpardy) ? 5 : 30;
+        // Extra time for the song to end.
+        this.timerDurationInSeconds = Debug.IsFlagSet(DebugFlags.FastFinalJeffpardy) ? 5 : 31;
         this.startTimer();
     }
 
