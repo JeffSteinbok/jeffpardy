@@ -6,7 +6,7 @@ import { IHostPage, HostPageViewMode } from "./HostPage";
 import { IHostSignalRClient, HostSignalRClient } from "./HostSignalRClient";
 import { IPlayer, TeamDictionary, ITeam } from "../../Types";
 import { Debug, DebugFlags } from "../../utilities/Debug";
-import { IGameData, ICategory, IGameRound, IClue } from "./Types";
+import { IGameData, ICategory, IGameRound, IClue, FinalJeffpardyWagerDictionary, FinalJeffpardyAnswerDictionary } from "./Types";
 
 /**
  * This class is to be passed down to pages and components so they can interact with
@@ -24,6 +24,9 @@ export class JeffpardyHostController {
     categories: ICategory[];
 
     hostSignalRClient: IHostSignalRClient;
+
+    finalJeffpardyWagers: FinalJeffpardyWagerDictionary = {};
+    finalJeffpardyAnswers: FinalJeffpardyAnswerDictionary = {};
 
     constructor(gameCode: string) {
         this.hostSignalRClient = new HostSignalRClient(this, gameCode)
@@ -57,6 +60,7 @@ export class JeffpardyHostController {
 
         // Assign the scores
         gameData.rounds.forEach((gameRound: IGameRound) => {
+            gameRound.name = gameRound.id == 0 ? "Jeffpardy" : "Super Jeffpardy";
             gameRound.categories.forEach((category: ICategory) => {
                 for (var i: number = 0; i < category.clues.length; i++) {
                     category.clues[i].value = (i + 1) * 100 * (gameRound.id + 1);
@@ -104,10 +108,13 @@ export class JeffpardyHostController {
         if (Debug.IsFlagSet(DebugFlags.ShortRound)) {
             gameData.rounds.forEach((gameRound: IGameRound) => {
                 gameRound.categories.forEach((category: ICategory) => {
-                    for (var i: number = 1; i < category.clues.length; i++) {
+                    for (var i: number = 0; i < category.clues.length; i++) {
                         category.clues[i].isAsked = true;
                     }
+                    category.isAsked = true;
                 });
+                gameRound.categories[0].isAsked = false;
+                gameRound.categories[0].clues[0].isAsked = false;
             });
         }
 
@@ -144,6 +151,23 @@ export class JeffpardyHostController {
         this.teamCount = teamCount;
         this.hostPage.onUpdateTeams(this.teams);
     }
+
+    public submitWager(user: IPlayer, wager: number) {
+        // TODO:  Something to stop a wager from being entered twice, or after the clue is shown
+        // Or, take this all out of the controller
+        Logger.debug("JeffpardyHostController:submitWager", user, wager);
+        this.finalJeffpardyWagers[user.connectionId] = wager;
+        this.hostPage.onUpdateFinalJeffpardy(this.finalJeffpardyWagers, this.finalJeffpardyAnswers);
+    }
+
+    public submitAnswer(user: IPlayer, answer: string, responseTime: number) {
+        // TODO:  Something to stop an answer from being entered twice, or after the tally has started.
+        // Or, take this all out of the controller
+        Logger.debug("JeffpardyHostController:submitAnswer", user, answer);
+        this.finalJeffpardyAnswers[user.connectionId] = { answer: answer, responseTime: responseTime }
+        this.hostPage.onUpdateFinalJeffpardy(this.finalJeffpardyWagers, this.finalJeffpardyAnswers);
+    }
+
 
     public resetBuzzer() {
         this.hostSignalRClient.resetBuzzer();
@@ -197,5 +221,29 @@ export class JeffpardyHostController {
 
     public buzzerTimeout = () => {
         this.scoreboard.onBuzzerTimeout();
+    }
+
+    public startFinalJeffpardy = () => {
+        // This line should move most likely.
+        this.controllingTeamChange(null);
+        this.scoreboard.clearControl();
+        this.hostPage.startFinalJeffpardy();
+
+        let scores: { [key: string]: number } = {};
+
+        // Get all the scores
+        Object.keys(this.teams).map((teamName, index) => {
+            scores[teamName] = this.teams[teamName].score;
+        });
+
+        this.hostSignalRClient.startFinalJeffpardy(scores);
+    }
+
+    public showFinalJeffpardyClue = () => {
+        this.hostSignalRClient.showFinalJeffpardyClue();
+    }
+
+    public endFinalJeffpardy = () => {
+        this.hostSignalRClient.endFinalJeffpardy();
     }
 }

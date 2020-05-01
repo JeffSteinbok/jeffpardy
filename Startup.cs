@@ -18,8 +18,12 @@ namespace Jeffpardy
         {
             Configuration = configuration;
 
+            AzureBlobCategoryLoader.Instance.PopulateSeasonManifest(SeasonManifestCache.Instance);
+
             // Load the category cache
-            AzureFilesCategoryLoader.Instance.PopulateSeasonManifest(SeasonManifestCache.Instance);
+            // AzureFilesCategoryLoader.Instance.PopulateSeasonManifest(SeasonManifestCache.Instance);
+
+            
         }
 
         public IConfiguration Configuration { get; }

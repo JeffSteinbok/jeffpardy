@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace Jeffpardy
 {
     [ApiController]
@@ -32,15 +30,19 @@ namespace Jeffpardy
                         Id = 1,
                         Categories = await this.GetCategoriesAsync(SeasonManifestCache.Instance.DoubleJeopardyCategoryList)
                     }
-                }
+                },
+                FinalJeffpardyCategory = await this.FinalCategoryAndClueAsync(SeasonManifestCache.Instance.FinalJeopardyCategoryList)
+
             };
-            return gd;  
+            return gd;
         }
 
         private async Task<Category[]> GetCategoriesAsync(IReadOnlyList<ManifestCategory> categoryList)
         {
             int categoryCount = categoryList.Count;
-            int startCategoryIndex = rand.Next(0, categoryCount - 6);
+            int categorySegments = categoryCount / 6;
+
+            int startCategoryIndex = rand.Next(0, categorySegments) * 6;
 
             List<ManifestCategory> manifestCategories = new List<ManifestCategory>();
 
@@ -49,11 +51,22 @@ namespace Jeffpardy
                 manifestCategories.Add(categoryList[i]);
             }
 
-            var categoryLoadTasks = manifestCategories.Select((mc) => AzureFilesCategoryLoader.Instance.LoadCategoryAsync(mc));
+            var categoryLoadTasks = manifestCategories.Select((mc) => AzureBlobCategoryLoader.Instance.LoadCategoryAsync(mc));
 
             await Task.WhenAll(categoryLoadTasks);
-            
+
             return categoryLoadTasks.Select((clt) => clt.Result).ToArray();
+        }
+
+        private async Task<Category> FinalCategoryAndClueAsync(IReadOnlyList<ManifestCategory> categoryList)
+        {
+            int categoryIndex = rand.Next(0, categoryList.Count);
+
+            ManifestCategory finalManifestCategory = categoryList[categoryIndex];
+
+            var finalCategory = await AzureBlobCategoryLoader.Instance.LoadCategoryAsync(finalManifestCategory);
+
+            return finalCategory;
         }
 
     }

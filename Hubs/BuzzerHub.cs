@@ -60,5 +60,34 @@ namespace Jeffpardy.Hubs
             buzzer.BuzzIn(gameCode, Context.ConnectionId, timeInMillisenconds);
         }
 
+        public async void StartFinalJeffpardy(string gameCode, Dictionary<string, int> scores)
+        {
+            if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
+            await buzzer.StartFinalJeffpardyAsync(gameCode, scores);
+        }
+
+        public async void SubmitWager(string gameCode, int wagerAmount)
+        {
+            if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
+            await buzzer.SubmitWagerAsync(gameCode, Context.ConnectionId, wagerAmount);
+        }
+        public async void SubmitAnswer(string gameCode, string answer, int timeInMilliseconds)
+        {
+            if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
+            await buzzer.SubmitAnswerAsync(gameCode, Context.ConnectionId, answer, timeInMilliseconds);
+        }
+
+        public async void ShowFinalJeffpardyClue(string gameCode)
+        {
+            if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
+            await buzzer.ShowFinalJeffpardyClueAsync(gameCode);
+        }
+
+        public async void EndFinalJeffpardy(string gameCode)
+        {
+            if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
+            await buzzer.EndFinalJeffpardyAsync(gameCode);
+        }
+
     }
 }

@@ -10,7 +10,9 @@ export enum DebugFlags {
     DailyDouble00 = 1 << 3,
     FixedGameCode = 1 << 4,
     ShortRound = 1 << 5,
-    ShortTimers = 1 << 6
+    ShortTimers = 1 << 6,
+    FinalJeffpardy = 1 << 7,
+    FastFinalJeffpardy = 1 << 8,
 }
 
 // Some helpful values:
@@ -55,11 +57,24 @@ export class Debug {
         }
     }
 
+    public static generateFinalCategory(): ICategory {
+        return {
+            title: LoremIpsum.generate(Math.floor(Math.random() * 2) + 1),
+            airDate: "1994-01-21T00:11:00",
+            comment: LoremIpsum.generate(Math.floor(Math.random() * 10) + 6),
+            isAsked: false,
+            clues: [
+                Debug.generateClue()],
+            hasDailyDouble: false
+        }
+    }
+
 
     public static GameData: IGameData = {
         rounds: [
             {
                 id: 0,
+                name: "Jeffpardy",
                 categories: [
                     Debug.generateCategory(),
                     Debug.generateCategory(),
@@ -71,6 +86,7 @@ export class Debug {
             },
             {
                 id: 1,
+                name: "Super Jeffpardy",
                 categories: [
                     Debug.generateCategory(),
                     Debug.generateCategory(),
@@ -80,6 +96,7 @@ export class Debug {
                     Debug.generateCategory()
                 ],
             }
-        ]
+        ],
+        finalJeffpardyCategory: Debug.generateFinalCategory()
     }
 }

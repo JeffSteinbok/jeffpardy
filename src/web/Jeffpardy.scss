@@ -29,6 +29,17 @@ $colorBrown: #2b0f01;
     unicode-range: U+0-FF,U+300-36F;
 }
 
+@media print{
+    .noprint{
+        display:none !important
+    }
+
+    .pageBreakAfter {
+        page-break-after: always;
+    }
+ }
+
+
 /* Core CSS */
 html
 {
@@ -68,6 +79,10 @@ button { cursor:pointer; }
 
 %bigButtonHover {
     background-color: darkgrey;
+}
+
+div.flexGrowSpacer {
+    flex-grow:1
 }
 
 /* Start Page */
@@ -428,24 +443,97 @@ div#jeffpardyBoard div.jeffpardyActiveClue .dailyDouble input[type="number"] {
     text-align: center;
 }
 
-div#jeffpardyBoard div.jeffpardyIntermission, div#jeffpardyBoard div.jeffpardyEnd {
+div#jeffpardyBoard div.jeffpardyIntermission,
+div#jeffpardyBoard div.jeffpardyFinal,
+div#jeffpardyBoard div.jeffpardyEnd {
     background-color:$colorGameBoard;
     color:white;
     flex-direction:column;
     text-align: center;
     align-items: center;
-    justify-content: center;
     display:flex;
     height:100%;
     width:100%;
     font-size:2rem;
+    padding-top:40px;
+    box-sizing: border-box;
 }
 
-div#jeffpardyBoard div.jeffpardyIntermission div.title, div#jeffpardyBoard div.jeffpardyEnd div.title {
+div#jeffpardyBoard div.jeffpardyFinal div.category {
+    @extend %jeffpardyMainFont;
+    font-size:2.5rem;
+    padding:10px 0 0 0;
+}
+
+div#jeffpardyBoard div.jeffpardyFinalCategory,
+div#jeffpardyBoard div.jeffpardyFinalClue,
+div#jeffpardyBoard div.jeffpardyFinalTally {
+    width: 100%;
+    flex-grow: 1;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+div#jeffpardyBoard div.jeffpardyFinalClue,
+div#jeffpardyBoard div.jeffpardyFinalTally {
+    padding-top:40px;
+}
+
+div#jeffpardyBoard div.jeffpardyFinalClue div.clue,
+div#jeffpardyBoard div.jeffpardyFinalTally div.clue {
+    font-size:3rem;
+}
+
+div#jeffpardyBoard div.jeffpardyIntermission,
+div#jeffpardyBoard div.jeffpardyEnd {
+    justify-content: center;
+}
+
+div#jeffpardyBoard div.jeffpardyIntermission div.title,
+div#jeffpardyBoard div.jeffpardyEnd div.title {
     @extend %jeffpardyMainFont;
     font-size: 3em;
 }
 
+ul.finalJeffpardySubmissionList,
+ul.finalJeffpardyTally {
+    text-align: left;
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding-bottom: 40px;
+}
+
+ul.finalJeffpardySubmissionList li,
+ul.finalJeffpardyTally li{
+    width: 250px;
+    font-size:1.5rem;
+}
+
+ul.finalJeffpardySubmissionList table,
+ul.finalJeffpardyTally table {
+    color: white;
+    width:100%;
+    border-spacing: 5px 0;
+}
+
+ul.finalJeffpardyTally table th {
+    font-weight:bold;
+    text-align: left;
+}
+
+ul.finalJeffpardyTally table td,
+ul.finalJeffpardyTally table td {
+    word-wrap: break-word;
+}
+
+div#jeffpardyBoard ul.finalJeffpardyTally button {
+    font-size: 1rem;
+    padding: 1px 6px;
+    margin: 2px 4px 0 0;
+}
 
 /*----------------------------------------------------------------------------*/
 div#playerPage
@@ -552,14 +640,16 @@ div#playerPage div.buzzerCurrentUserView h2 {
     margin-top:0px;
 }
 
-div.buzzerRegistration
+div#playerPage input {
+    font-size:1.5rem;
+}
+
+div#playerPage div.buzzerRegistration,
+div#playerPage div.finalJeffpardy
 {
     font-size:1.5rem;
 }
 
-div.buzzerRegistration input[type="text"] {
-    font-size:1.5rem;
-}
 
 div#playerPage div.buzzerCurrentUserView div.playerName {
     font-size:1.5rem;
@@ -574,11 +664,6 @@ div#playerPage div.buzzerCurrentUserView div.buzzedInUser {
 
 div#playerPage div.buzzerCurrentUserView div.buzzedInUser.buzzedInWinner {
     background-color: green;
-}
-
-
-div#playerPage div.buzzerCurrentUserView div.buzzedInUser div.buzzedInUserTitle{
-
 }
 
 div#playerPage div.buzzerCurrentUserView div.buzzedInUser div.buzzedInUserName{
@@ -693,6 +778,11 @@ div#scoreboard .scoreboardEntry.controllingTeam{
     box-shadow: 0px 0px 20px yellow;
 }
 
+div#scoreboard .scoreboardEntry.winningTeam{
+    border:2px solid green;
+    box-shadow: 0px 0px 20px green;
+}
+
 div#scoreboard .scoreboardEntry .buzzerIndicator{
     height:15px;
     background-color: black;
@@ -745,10 +835,6 @@ div.buzzerUserListView ul.playerList ul li {
     font-weight:normal;
 }
 
-div.answerKeyRound {
-    page-break-after: always;
-}
-
 div.answerKeyRound div.answerKeyClues {
     display:grid;
     background-color: black;
@@ -760,7 +846,7 @@ div.answerKeyRound div.answerKeyClues {
     grid-column-gap: 2px;
     grid-row-gap: 2px;
     padding:2px;
-    font-size:9pt;
+    font-size:8pt;
 
 }
 

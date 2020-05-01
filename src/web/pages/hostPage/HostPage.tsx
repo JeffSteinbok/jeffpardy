@@ -8,7 +8,7 @@ import { Debug, DebugFlags } from "../../utilities/Debug";
 import { HostStartScreen } from "./hostStartScreen/HostStartScreen";
 import { PlayerList } from "../../components/playerList/PlayerList";
 import { HostLobby } from "./HostLobby";
-import { ICategory, IGameData } from "./Types";
+import { ICategory, IGameData, FinalJeffpardyAnswerDictionary, FinalJeffpardyWagerDictionary } from "./Types";
 import { ITeam, TeamDictionary } from "../../Types";
 
 export enum HostPageViewMode {
@@ -16,6 +16,7 @@ export enum HostPageViewMode {
     Lobby,
     Intro,
     Game,
+    End
 }
 
 export interface IHostPageProps {
@@ -28,13 +29,17 @@ export interface IHostPageState {
     controllingTeam: ITeam;
     teams: TeamDictionary;
     gameData: IGameData;
+    finalJeffpardyWagers: FinalJeffpardyWagerDictionary;
+    finalJeffpardyAnswers: FinalJeffpardyAnswerDictionary;
 }
 
 export interface IHostPage {
     setViewMode: (viewMode: HostPageViewMode) => void;
     startNewRound: () => void;
+    startFinalJeffpardy: () => void;
     onGameDataLoaded: (gameData: IGameData) => void;
-    onUpdateTeams: (teams) => void;
+    onUpdateTeams: (teams: TeamDictionary) => void;
+    onUpdateFinalJeffpardy: (wagers: FinalJeffpardyWagerDictionary, answers: FinalJeffpardyAnswerDictionary) => void;
     onControllingTeamChange: (team: ITeam) => void;
 }
 
@@ -71,7 +76,9 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
             categories: null,
             controllingTeam: null,
             teams: {},
-            gameData: null
+            gameData: null,
+            finalJeffpardyWagers: {},
+            finalJeffpardyAnswers: {}
         }
     }
 
@@ -147,10 +154,19 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
 
         this.jeffpardyHostController.controllingTeamChange(this.getRandomTeam(this.state.teams));
 
-        this.setState({
-            viewMode: HostPageViewMode.Game,
-            categories: this.state.gameData.rounds[0].categories
-        });
+        if (Debug.IsFlagSet(DebugFlags.FinalJeffpardy)) {
+            this.setState({
+                viewMode: HostPageViewMode.Game,
+                round: 1,
+                categories: [this.state.gameData.finalJeffpardyCategory],
+                controllingTeam: null
+            });
+        } else {
+            this.setState({
+                viewMode: HostPageViewMode.Game,
+                categories: this.state.gameData.rounds[0].categories
+            });
+        }
     }
 
     public startNewRound = () => {
@@ -161,6 +177,13 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
         this.setState({
             round: this.state.round + 1,
             categories: this.state.gameData.rounds[this.state.round + 1].categories
+        })
+    }
+
+    public startFinalJeffpardy = () => {
+        this.setState({
+            round: this.state.round + 1,
+            categories: [this.state.gameData.finalJeffpardyCategory]
         })
     }
 
@@ -178,11 +201,20 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
         })
     }
 
-    public onUpdateTeams = (teams: { [key: string]: ITeam }) => {
+    public onUpdateTeams = (teams: TeamDictionary) => {
         Logger.debug("HostPage:onUpdateTeams", teams);
 
         this.setState({
             teams: teams,
+        });
+    }
+
+    public onUpdateFinalJeffpardy = (wagers: FinalJeffpardyWagerDictionary, answers: FinalJeffpardyAnswerDictionary) => {
+        Logger.debug("HostPage:onUpdateFinalJeffpardy", wagers, answers);
+
+        this.setState({
+            finalJeffpardyWagers: wagers,
+            finalJeffpardyAnswers: answers
         });
     }
 
@@ -191,6 +223,14 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
         this.setState({
             controllingTeam: team
         });
+    }
+
+    onScoreChange = (team: ITeam, newScore: number) => {
+        Logger.debug("HostPage:onScoreChange", team, newScore);
+        team.score = newScore;
+        this.setState({
+            teams: this.state.teams
+        })
     }
 
     public render() {
@@ -227,7 +267,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                     </div>
                 }
                 {
-                    this.state.viewMode == HostPageViewMode.Game &&
+                    (this.state.viewMode == HostPageViewMode.Game || this.state.viewMode == HostPageViewMode.End) &&
                     <div className="topPageNormal" >
                         <div className="topSection">
                             <div className="title">Jeffpardy!</div>
@@ -239,11 +279,16 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                                     jeffpardyHostController={ this.jeffpardyHostController }
                                     categories={ this.state.categories }
                                     round={ this.state.round }
-                                    controllingTeam={ this.state.controllingTeam } />
+                                    controllingTeam={ this.state.controllingTeam }
+                                    teams={ this.state.teams }
+                                    finalJeffpardyWagers={ this.state.finalJeffpardyWagers }
+                                    finalJeffpardyAnswers={ this.state.finalJeffpardyAnswers }
+                                    onScoreChange={ this.onScoreChange } />
                                 <Scoreboard
                                     jeffpardyHostController={ this.jeffpardyHostController }
                                     teams={ this.state.teams }
-                                    controllingTeam={ this.state.controllingTeam } />
+                                    controllingTeam={ this.state.controllingTeam }
+                                    hilightWinningTeams={ this.state.viewMode == HostPageViewMode.End } />
                             </div>
                         </div>
                     </div>

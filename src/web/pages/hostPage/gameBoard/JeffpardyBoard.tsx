@@ -4,9 +4,12 @@ import { Logger } from "../../../utilities/Logger";
 import { JeffpardyHostController } from "../JeffpardyHostController";
 import { JeffpardyClue } from "./JeffpardyClue"
 import { Timer } from "./Timer"
-import { ICategory, IClue } from "../Types";
-import { ITeam } from "../../../Types";
+import { ICategory, IClue, FinalJeffpardyAnswerDictionary, FinalJeffpardyWagerDictionary } from "../Types";
+import { ITeam, TeamDictionary } from "../../../Types";
 import { Debug, DebugFlags } from "../../../utilities/Debug";
+import { FinalJeffpardySubmissionList } from "./FinalJeffpardySubmissionList";
+import { FinalJeffpardyTally } from "./FinalJeffpardyTally";
+import { HostPageViewMode } from "../HostPage";
 
 export enum JeopardyBoardView {
     Board,
@@ -14,6 +17,9 @@ export enum JeopardyBoardView {
     Clue,
     Question,
     Intermission,
+    FinalCategory,
+    FinalClue,
+    FinalTally,
     End
 }
 
@@ -22,6 +28,10 @@ export interface IJeffpardyBoardProps {
     round: number;
     categories: ICategory[];
     controllingTeam: ITeam;
+    teams: TeamDictionary;
+    finalJeffpardyWagers: FinalJeffpardyWagerDictionary,
+    finalJeffpardyAnswers: FinalJeffpardyAnswerDictionary,
+    onScoreChange: (team: ITeam, newScore: number) => void
 }
 
 export interface IJeffpardyBoardState {
@@ -29,6 +39,7 @@ export interface IJeffpardyBoardState {
     activeCategory: ICategory;
     jeopardyBoardView: JeopardyBoardView;
     timerPercentageRemaining: number;
+    finalJeffpardyTimerActive: boolean;
 }
 
 export interface IJeffpardyBoard {
@@ -58,11 +69,18 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             this.timerDurationInSeconds = 1;
         }
 
+        // HACK HACK
+        let boardView: JeopardyBoardView = JeopardyBoardView.Board;
+        if (Debug.IsFlagSet(DebugFlags.FinalJeffpardy)) {
+            boardView = JeopardyBoardView.Intermission;
+        }
+
         this.state = {
-            jeopardyBoardView: JeopardyBoardView.Board,
+            jeopardyBoardView: boardView,
             activeClue: null,
             activeCategory: null,
-            timerPercentageRemaining: 1
+            timerPercentageRemaining: 1,
+            finalJeffpardyTimerActive: false
         }
 
         this.props.jeffpardyHostController.setJeffpardyBoard(this);
@@ -104,18 +122,48 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             }
         }
 
+        let newBoardView: JeopardyBoardView = JeopardyBoardView.Board;
+        if (boardEmpty) {
+            newBoardView = JeopardyBoardView.Intermission;
+            if (this.props.round == 2) {
+                newBoardView = JeopardyBoardView.End
+            }
+        }
+
         this.setState({
             activeClue: null,
             activeCategory: null,
-            jeopardyBoardView: boardEmpty ? (this.props.round == 0 ? JeopardyBoardView.Intermission : JeopardyBoardView.End) : JeopardyBoardView.Board
+            jeopardyBoardView: newBoardView
         })
     };
 
     public startNewRound = () => {
-        this.props.jeffpardyHostController.startNewRound();
+        if (this.props.round == 0) {
+            this.props.jeffpardyHostController.startNewRound();
+            this.setState({
+                jeopardyBoardView: JeopardyBoardView.Board
+            })
+        } else if (this.props.round == 1) {
+            this.props.jeffpardyHostController.startFinalJeffpardy();
+            this.setState({
+                jeopardyBoardView: JeopardyBoardView.FinalCategory
+            })
+        }
+    }
+
+    showFinalJeffpardyClue = () => {
+        this.props.jeffpardyHostController.showFinalJeffpardyClue();
         this.setState({
-            jeopardyBoardView: JeopardyBoardView.Board
+            jeopardyBoardView: JeopardyBoardView.FinalClue
         })
+    }
+
+    startFinalJeffpardyTimer = () => {
+        this.setState({
+            finalJeffpardyTimerActive: true
+        })
+        this.timerDurationInSeconds = Debug.IsFlagSet(DebugFlags.FastFinalJeffpardy) ? 5 : 30;
+        this.startTimer();
     }
 
     public validateAndSubmitDailyDoubleBet = (maxBet: number) => {
@@ -157,8 +205,24 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             this.timerHandle = setTimeout(this.onTimerFire, 250);
         } else {
             // Time's up!
-            this.props.jeffpardyHostController.buzzerTimeout();
+            if (this.state.jeopardyBoardView == JeopardyBoardView.FinalClue) {
+                this.props.jeffpardyHostController.endFinalJeffpardy();
+                this.setState({
+                    jeopardyBoardView: JeopardyBoardView.FinalTally,
+                    finalJeffpardyTimerActive: false
+                });
+            } else {
+                this.props.jeffpardyHostController.buzzerTimeout();
+            }
         }
+    }
+
+    onTallyCompleted = () => {
+        Logger.debug("JeffpardyBoard:onTallyCompleted");
+        this.props.jeffpardyHostController.setViewMode(HostPageViewMode.End);
+        this.setState({
+            jeopardyBoardView: JeopardyBoardView.End
+        })
     }
 
     public render() {
@@ -168,7 +232,9 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
         let boardGridElements: JSX.Element[] = [];
         let dailyDoubleMaxBet: number;
 
-        if (this.props.categories && this.state.activeClue == null) {
+        if (this.state.jeopardyBoardView == JeopardyBoardView.Board &&
+            this.props.categories &&
+            this.state.activeClue == null) {
             Logger.debug("Drawing Categories!", this.props.categories);
             // Generate the grid of DIVs.  Doesn't work super-well in the below because they are not
             // nested.
@@ -248,11 +314,68 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                         }
                         { this.state.jeopardyBoardView == JeopardyBoardView.Intermission &&
                             <div className="jeffpardyIntermission">
-                                Ready for... <br />
-                                <div className="title">Super Jeffpardy!?</div>
-                                Harder clues....Higher points
+                                Get ready for... <br />
+                                { this.props.round == 0 &&
+                                    <div className="title">Super Jeffpardy!</div>
+                                }
+                                { this.props.round == 1 &&
+                                    <div className="title">Final Jeffpardy!</div>
+                                }
                                 <p />
                                 <button onClick={ this.startNewRound }>Start</button>
+                            </div>
+                        }
+                        { (this.state.jeopardyBoardView == JeopardyBoardView.FinalCategory ||
+                            this.state.jeopardyBoardView == JeopardyBoardView.FinalClue ||
+                            this.state.jeopardyBoardView == JeopardyBoardView.FinalTally) &&
+                            <div className="jeffpardyFinal">
+                                The category for Final Jeffpardy is:<br />
+                                <div className="category">{ this.props.categories[0].title }</div>
+
+                                { this.state.jeopardyBoardView == JeopardyBoardView.FinalCategory &&
+                                    <div className="jeffpardyFinalCategory">
+                                        <FinalJeffpardySubmissionList
+                                            teams={ this.props.teams }
+                                            submissions={ this.props.finalJeffpardyWagers }
+                                            waitingText="Waiting for Wager."
+                                            receivedText="Wager Locked" />
+
+                                        <button onClick={ this.showFinalJeffpardyClue }>Show Clue</button>
+                                    </div>
+                                }
+                                { this.state.jeopardyBoardView == JeopardyBoardView.FinalClue &&
+                                    <div className="jeffpardyFinalClue">
+                                        { this.state.finalJeffpardyTimerActive &&
+                                            <audio autoPlay>
+                                                <source src="/finalJeopardy.mp3" type="audio/mp3" />
+                                            </audio>
+                                        }
+                                        <div className="clue">{ this.props.categories[0].clues[0].clue }</div>
+                                        <FinalJeffpardySubmissionList
+                                            teams={ this.props.teams }
+                                            submissions={ this.props.finalJeffpardyAnswers }
+                                            waitingText="Waiting for Answer"
+                                            receivedText="Answer Locked" />
+                                        { !this.state.finalJeffpardyTimerActive &&
+                                            <button onClick={ this.startFinalJeffpardyTimer }>Start Timer</button>
+                                        }
+                                        <div className="flexGrowSpacer"></div>
+                                        <Timer percentageRemaining={ this.state.timerPercentageRemaining }></Timer>
+                                    </div>
+                                }
+                                { this.state.jeopardyBoardView == JeopardyBoardView.FinalTally &&
+                                    <div className="jeffpardyFinalTally">
+                                        The clue:<br />
+                                        <div className="clue">{ this.props.categories[0].clues[0].clue }</div>
+                                        <FinalJeffpardyTally
+                                            teams={ this.props.teams }
+                                            wagers={ this.props.finalJeffpardyWagers }
+                                            answers={ this.props.finalJeffpardyAnswers }
+                                            onScoreChange={ this.props.onScoreChange }
+                                            onTallyCompleted={ this.onTallyCompleted }
+                                        />
+                                    </div>
+                                }
                             </div>
                         }
                         { this.state.jeopardyBoardView == JeopardyBoardView.End &&
@@ -260,8 +383,8 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                                 Thank you for playing<br />
                                 <div className="title">Jeffpardy!</div>
                                 <p />
-                                Refresh your browser to start a new game.
-                            </div>
+                                    Refresh your browser to start a new game.
+                                </div>
                         }
                     </div>
                 </div>

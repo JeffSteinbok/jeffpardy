@@ -12,6 +12,7 @@ namespace Jeffpardy
         private readonly List<SeasonManifest> seasonManifestList;
         private readonly List<ManifestCategory> jeopardyCategoryList;
         private readonly List<ManifestCategory> doubleJeopardyCategoryList;
+        private readonly List<ManifestCategory> finalJeopardyCategoryList;
 
         public static ISeasonManifestCache Instance
         {
@@ -27,11 +28,14 @@ namespace Jeffpardy
 
         public IReadOnlyList<ManifestCategory> DoubleJeopardyCategoryList => doubleJeopardyCategoryList;
 
+        public IReadOnlyList<ManifestCategory> FinalJeopardyCategoryList => finalJeopardyCategoryList;
+
         private SeasonManifestCache()
         {
             this.seasonManifestList = new List<SeasonManifest>();
             this.jeopardyCategoryList = new List<ManifestCategory>();
             this.doubleJeopardyCategoryList = new List<ManifestCategory>();
+            this.finalJeopardyCategoryList = new List<ManifestCategory>();
         }
 
         public void AddSeason(SeasonManifest seasonManifest)
@@ -39,9 +43,11 @@ namespace Jeffpardy
             this.seasonManifestList.Add(seasonManifest);
             seasonManifest.JeopardyCategories.ForEach((cat) => cat.Season = seasonManifest.Season);
             seasonManifest.DoubleJeopardyCategories.ForEach((cat) => cat.Season = seasonManifest.Season);
+            seasonManifest.FinalJeopardyCategories.ForEach((cat) => cat.Season = seasonManifest.Season);
 
             this.jeopardyCategoryList.AddRange(seasonManifest.JeopardyCategories);
             this.doubleJeopardyCategoryList.AddRange(seasonManifest.DoubleJeopardyCategories);
+            this.finalJeopardyCategoryList.AddRange(seasonManifest.FinalJeopardyCategories);
         }
     }
 }

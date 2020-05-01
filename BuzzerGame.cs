@@ -11,6 +11,7 @@ namespace Jeffpardy
     class BuzzerGame
     {
         public string GameCode { get; private set; }
+        private readonly string hostGroupName;
 
         private readonly IHubContext<BuzzerHub> buzzerHubContext;
 
@@ -46,6 +47,7 @@ namespace Jeffpardy
         public BuzzerGame(IHubContext<BuzzerHub> buzzerHubContext, string gameCode)
         {
             this.GameCode = gameCode;
+            this.hostGroupName = gameCode + "-HOST";
             this.buzzerHubContext = buzzerHubContext;
 
             this.buzzerWindowTimer = new Timer(500);
@@ -58,13 +60,23 @@ namespace Jeffpardy
 
         public bool IsEmptyGame => this.players.Count == 0;
 
-        public async Task ConnectAsync(string connectionId)
+        public async Task ConnectHostAsync(string connectionId)
         {
+            await this.buzzerHubContext.Groups.AddToGroupAsync(connectionId, this.hostGroupName);
+            await this.AddConnectionToGame(connectionId);
             await this.SendUserListAsync(connectionId);
         }
 
-        public async Task ConnectUserAsync(string connectionId, string team, string name)
+        public async Task ConnectPlayerLobbyAsync(string connectionId)
         {
+            await this.AddConnectionToGame(connectionId);
+            await this.SendUserListAsync(connectionId);
+        }
+
+        public async Task ConnectPlayerAsync(string connectionId, string team, string name)
+        {
+            await this.AddConnectionToGame(connectionId);
+
             lock (this)
             {
                 this.players.Add(connectionId, new Player()
@@ -72,9 +84,7 @@ namespace Jeffpardy
                     ConnectionId = connectionId,
                     Team = team,
                     Name = name
-                });
-
-                
+                }); 
             }
 
             await this.SendUserListToAllClientsAsync();
@@ -92,7 +102,6 @@ namespace Jeffpardy
 
             }
         }
-
 
         public async Task ResetBuzzerAsync()
         {
@@ -152,6 +161,26 @@ namespace Jeffpardy
             }
         }
 
+        public async Task StartFinalJeffpardyAsync(Dictionary<string, int> scores)
+        {
+            await buzzerHubContext.Clients.Group(this.GameCode).SendAsync("startFinalJeffpardy", scores);
+        }
+
+        public async Task SubmitWagerAsync(string connectionId, int wager)
+        {
+            await buzzerHubContext.Clients.Group(this.hostGroupName).SendAsync("submitWager",
+                                                                                players[connectionId], 
+                                                                                wager);
+        }
+
+        public async Task SubmitAnswerAsync(string connectionId, string answer, int timeInMilliseconds)
+        {
+            await buzzerHubContext.Clients.Group(this.hostGroupName).SendAsync("submitAnswer",
+                                                                                players[connectionId],
+                                                                                answer,
+                                                                                timeInMilliseconds);
+        }
+
         private async Task SendUserListAsync(string connectionId)
         {
             await buzzerHubContext.Clients.Client(connectionId).SendAsync("updateUsers", this.teamDictionary);
@@ -161,7 +190,22 @@ namespace Jeffpardy
         {
             await buzzerHubContext.Clients.Groups(this.GameCode).SendAsync("updateUsers", this.teamDictionary);
         }
-        
+
+        private async Task AddConnectionToGame(string connectionId)
+        {
+            await this.buzzerHubContext.Groups.AddToGroupAsync(connectionId, this.GameCode);
+        }
+
+        public async Task ShowFinalJeffpardyClueAsync()
+        {
+            await buzzerHubContext.Clients.Group(this.GameCode).SendAsync("showFinalJeffpardyClue");
+        }
+
+        public async Task EndFinalJeffpardyAsync()
+        {
+            await buzzerHubContext.Clients.Group(this.GameCode).SendAsync("endFinalJeffpardy");
+        }
+
 
     }
 

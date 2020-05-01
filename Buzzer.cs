@@ -26,8 +26,8 @@ namespace Jeffpardy
             BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
 
             connectionToGameDictionary[connectionId] = gameCode;
-            await this.buzzerHubContext.Groups.AddToGroupAsync(connectionId, gameCode);
-            await buzzerGame.ConnectAsync(connectionId);
+            
+            await buzzerGame.ConnectHostAsync(connectionId);
         }
 
         public async Task ConnectPlayerLobbyAsync(string connectionId, string gameCode)
@@ -35,8 +35,8 @@ namespace Jeffpardy
             BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
 
             connectionToGameDictionary[connectionId] = gameCode;
-            await this.buzzerHubContext.Groups.AddToGroupAsync(connectionId, gameCode);
-            await buzzerGame.ConnectAsync(connectionId);
+            
+            await buzzerGame.ConnectPlayerLobbyAsync(connectionId);
         }
 
         public async Task ConnectPlayerAsync(string connectionId, string gameCode, string team, string name)
@@ -44,8 +44,8 @@ namespace Jeffpardy
             BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
 
             connectionToGameDictionary[connectionId] = gameCode;
-            await this.buzzerHubContext.Groups.AddToGroupAsync(connectionId, gameCode.ToUpperInvariant());
-            await buzzerGame.ConnectUserAsync(connectionId, team, name);
+            
+            await buzzerGame.ConnectPlayerAsync(connectionId, team, name);
         }
 
         public async Task RemoveUserAsync(string connectionId)
@@ -78,6 +78,39 @@ namespace Jeffpardy
             BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
             buzzerGame.BuzzIn(connectionId, timeInMilliseconds);
         }
+
+        public async Task StartFinalJeffpardyAsync(string gameCode, Dictionary<string, int> scores)
+        {
+            BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
+
+            // TODO: Send in max bets
+            await buzzerGame.StartFinalJeffpardyAsync(scores);
+        }
+
+        public async Task SubmitWagerAsync(string gameCode, string connectionId, int wager)
+        {
+            BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
+            await buzzerGame.SubmitWagerAsync(connectionId, wager);
+        }
+
+        public async Task SubmitAnswerAsync(string gameCode, string connectionId, string answer, int timeInMilliseconds)
+        {
+            BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
+            await buzzerGame.SubmitAnswerAsync(connectionId, answer, timeInMilliseconds);
+        }
+
+        public async Task ShowFinalJeffpardyClueAsync(string gameCode)
+        {
+            BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
+            await buzzerGame.ShowFinalJeffpardyClueAsync();
+        }
+
+        public async Task EndFinalJeffpardyAsync(string gameCode)
+        {
+            BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
+            await buzzerGame.EndFinalJeffpardyAsync();
+        }
+
 
         private BuzzerGame GetBuzzerGame(string gameCode)
         {

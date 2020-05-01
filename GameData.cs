@@ -14,6 +14,8 @@ namespace Jeffpardy
 
     public class GameData
     {
-        public GameRound[] Rounds { get; set;  } 
+        public GameRound[] Rounds { get; set; }
+
+        public Category FinalJeffpardyCategory { get; set; }
     }
 }

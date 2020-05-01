@@ -21,6 +21,7 @@ export interface IScoreboardProps {
     jeffpardyHostController: JeffpardyHostController;
     teams: TeamDictionary;
     controllingTeam: ITeam;
+    hilightWinningTeams: boolean;
 }
 
 export interface IScoreboardState {
@@ -54,7 +55,6 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         super(props);
         Logger.debug("Scoreboard:constructor");
         this.props.jeffpardyHostController.setScoreboard(this);
-
 
         this.state = {
             message: '',
@@ -115,7 +115,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         });
     }
 
-    clearControl = () => {
+    public clearControl = () => {
         this.setState({
             controllingUser: null
         })
@@ -248,9 +248,18 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
     }
 
     public render() {
+        Logger.debug("Scoreboard:render", this.props);
+
         this.teamCount = 0;
+        let topScore: number = Number.MIN_SAFE_INTEGER;
+
         for (var key in this.props.teams) {
             this.teamCount++;
+
+            let score: number = this.props.teams[key].score;
+            if (score > topScore) {
+                topScore = score;
+            }
         }
 
         return (
@@ -319,7 +328,8 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                                 buzzerState={ buzzerState }
                                 userName={ userName }
                                 score={ this.props.teams[teamName].score }
-                                isControllingTeam={ isControllingTeam } />
+                                isControllingTeam={ isControllingTeam }
+                                isWinningTeam={ this.props.hilightWinningTeams && (this.props.teams[teamName].score == topScore) } />
                         )
                     }) }
                 </div>
