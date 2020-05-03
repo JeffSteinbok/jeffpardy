@@ -43,7 +43,7 @@ $colorBrown: #2b0f01;
 /* Core CSS */
 html
 {
-    background-color: #fff;
+    background-color:$colorGameBoard;
     margin: 0;
     padding: 0;
     height: 100%;
@@ -52,7 +52,7 @@ html
 body {
     font-size: 14px;
     font-family: "Segoe UI","Segoe UI Web Regular","Segoe UI Symbol","Helvetica Neue","BBAlpha Sans","S60 Sans",Arial,"sans-serif";
-    background-color: #fff;
+    background-color: $colorGameBoard;
     color: #000;
     margin: 0;
     padding: 0;
@@ -84,6 +84,7 @@ button { cursor:pointer; }
 div.flexGrowSpacer {
     flex-grow:1
 }
+
 
 /* Start Page */
 /* ------------------------------------------------------ */
@@ -924,3 +925,28 @@ div.topPageNormal {
     flex-direction: column;
 }
 
+/* From JeopardyLabs */
+div#fromJeopardyLabs {
+    padding:10px;
+    background-color: $colorGameBoard;
+    color:white;
+    flex-direction: column;
+}
+
+div#fromJeopardyLabs a {
+    color:white;
+}
+
+div#fromJeopardyLabs div.title {
+    @extend %jeffpardyMainFont;
+
+    height: 15%;
+    background-color:$colorGameBoard;
+    font-size: 4rem;
+    text-align: center;
+    margin:2px;
+    padding:10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

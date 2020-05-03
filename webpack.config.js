@@ -7,7 +7,8 @@ module.exports = {
     entry: {
         index: './src/web/pages/startPage/StartPage.tsx',
         host: './src/web/pages/hostPage/HostPage.tsx',
-        player: './src/web/pages/playerPage/PlayerPage.tsx'
+        player: './src/web/pages/playerPage/PlayerPage.tsx',
+        fromJeopardyLabs: './src/web/pages/fromJeopardyLabs/FromJeopardyLabs.tsx',
     },
     output: {
         path: path.resolve(__dirname, './wwwroot/js/dist'),
