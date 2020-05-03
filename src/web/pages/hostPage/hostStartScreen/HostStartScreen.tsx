@@ -56,6 +56,92 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
         alert("Please check the answer key to see if this loaded correctly.")
     }
 
+    public loadCustomCategoriesFromExcelPaste = () => {
+        this.setState({ isCustomCategoryDialogOpen: false })
+
+        // TODO: fix name
+        let tsv: string = this.customCategoryJSON;
+
+        let lines: string[] = tsv.split("\n");
+
+        let gameData: IGameData = {
+            rounds: [],
+            finalJeffpardyCategory: null
+        }
+
+        // Totally hardcoding this.  Any failure will fail all
+        let finalJeffpardyLineStart: number = 13;
+
+        gameData.rounds.push({
+            id: 0,
+            name: "Jeffpardy",
+            categories: this.parseRoundFromTsv(lines, 0)
+        });
+
+        if (lines[13].startsWith("Round 2")) {
+            gameData.rounds.push({
+                id: 1,
+                name: "Super Jeffpardy",
+                categories: this.parseRoundFromTsv(lines, 13)
+            });
+            finalJeffpardyLineStart = 26;
+        }
+
+        gameData.finalJeffpardyCategory = {
+            title: lines[finalJeffpardyLineStart + 1],
+            comment: '',
+            airDate: "1900-01-21T00:11:00",
+            hasDailyDouble: false,
+            isAsked: false,
+            clues: [
+                {
+                    clue: lines[finalJeffpardyLineStart + 2],
+                    question: lines[finalJeffpardyLineStart + 3],
+                    isDailyDouble: false,
+                    isAsked: false,
+                    value: 0
+                }
+            ]
+        }
+
+        this.props.onModifyGameData(gameData);
+        alert("Please check the answer key to see if this loaded correctly.")
+    }
+
+    parseRoundFromTsv = (lines: string[], startLineIndex: number): ICategory[] => {
+        let categories: ICategory[] = [];
+
+        lines[startLineIndex + 1].split("\t").forEach((value, index) => {
+            let category: ICategory = {
+                title: value,
+                clues: [],
+                comment: '',
+                airDate: "1900-01-21T00:11:00",
+                hasDailyDouble: false,
+                isAsked: false
+            }
+            categories.push(category);
+        });
+
+        for (let i: number = 0; i < 5; i++) {
+
+            let clues: string[] = lines[startLineIndex + 2 + (i * 2)].split("\t");
+            let questions: string[] = lines[startLineIndex + 2 + (i * 2) + 1].split("\t");
+
+            for (let j: number = 0; j < 6; j++) {
+                categories[j].clues.push({
+                    clue: clues[j],
+                    question: questions[j],
+                    isAsked: false,
+                    isDailyDouble: false,
+                    value: 0
+                });
+            }
+        }
+
+        return categories;
+    }
+
     public showAnswerKey = () => {
         this.setState({
             viewMode: HostStartScreenViewMode.AnswerKey
@@ -155,7 +241,15 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                             style={ { fontSize: "0.8em", fontFamily: "Courier" } }
                                             fullWidth
                                             multiline
-                                            defaultValue={ JSON.stringify(this.props.gameData, null, 4) }
+                                            defaultValue={
+                                                JSON.stringify(this.props.gameData, (key, value) => {
+                                                    if (key == "isAsked") return undefined;
+                                                    else if (key == "isDailyDouble") return undefined;
+                                                    else if (key == "hasDailyDouble") return undefined;
+                                                    else if (key == "value") return undefined;
+                                                    else return value;
+                                                }, 4)
+                                            }
                                             onChange={ (event) => this.customCategoryJSON = event.target.value } />
                                     </DialogContent>
                                     <DialogActions>
@@ -163,7 +257,10 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                             Cancel
                                         </Button>
                                         <Button onClick={ this.loadCustomCategories } color="primary">
-                                            Load
+                                            Load JSON
+                                        </Button>
+                                        <Button onClick={ this.loadCustomCategoriesFromExcelPaste } color="primary">
+                                            Load from Excel Template
                                         </Button>
                                     </DialogActions>
                                 </Dialog>

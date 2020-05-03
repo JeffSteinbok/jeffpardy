@@ -125,8 +125,7 @@ export class JeffpardyHostController {
     }
 
     public setCustomGameData(gameData: IGameData) {
-        this.gameData = gameData;
-        this.hostPage.onGameDataLoaded(gameData);
+        this.onGameDataLoaded(gameData);
     }
 
     public updateUsers(teams: TeamDictionary) {

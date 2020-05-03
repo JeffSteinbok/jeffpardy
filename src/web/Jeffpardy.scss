@@ -43,7 +43,7 @@ $colorBrown: #2b0f01;
 /* Core CSS */
 html
 {
-    background-color:$colorGameBoard;
+    background-color:white;
     margin: 0;
     padding: 0;
     height: 100%;
@@ -52,7 +52,7 @@ html
 body {
     font-size: 14px;
     font-family: "Segoe UI","Segoe UI Web Regular","Segoe UI Symbol","Helvetica Neue","BBAlpha Sans","S60 Sans",Arial,"sans-serif";
-    background-color: $colorGameBoard;
+    background-color: white;
     color: #000;
     margin: 0;
     padding: 0;
