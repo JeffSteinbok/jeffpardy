@@ -147,6 +147,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                     open={ this.state.isCustomCategoryDialogOpen }
                                     keepMounted
                                     fullWidth
+                                    maxWidth={ false }
                                 >
                                     <DialogTitle id="alert-dialog-slide-title">{ "Modify this JSON" }</DialogTitle>
                                     <DialogContent>

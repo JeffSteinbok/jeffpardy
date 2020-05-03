@@ -79,7 +79,7 @@ export class AnswerKey extends React.Component<IAnswerKeyProps, any> {
         }
 
         return (
-            <div>
+            <div id="hostAnswerKey">
                 <i className="noPrint">Print or save this and press ESC to return to the game.</i>
                 {
                     this.props.gameData.rounds.map((round, index) => {

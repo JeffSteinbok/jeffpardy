@@ -138,12 +138,14 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
     };
 
     public startNewRound = () => {
-        if (this.props.round == 0) {
+        let numRounds: number = this.props.jeffpardyHostController.gameData.rounds.length;
+
+        if (this.props.round < (numRounds - 1)) {
             this.props.jeffpardyHostController.startNewRound();
             this.setState({
                 jeopardyBoardView: JeopardyBoardView.Board
             })
-        } else if (this.props.round == 1) {
+        } else {
             this.props.jeffpardyHostController.startFinalJeffpardy();
             this.setState({
                 jeopardyBoardView: JeopardyBoardView.FinalCategory
@@ -319,10 +321,10 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                         { this.state.jeopardyBoardView == JeopardyBoardView.Intermission &&
                             <div className="jeffpardyIntermission">
                                 Get ready for... <br />
-                                { this.props.round == 0 &&
+                                { this.props.round < (this.props.jeffpardyHostController.gameData.rounds.length - 1) &&
                                     <div className="title">Super Jeffpardy!</div>
                                 }
-                                { this.props.round == 1 &&
+                                { this.props.round >= (this.props.jeffpardyHostController.gameData.rounds.length - 1) &&
                                     <div className="title">Final Jeffpardy!</div>
                                 }
                                 <p />
