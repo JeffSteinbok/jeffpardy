@@ -222,6 +222,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
 
                                 <span style={ { color: "red" } }>NEW: Edit these categories and clues.</span><br />
                                 <div><a href="/fromJeopardyLabs">Pull some game data from JeopardyLabs</a></div>
+                                <div><a href="/JeffpardyGameDataTemplate.xlsx" target="#">Download Excel Template</a></div>
                                 <button onClick={ () => { this.setState({ isCustomCategoryDialogOpen: true }) } }>Edit Categories &amp; Clues</button>
                                 <p></p>
                                 <button onClick={ this.showAnswerKey }>Show Answers</button>
