@@ -294,6 +294,9 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                         }
                         { (this.state.jeopardyBoardView == JeopardyBoardView.DailyDouble) &&
                             <div className="jeffpardyActiveClue">
+                                <audio autoPlay>
+                                    <source src="/dailyDouble.mp3" type="audio/mp3" />
+                                </audio>
                                 <div className="header">{ this.state.activeCategory.title } for { this.state.activeClue.value }</div>
                                 <div className="dailyDouble">
                                     <div>The answer is a....</div>
@@ -338,8 +341,8 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                                         <FinalJeffpardySubmissionList
                                             teams={ this.props.teams }
                                             submissions={ this.props.finalJeffpardyWagers }
-                                            waitingText="Waiting for Wager."
-                                            receivedText="Wager Locked" />
+                                            waitingText="Waiting"
+                                            receivedText="LOCKED" />
 
                                         <button onClick={ this.showFinalJeffpardyClue }>Show Clue</button>
                                     </div>
@@ -355,8 +358,8 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                                         <FinalJeffpardySubmissionList
                                             teams={ this.props.teams }
                                             submissions={ this.props.finalJeffpardyAnswers }
-                                            waitingText="Waiting for Answer"
-                                            receivedText="Answer Locked" />
+                                            waitingText="Waiting"
+                                            receivedText="LOCKED" />
                                         { !this.state.finalJeffpardyTimerActive &&
                                             <button onClick={ this.startFinalJeffpardyTimer }>Start Timer</button>
                                         }

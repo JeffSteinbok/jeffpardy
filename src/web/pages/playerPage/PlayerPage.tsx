@@ -5,6 +5,7 @@ import { Logger } from "../../utilities/Logger";
 import { IPlayer, TeamDictionary } from "../../Types"
 import { PlayerList } from "../../components/playerList/PlayerList";
 import { ITeam } from "../../Types";
+import { Debug } from "../../utilities/Debug";
 
 enum PlayerPageState {
     FrontPage,
@@ -53,16 +54,23 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     finalJeffpardyAnswerTemp: string = "";
     finalJeffpardyClueShownTime: Date;
 
+    teamTemp: string;
+    nameTemp: string;
+
     constructor(props: any) {
         super(props);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const debugParam: string = urlParams.get('debugMode');
+        Debug.SetFlags(Number.parseInt(debugParam, 16));
 
         this.state = {
             gameCode: '',
             teams: {},
             logMessages: [],
             hubConnection: null,
-            name: '',
-            team: '',
+            name: null,
+            team: null,
             playerPageState: PlayerPageState.FrontPage,
             buzzerActive: false,
             buzzerEarlyClickLock: false,
@@ -154,7 +162,12 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
 
             this.state.hubConnection.on('startFinalJeffpardy', (scores: { [key: string]: number }) => {
-                Logger.debug("on startFinalJeffpardy");
+                Logger.debug("on startFinalJeffpardy", this.state.team);
+
+                // If not registered yet, bail
+                if (this.state.team == null) {
+                    return;
+                }
 
                 // Get the max wager for this team.
                 // If negative, then 0
@@ -169,6 +182,12 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             this.state.hubConnection.on('showFinalJeffpardyClue', () => {
                 this.finalJeffpardyClueShownTime = new Date();
                 Logger.debug("on showFinalJeffpardyClue");
+
+                // If not registered yet, bail
+                if (this.state.team == null) {
+                    return;
+                }
+
                 this.setState({
                     playerPageState: PlayerPageState.FinalJeffpardy,
                     finalJeffpardyWagerEnabled: false
@@ -177,6 +196,12 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
             this.state.hubConnection.on('endFinalJeffpardy', () => {
                 Logger.debug("on endFinalJeffpardy");
+
+                // If not registered yet, bail
+                if (this.state.team == null) {
+                    return;
+                }
+
                 this.setState({
                     playerPageState: PlayerPageState.FinalJeffpardy,
                     finalJeffpardyWagerEnabled: false,
@@ -187,13 +212,18 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     }
 
     registerPlayer = () => {
-        if (this.state.name == "" || this.state.team == "") {
+        if (this.nameTemp == "" || this.teamTemp == "") {
             alert("Please fill in a team name and player name.");
             return;
         }
 
+        this.setState({
+            name: this.nameTemp,
+            team: this.teamTemp
+        });
+
         this.state.hubConnection
-            .invoke('connectPlayer', this.state.gameCode, this.state.team, this.state.name)
+            .invoke('connectPlayer', this.state.gameCode, this.teamTemp, this.nameTemp)
             .then(() => this.setState({ playerPageState: PlayerPageState.Buzzer }))
             .catch(err => console.error(err));
     }
@@ -344,10 +374,9 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                         <input
                                             type="text"
                                             maxLength={ 10 }
-                                            value={ this.state.team }
                                             list="dataListTeam"
                                             ref={ (input) => { this.focusInput = input; } }
-                                            onChange={ e => this.setState({ team: e.target.value.toUpperCase() }) }
+                                            onChange={ e => { this.teamTemp = e.target.value } }
                                         />
 
                                         <datalist id="dataListTeam">
@@ -363,7 +392,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                             type="text"
                                             maxLength={ 25 }
                                             value={ this.state.name }
-                                            onChange={ e => this.setState({ name: e.target.value }) }
+                                            onChange={ e => { this.nameTemp = e.target.value } }
                                         />
                                         <p />
                                         <button onClick={ this.registerPlayer }>Start</button>
