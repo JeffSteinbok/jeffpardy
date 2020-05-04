@@ -466,7 +466,14 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                                 <button onClick={ this.submitFinalJeffpardyAnswer }>Submit Answer</button>
                                             }
                                             { !this.state.finalJeffpardyAnswerEnabled &&
+                                                this.state.finalJeffpardyAnswer != null &&
+
                                                 <div>Answer Submitted</div>
+                                            }
+                                            { !this.state.finalJeffpardyAnswerEnabled &&
+                                                this.state.finalJeffpardyAnswer == null &&
+
+                                                <div>Answer Not Submitted in Time</div>
                                             }
                                         </div>
                                     }
