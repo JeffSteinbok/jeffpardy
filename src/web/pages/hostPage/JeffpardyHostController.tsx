@@ -106,7 +106,7 @@ export class JeffpardyHostController {
             else {
                 this.gameData.finalJeffpardyCategory = Debug.generateFinalCategory();
             }
-            this.onGameDataLoaded(Debug.GameData);
+            this.onGameDataLoaded(this.gameData);
         }
     }
 

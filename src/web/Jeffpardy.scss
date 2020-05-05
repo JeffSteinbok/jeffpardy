@@ -86,6 +86,13 @@ div.flexGrowSpacer {
 }
 
 
+div.attribution {
+    padding-top:40px;
+    font-style: italic;
+    font-size: 0.6em;
+    text-align: center;
+}
+
 /* Start Page */
 /* ------------------------------------------------------ */
 
@@ -98,22 +105,27 @@ div#startPage {
     height:100%;
     box-sizing: border-box;
     align-content: center;
+    align-items: center;
 }
 
-div#startPage a {
-    font-size:2rem;
+div#startPage div.linkList {
+    padding-top:100px;
+}
+
+div#startPage div.linkList,
+div#startPage div.linkList a {
+    font-size:2.5rem;
     color:white;
 }
 
 div#startPage div.title {
     @extend %jeffpardyMainFont;
 
-    height: 15%;
     background-color:$colorGameBoard;
     font-size: 4rem;
     text-align: center;
     margin:2px;
-    padding:10px;
+    padding:20px 0 10px 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -142,6 +154,24 @@ div.hostStartPage a {
     color:white;
 }
 
+div.hostStartPage div.customize a,
+div.hostStartPage div.customize {
+    font-size: 1rem;
+    color:white;
+}
+
+div.hostStartPage div.customize div.buttons {
+    display:flex;
+    align-items: center;
+
+}
+
+div.hostStartPage div.customize div.buttons button {
+    font-size:1.1rem;
+    margin:0px 2px;
+    padding: 2px 10px;
+}
+
 div.hostStartPage button {
     @extend %bigButton;
 }
@@ -157,20 +187,29 @@ div.hostStartPage div.title {
     font-size: 4rem;
     text-align: center;
     margin:2px;
-    padding:10px;
+    padding:20px 0 10px 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 15%;
+}
+
+div.hostStartPage div.gameDataLoaded {
+    display:flex;
+    flex-direction: column;
+    align-items: center;;
+}
+
+div.hostStartPage div.categoryListContainer {
+    border: 3px solid white;
+    width: 80%;
+    margin: 20px;
 }
 
 div.hostStartPage ul.categoryList {
-    border: 3px solid white;
     columns:2;
     column-gap: 50px;
     list-style: none;
     font-weight:bold;
-    padding: 20px;
 }
 
 div.hostStartPage ul.categoryList li {
@@ -188,7 +227,8 @@ div.hostStartPage ul.categoryList li ul {
 
 div.hostStartPage ul.categoryList li a {
     text-decoration: none;
-    font-size: 1rem
+    font-size: 1rem;
+    margin-right: 3px;
 }
 
 div.hostStartPage div.playerListBox {
@@ -561,7 +601,7 @@ div#playerPage div.title {
     font-size: 4rem;
     text-align: center;
     margin:2px;
-    padding-top:10px;
+    padding:20px 0 10px 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -592,6 +632,13 @@ div#playerPage div.gameCodeEntry {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    flex-grow: 1;
+}
+
+div#playerPage form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 div#playerPage div.gameCodeEntry input {
@@ -949,12 +996,11 @@ div#fromJeopardyLabs a {
 div#fromJeopardyLabs div.title {
     @extend %jeffpardyMainFont;
 
-    height: 15%;
     background-color:$colorGameBoard;
     font-size: 4rem;
     text-align: center;
     margin:2px;
-    padding:10px;
+    padding:20px 0 10px 0;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -9,8 +9,9 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
-import { TextField } from "@material-ui/core";
+import { TextField, Link } from "@material-ui/core";
 import { AnswerKey } from "./AnswerKey";
+import { Attribution } from "../../../components/attribution/Attribution";
 import { TeamDictionary } from "../../../Types";
 import { JeffpardyHostController } from "../JeffpardyHostController";
 
@@ -32,6 +33,7 @@ export interface IHostStartScreenProps {
 export interface IHostStartScreenState {
     viewMode: HostStartScreenViewMode;
     isCustomCategoryDialogOpen: boolean;
+    isCustomCategoryTsvDialogOpen: boolean;
 }
 
 /**
@@ -40,6 +42,7 @@ export interface IHostStartScreenState {
 export class HostStartScreen extends React.Component<IHostStartScreenProps, IHostStartScreenState> {
 
     customCategoryJSON: string;
+    customCategoryTsv: string;
     isCustomCategoryDialogOpen: boolean = false;
 
     constructor(props: any) {
@@ -47,7 +50,8 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
 
         this.state = {
             viewMode: HostStartScreenViewMode.Normal,
-            isCustomCategoryDialogOpen: false
+            isCustomCategoryDialogOpen: false,
+            isCustomCategoryTsvDialogOpen: false
         }
     }
 
@@ -59,10 +63,10 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
     }
 
     public loadCustomCategoriesFromExcelPaste = () => {
-        this.setState({ isCustomCategoryDialogOpen: false })
+        this.setState({ isCustomCategoryTsvDialogOpen: false })
 
         // TODO: fix name
-        let tsv: string = this.customCategoryJSON;
+        let tsv: string = this.customCategoryTsv;
 
         let lines: string[] = tsv.split("\n");
 
@@ -188,7 +192,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                             <div>Finding some really great clues...</div>
                         }
                         { this.props.gameData != null &&
-                            <div>
+                            <div className="gameDataLoaded">
                                 <div className="gameCode">Use Game Code: { this.props.gameCode }</div>
                                     Give the above game code to the players or give them this direct link:<br />
                                 <a target="#" href={ "/player#" + this.props.gameCode }>https://{ window.location.hostname }{ window.location.port != "" ? ":" + window.location.port : "" }/player#{ this.props.gameCode }</a>
@@ -196,50 +200,59 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                     Don't forget to save or print the answer key before you start. <br />
                                     If you don't, you won't be able to during the game.
                                 <p></p>
+                                <div className="categoryListContainer">
+                                    <ul className="categoryList">
+                                        {
+                                            this.props.gameData.rounds.map((round, index) => {
+                                                return (
+                                                    <li key={ index }>{ round.name }
+                                                        <ul>
+                                                            {
+                                                                round.categories.map((category, index) => {
+                                                                    let airDate: Date = new Date(category.airDate);
+                                                                    return (
+                                                                        <li key={ index }>
+                                                                            <a href="#" onClick={ (e) => { this.updateSingleCategory(category); } }>🔄</a>
+                                                                            { category.title } - { airDate.getMonth() + 1 + "/" + airDate.getDay() + "/" + airDate.getFullYear() }
+                                                                        </li>
+                                                                    )
+                                                                })
+                                                            }
+                                                        </ul>
+                                                    </li>
+                                                )
+                                            })
+                                        }
+                                    </ul>
+                                    <ul className="categoryList" style={ { columns: 1 } }>
+                                        <li>Final Jeffpardy
+                                            <ul>
+                                                <li>
+                                                    <a href="#" onClick={ (e) => { this.updateSingleCategory(finalCategory); } }>🔄</a>
+                                                    { finalCategory.title } - { finalAirDate.getMonth() + 1 + "/" + finalAirDate.getDay() + "/" + finalAirDate.getFullYear() }</li>
+                                            </ul>
+                                        </li>
 
-                                <ul className="categoryList">
-                                    {
-                                        this.props.gameData.rounds.map((round, index) => {
-                                            return (
-                                                <li key={ index }>{ round.name }
-                                                    <ul>
-                                                        {
-                                                            round.categories.map((category, index) => {
-                                                                let airDate: Date = new Date(category.airDate);
-                                                                return (
-                                                                    <li key={ index }>
-                                                                        <a href="#" onClick={ (e) => { this.updateSingleCategory(category); } }>🔄</a>
-                                                                        { category.title } - { airDate.getMonth() + 1 + "/" + airDate.getDay() + "/" + airDate.getFullYear() }
-                                                                    </li>
-                                                                )
-                                                            })
-                                                        }
-                                                    </ul>
-                                                </li>
-                                            )
-                                        })
-                                    }
-                                </ul>
-                                <ul className="categoryList" style={ { columns: 1 } }>
-                                    <li>Final Jeffpardy
-                                        <ul>
-                                            <li>
-                                                <a href="#" onClick={ (e) => { this.updateSingleCategory(finalCategory); } }>🔄</a>
-                                                { finalCategory.title } - { finalAirDate.getMonth() + 1 + "/" + finalAirDate.getDay() + "/" + finalAirDate.getFullYear() }</li>
-                                        </ul>
-                                    </li>
+                                    </ul>
+                                </div>
 
-                                </ul>
+                                <div className="customize">
 
-                                <span style={ { color: "red" } }>NEW: Edit these categories and clues.</span><br />
-                                <div><a href="/fromJeopardyLabs">Pull some game data from JeopardyLabs</a></div>
-                                <div><a href="/JeffpardyGameDataTemplate.xlsx" target="#">Download Excel Template</a></div>
-                                <button onClick={ () => { this.setState({ isCustomCategoryDialogOpen: true }) } }>Edit Categories &amp; Clues</button>
+                                    <div className="buttons">
+                                        <button onClick={ () => { this.setState({ isCustomCategoryDialogOpen: true }) } }>Edit Game Data JSON</button>
+                                        <button onClick={ () => { this.setState({ isCustomCategoryTsvDialogOpen: true }) } }>Paste from Excel Template</button>
+                                    </div>
+
+                                    <a href="/fromJeopardyLabs">Pull from JeopardyLabs</a>&nbsp;|&nbsp;
+                                    <a href="/JeffpardyGameDataTemplate.xlsx" target="#">Download Excel Template</a>
+                                </div>
                                 <p></p>
                                 <button onClick={ this.showAnswerKey }>Show Answers</button>
                                 <p />
 
                                 <button onClick={ this.props.onEnterLobby }>Enter Game Lobby</button>
+
+                                <Attribution />
 
                                 <Dialog
                                     open={ this.state.isCustomCategoryDialogOpen }
@@ -247,10 +260,9 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                     fullWidth
                                     maxWidth={ false }
                                 >
-                                    <DialogTitle id="alert-dialog-slide-title">{ "Modify this JSON" }</DialogTitle>
+                                    <DialogTitle>{ "Modify this JSON" }</DialogTitle>
                                     <DialogContent>
-                                        <TextField id="alert-dialog-slide-description"
-                                            style={ { fontSize: "0.8em", fontFamily: "Courier" } }
+                                        <TextField
                                             fullWidth
                                             multiline
                                             defaultValue={
@@ -271,8 +283,32 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                         <Button onClick={ this.loadCustomCategories } color="primary">
                                             Load JSON
                                         </Button>
+                                    </DialogActions>
+                                </Dialog>
+
+                                <Dialog
+                                    open={ this.state.isCustomCategoryTsvDialogOpen }
+                                    keepMounted
+                                    fullWidth
+                                    maxWidth={ false }
+                                >
+                                    <DialogTitle>{ "Paste from Excel Template" }</DialogTitle>
+                                    <DialogContent>
+                                        <Link href="/JeffpardyGameDataTemplate.xlsx"
+                                            target="#">Download Excel Template</Link>
+                                        <TextField
+                                            label="Paste Excel content here."
+                                            fullWidth
+                                            multiline
+                                            rows={ 40 }
+                                            onChange={ (event) => this.customCategoryTsv = event.target.value } />
+                                    </DialogContent>
+                                    <DialogActions>
+                                        <Button onClick={ () => { this.setState({ isCustomCategoryTsvDialogOpen: false }) } }>
+                                            Cancel
+                                        </Button>
                                         <Button onClick={ this.loadCustomCategoriesFromExcelPaste } color="primary">
-                                            Load from Excel Template
+                                            Load
                                         </Button>
                                     </DialogActions>
                                 </Dialog>

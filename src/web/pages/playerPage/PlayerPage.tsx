@@ -7,6 +7,8 @@ import { PlayerList } from "../../components/playerList/PlayerList";
 import { ITeam } from "../../Types";
 import { Debug } from "../../utilities/Debug";
 import { SpecialKey } from "../../utilities/Key";
+import { Attribution } from "../../components/attribution/Attribution";
+import { inherits } from "util";
 
 enum PlayerPageState {
     FrontPage,
@@ -49,14 +51,13 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
     buzzerActivateTime: Date;
     gameCodeTemp: string = '';
-    focusInput: HTMLInputElement = null;
     handicap: number = 0;
     finalJeffpardyWagerTemp: number = 0;
     finalJeffpardyAnswerTemp: string = "";
     finalJeffpardyClueShownTime: Date;
 
-    teamTemp: string;
-    nameTemp: string;
+    teamTemp: string = "";
+    nameTemp: string = "";
 
     constructor(props: any) {
         super(props);
@@ -91,10 +92,6 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     }
 
     componentDidMount = () => {
-        if (this.focusInput != null) {
-            this.focusInput.focus();
-        }
-
         window.addEventListener("keydown", this.handleKeyDown);
 
         const hubConnection: signalR.HubConnection = new signalR.HubConnectionBuilder()
@@ -359,55 +356,63 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
 
             <div id="playerPage">
-                <div className="title">Jeffpardy! Buzzer</div>
+                <div className="title">Jeffpardy!</div>
                 <div className="gameCode">{ this.state.gameCode }</div>
 
                 { this.state.playerPageState == PlayerPageState.FrontPage &&
                     <div className="gameCodeEntry">
                         <h1>Enter Game Code</h1>
-                        <input
-                            type="text"
-                            maxLength={ 6 }
-                            onChange={ e => this.gameCodeTemp = e.target.value }
-                            ref={ (input) => { this.focusInput = input; } }
-                        />
-                        <p />
-                        <button onClick={ this.setGameCode }>Start</button>
+                        <form
+                            onSubmit={ (e) => { e.preventDefault(); this.setGameCode() } } >
+                            <input
+                                autoFocus
+                                type="text"
+                                maxLength={ 6 }
+                                onChange={ e => this.gameCodeTemp = e.target.value }
+                            />
+                            <p />
+                            <button type="submit">Start</button>
+                        </form>
+                        <div className="flexGrowSpacer" />
                     </div>
                 }
-                { this.state.playerPageState != PlayerPageState.FrontPage &&
+                {
+                    this.state.playerPageState != PlayerPageState.FrontPage &&
                     <div id="playerPageMain">
                         <div className="buzzerCurrentUserView">
                             { this.state.playerPageState == PlayerPageState.Lobby &&
                                 <div>
                                     <h1>Register</h1>
                                     <div className="buzzerRegistration">
-                                        <div>Team Name</div>
-                                        <input
-                                            type="text"
-                                            maxLength={ 10 }
-                                            list="dataListTeam"
-                                            ref={ (input) => { this.focusInput = input; } }
-                                            onChange={ e => { this.teamTemp = e.target.value } }
-                                        />
+                                        <form
+                                            onSubmit={ (e) => { e.preventDefault(); this.registerPlayer() } } >
+                                            <div>Team Name</div>
+                                            <input
+                                                autoFocus
+                                                type="text"
+                                                maxLength={ 10 }
+                                                list="dataListTeam"
+                                                onChange={ e => { this.teamTemp = e.target.value } }
+                                            />
 
-                                        <datalist id="dataListTeam">
-                                            { Object.keys(this.state.teams).sort().map((teamName, key) =>
-                                                <option key={ key } value={ teamName } />
-                                            ) }
-                                        </datalist>
+                                            <datalist id="dataListTeam">
+                                                { Object.keys(this.state.teams).sort().map((teamName, key) =>
+                                                    <option key={ key } value={ teamName } />
+                                                ) }
+                                            </datalist>
 
 
-                                        <p />
-                                        <div>Player Name</div>
-                                        <input
-                                            type="text"
-                                            maxLength={ 25 }
-                                            value={ this.state.name }
-                                            onChange={ e => { this.nameTemp = e.target.value } }
-                                        />
-                                        <p />
-                                        <button onClick={ this.registerPlayer }>Start</button>
+                                            <p />
+                                            <div>Player Name</div>
+                                            <input
+                                                type="text"
+                                                maxLength={ 25 }
+                                                value={ this.state.name }
+                                                onChange={ e => { this.nameTemp = e.target.value } }
+                                            />
+                                            <p />
+                                            <button type="submit">Start</button>
+                                        </form>
                                     </div>
                                 </div>
                             }
@@ -502,7 +507,9 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                         </div>
                     </div>
                 }
-            </div>
+
+                <Attribution />
+            </div >
         );
     }
 }
