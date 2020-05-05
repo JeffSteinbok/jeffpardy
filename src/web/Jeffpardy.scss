@@ -196,7 +196,8 @@ div.hostStartPage div.title {
 div.hostStartPage div.gameDataLoaded {
     display:flex;
     flex-direction: column;
-    align-items: center;;
+    align-items: center;
+    flex-grow:1;
 }
 
 div.hostStartPage div.categoryListContainer {

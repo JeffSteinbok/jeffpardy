@@ -7,6 +7,7 @@ import { Logger } from "../../utilities/Logger";
 import { PlayerList } from "../../components/playerList/PlayerList";
 import { TeamDictionary } from "../../Types";
 import * as QRCode from "qrcode.react";
+import { Attribution } from "../../components/attribution/Attribution";
 
 export interface IHostLobbyProps {
     teams: TeamDictionary;
@@ -55,6 +56,8 @@ export class HostLobby extends React.Component<IHostLobbyProps, IHostLobbyState>
                     <PlayerList teams={ this.props.teams } />
                 </div>
                 <button onClick={ this.props.onStartGame }>Start Game</button>
+                <div className="flexGrowSpacer"></div>
+                <Attribution />
             </div>
         );
     }

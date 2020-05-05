@@ -251,7 +251,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                 <p />
 
                                 <button onClick={ this.props.onEnterLobby }>Enter Game Lobby</button>
-
+                                <div className="flexGrowSpacer"></div>
                                 <Attribution />
 
                                 <Dialog
