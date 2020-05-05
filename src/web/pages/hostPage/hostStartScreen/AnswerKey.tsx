@@ -78,8 +78,13 @@ export class AnswerKey extends React.Component<IAnswerKeyProps, any> {
             finalAirDate = new Date(finalCategory.airDate);
         }
 
+        let styles: string = "body { background-color: white } html { background-color: white }";
+
         return (
             <div id="hostAnswerKey">
+                <style>
+                    { styles }
+                </style>
                 <i className="noPrint">Print or save this and press ESC to return to the game.</i>
                 {
                     this.props.gameData.rounds.map((round, index) => {

@@ -6,6 +6,7 @@ import { IPlayer, TeamDictionary } from "../../Types"
 import { PlayerList } from "../../components/playerList/PlayerList";
 import { ITeam } from "../../Types";
 import { Debug } from "../../utilities/Debug";
+import { SpecialKey } from "../../utilities/Key";
 
 enum PlayerPageState {
     FrontPage,
@@ -93,6 +94,8 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         if (this.focusInput != null) {
             this.focusInput.focus();
         }
+
+        window.addEventListener("keydown", this.handleKeyDown);
 
         const hubConnection: signalR.HubConnection = new signalR.HubConnectionBuilder()
             .withUrl('/hub/buzzer')
@@ -315,7 +318,16 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         })
     }
 
+    handleKeyDown = (event: KeyboardEvent) => {
+        switch (event.keyCode) {
+            case SpecialKey.SPACE:
+                this.buzzIn();
+                break;
+        }
+    }
+
     componentWillUnmount() {
+        window.removeEventListener("keydown", this.handleKeyDown);
         this.state.hubConnection.stop();
     }
 
@@ -404,7 +416,8 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                     <h1>{ this.state.name }</h1>
                                     <h2>Team: { this.state.team }</h2>
 
-                                    <div><i>Wait for the button to turn green before buzzing in.</i></div>
+                                    <div><i>Wait for the button to turn green before buzzing in.<br />
+                                            Click, touch or press SPACE to activate.</i></div>
 
                                     <button id="buzzer" className={ buzzerClassName } onMouseDown={ this.buzzIn }>
                                         <div>{ buzzerButtonText }</div>
