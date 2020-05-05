@@ -6,13 +6,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Jeffpardy
 {
+    public enum RoundDescriptor
+    {
+        Jeffpardy,
+        SuperJeffpardy,
+        FinalJeffpardy
+    }
+
     [ApiController]
     [Route("api/Categories")]
     public class CategoriesController : Controller
     {
         Random rand = new Random();
 
-        [Route("[action]")]
+        [Route("GameData")]
         [HttpGet]
         public async Task<GameData> GetGameData()
         {
@@ -35,6 +42,30 @@ namespace Jeffpardy
 
             };
             return gd;
+        }
+
+        [Route("RandomCategory/{roundDescriptor}")]
+        public async Task<Category> GetRandomCategory(RoundDescriptor roundDescriptor)
+        {
+            IReadOnlyList<ManifestCategory> categoryList = null;
+            switch (roundDescriptor)
+            {
+                case RoundDescriptor.Jeffpardy:
+                    categoryList = SeasonManifestCache.Instance.JeopardyCategoryList;
+                    break;
+                case RoundDescriptor.SuperJeffpardy:
+                    categoryList = SeasonManifestCache.Instance.DoubleJeopardyCategoryList;
+                    break;
+                case RoundDescriptor.FinalJeffpardy:
+                    categoryList = SeasonManifestCache.Instance.FinalJeopardyCategoryList;
+                    break;
+            }
+
+            int categoryIndex = rand.Next(0, categoryList.Count);
+
+            var category = await AzureBlobCategoryLoader.Instance.LoadCategoryAsync(categoryList[categoryIndex]);
+
+            return category;
         }
 
         private async Task<Category[]> GetCategoriesAsync(IReadOnlyList<ManifestCategory> categoryList)

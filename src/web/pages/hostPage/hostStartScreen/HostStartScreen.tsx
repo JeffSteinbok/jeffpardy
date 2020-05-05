@@ -12,6 +12,7 @@ import Slide from '@material-ui/core/Slide';
 import { TextField } from "@material-ui/core";
 import { AnswerKey } from "./AnswerKey";
 import { TeamDictionary } from "../../../Types";
+import { JeffpardyHostController } from "../JeffpardyHostController";
 
 export enum HostStartScreenViewMode {
     Normal,
@@ -23,6 +24,7 @@ export interface IHostStartScreenProps {
     gameCode: string;
     gameData: IGameData;
     teams: TeamDictionary;
+    jeffpardyHostController: JeffpardyHostController;
     onModifyGameData: (gameData: IGameData) => void;
     onEnterLobby: () => void;
 }
@@ -142,6 +144,10 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
         return categories;
     }
 
+    public updateSingleCategory = (category: ICategory) => {
+        this.props.jeffpardyHostController.updateSingleCategory(category);
+    }
+
     public showAnswerKey = () => {
         this.setState({
             viewMode: HostStartScreenViewMode.AnswerKey
@@ -201,7 +207,10 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                                             round.categories.map((category, index) => {
                                                                 let airDate: Date = new Date(category.airDate);
                                                                 return (
-                                                                    <li key={ index }> { category.title } - { airDate.getMonth() + 1 + "/" + airDate.getDay() + "/" + airDate.getFullYear() }</li>
+                                                                    <li key={ index }>
+                                                                        <a href="#" onClick={ (e) => { this.updateSingleCategory(category); } }>🔄</a>
+                                                                        { category.title } - { airDate.getMonth() + 1 + "/" + airDate.getDay() + "/" + airDate.getFullYear() }
+                                                                    </li>
                                                                 )
                                                             })
                                                         }
@@ -214,7 +223,9 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                 <ul className="categoryList" style={ { columns: 1 } }>
                                     <li>Final Jeffpardy
                                         <ul>
-                                            <li> { finalCategory.title } - { finalAirDate.getMonth() + 1 + "/" + finalAirDate.getDay() + "/" + finalAirDate.getFullYear() }</li>
+                                            <li>
+                                                <a href="#" onClick={ (e) => { this.updateSingleCategory(finalCategory); } }>🔄</a>
+                                                { finalCategory.title } - { finalAirDate.getMonth() + 1 + "/" + finalAirDate.getDay() + "/" + finalAirDate.getFullYear() }</li>
                                         </ul>
                                     </li>
 

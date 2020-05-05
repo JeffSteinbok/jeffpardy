@@ -6,7 +6,8 @@ import { IHostPage, HostPageViewMode } from "./HostPage";
 import { IHostSignalRClient, HostSignalRClient } from "./HostSignalRClient";
 import { IPlayer, TeamDictionary, ITeam } from "../../Types";
 import { Debug, DebugFlags } from "../../utilities/Debug";
-import { IGameData, ICategory, IGameRound, IClue, FinalJeffpardyWagerDictionary, FinalJeffpardyAnswerDictionary } from "./Types";
+import { RoundDescriptor, IGameData, ICategory, IGameRound, IClue, FinalJeffpardyWagerDictionary, FinalJeffpardyAnswerDictionary } from "./Types";
+import createTypography from "@material-ui/core/styles/createTypography";
 
 /**
  * This class is to be passed down to pages and components so they can interact with
@@ -38,7 +39,7 @@ export class JeffpardyHostController {
         if (!Debug.IsFlagSet(DebugFlags.LocalCategories)) {
             let context: IApiExecutionContext = {
                 showProgressIndicator: true,
-                apiName: "/api/Categories/GetGameData",
+                apiName: "/api/Categories/GameData",
                 formData: {},
                 json: true,
                 success: (results: IGameData) => {
@@ -55,20 +56,77 @@ export class JeffpardyHostController {
         }
     }
 
+    public updateSingleCategory(category: ICategory) {
+
+        // Find the category in GameData
+        let existingRound: IGameRound = null;
+        let categoryIndex: number = -1;
+
+        this.gameData.rounds.forEach((gameRound: IGameRound, index: number) => {
+            if (categoryIndex == -1) {
+                categoryIndex = gameRound.categories.indexOf(category);
+                if (categoryIndex >= 0) {
+                    existingRound = gameRound;
+                }
+            }
+        });
+
+        let roundDescriptor: RoundDescriptor = RoundDescriptor.Jeffpardy;
+        if (existingRound == null) {
+            roundDescriptor = RoundDescriptor.FinalJeffpardy;
+        } else if (existingRound.id == 1) {
+            roundDescriptor = RoundDescriptor.SuperJeffpardy;
+        }
+
+        if (!Debug.IsFlagSet(DebugFlags.LocalCategories)) {
+            let context: IApiExecutionContext = {
+                showProgressIndicator: true,
+                apiName: "/api/Categories/RandomCategory/" + roundDescriptor,
+                formData: {},
+                json: true,
+                success: (results: ICategory) => {
+                    if (existingRound != null) {
+                        existingRound.categories[categoryIndex] = results;
+                    }
+                    else {
+                        this.gameData.finalJeffpardyCategory = results;
+                    }
+                    this.onGameDataLoaded(this.gameData);
+                },
+                error: null
+            };
+
+            let wsam: WebServerApiManager = new WebServerApiManager();
+            wsam.executeApi(context);
+        }
+        else {
+            if (existingRound != null) {
+                existingRound.categories[categoryIndex] = Debug.generateCategory();
+            }
+            else {
+                this.gameData.finalJeffpardyCategory = Debug.generateFinalCategory();
+            }
+            this.onGameDataLoaded(Debug.GameData);
+        }
+    }
+
     public onGameDataLoaded = (gameData: IGameData) => {
         Logger.debug("JeffpardyHostController:onGameDataLoaded");
 
         // Assign the scores
+        // Reset the daily doubles
         gameData.rounds.forEach((gameRound: IGameRound) => {
             gameRound.name = gameRound.id == 0 ? "Jeffpardy" : "Super Jeffpardy";
             gameRound.categories.forEach((category: ICategory) => {
+                category.hasDailyDouble = false;
                 for (var i: number = 0; i < category.clues.length; i++) {
+                    category.clues[i].isDailyDouble = false;
                     category.clues[i].value = (i + 1) * 100 * (gameRound.id + 1);
                 }
             });
         });
 
-        // Assign the daily doubles - 2 ^ roundIndex
+        // assign the daily doubles - 2 ^ roundIndex
         // We're going to make sure there is only one per category
         // We're going to weight them towards the bottom 3 rows.
         // There are actually 30 spots on the board.  We're going

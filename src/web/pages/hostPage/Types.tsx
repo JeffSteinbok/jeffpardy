@@ -1,3 +1,9 @@
+export enum RoundDescriptor {
+    Jeffpardy,
+    SuperJeffpardy,
+    FinalJeffpardy
+}
+
 export interface IClue {
     clue: string;
     question: string;

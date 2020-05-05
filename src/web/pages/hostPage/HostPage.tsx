@@ -245,6 +245,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                         gameData={ this.state.gameData }
                         teams={ this.state.teams }
                         onModifyGameData={ (gameData) => { this.jeffpardyHostController.setCustomGameData(gameData) } }
+                        jeffpardyHostController={ this.jeffpardyHostController }
                         onEnterLobby={ () => {
                             this.setState({
                                 viewMode: HostPageViewMode.Lobby
