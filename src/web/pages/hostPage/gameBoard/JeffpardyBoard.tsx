@@ -288,9 +288,9 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                             <div className="jeffpardyActiveClue">
                                 <div className="header">{ this.state.activeCategory.title } for { this.state.activeClue.value }</div>
                                 <div className="clue">{ this.state.activeClue.clue }</div>
-                                { this.state.jeopardyBoardView == JeopardyBoardView.Question &&
-                                    <div className="question">{ this.state.activeClue.question }</div>
-                                }
+                                <div className="question">
+                                    { this.state.jeopardyBoardView == JeopardyBoardView.Question ? this.state.activeClue.question : '\u00A0' }
+                                </div>
                                 <Timer percentageRemaining={ this.state.timerPercentageRemaining }></Timer>
                             </div>
                         }
