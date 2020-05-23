@@ -23,6 +23,7 @@ export class JeffpardyHostController {
     teamCount: number;
     gameData: IGameData;
     categories: ICategory[];
+    buzzerActive: boolean = false;
 
     hostSignalRClient: IHostSignalRClient;
 
@@ -227,17 +228,22 @@ export class JeffpardyHostController {
 
 
     public resetBuzzer() {
+        this.buzzerActive = false;
         this.hostSignalRClient.resetBuzzer();
     }
 
     public activateBuzzer() {
+        this.buzzerActive = true;
         this.jeffpardyBoard.startTimer();
         this.hostSignalRClient.activateBuzzer();
     }
 
     public assignBuzzedInUser(user: IPlayer) {
-        this.jeffpardyBoard.stopTimer();
-        this.scoreboard.onAssignBuzzedInUser(user);
+        // If the timer has expired, we have to not honor this...
+        if (this.buzzerActive) {
+            this.jeffpardyBoard.stopTimer();
+            this.scoreboard.onAssignBuzzedInUser(user);
+        }
     }
 
     public setViewMode(viewMode: HostPageViewMode) {
@@ -277,6 +283,7 @@ export class JeffpardyHostController {
     }
 
     public buzzerTimeout = () => {
+        this.buzzerActive = false;
         this.scoreboard.onBuzzerTimeout();
     }
 
