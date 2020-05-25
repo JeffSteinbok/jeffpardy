@@ -334,7 +334,7 @@ div#jeffpardyBoard div.jeffpardyBoardClues {
 div#jeffpardyBoard div.jeffpardyCategory
 {
     @extend %jeffpardyMainFont;
-
+    text-transform: none;
     background-color:$colorGameBoard;
     font-size: 2rem;
     text-align: center;
