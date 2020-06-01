@@ -253,38 +253,39 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                 <button onClick={ this.props.onEnterLobby }>Enter Game Lobby</button>
                                 <div className="flexGrowSpacer"></div>
                                 <Attribution />
-
-                                <Dialog
-                                    open={ this.state.isCustomCategoryDialogOpen }
-                                    keepMounted
-                                    fullWidth
-                                    maxWidth={ false }
-                                >
-                                    <DialogTitle>{ "Modify this JSON" }</DialogTitle>
-                                    <DialogContent>
-                                        <TextField
-                                            fullWidth
-                                            multiline
-                                            defaultValue={
-                                                JSON.stringify(this.props.gameData, (key, value) => {
-                                                    if (key == "isAsked") return undefined;
-                                                    else if (key == "isDailyDouble") return undefined;
-                                                    else if (key == "hasDailyDouble") return undefined;
-                                                    else if (key == "value") return undefined;
-                                                    else return value;
-                                                }, 4)
-                                            }
-                                            onChange={ (event) => this.customCategoryJSON = event.target.value } />
-                                    </DialogContent>
-                                    <DialogActions>
-                                        <Button onClick={ () => { this.setState({ isCustomCategoryDialogOpen: false }) } }>
-                                            Cancel
+                                { this.state.isCustomCategoryDialogOpen &&
+                                    <Dialog
+                                        open={ this.state.isCustomCategoryDialogOpen }
+                                        keepMounted
+                                        fullWidth
+                                        maxWidth={ false }
+                                    >
+                                        <DialogTitle>{ "Modify this JSON" }</DialogTitle>
+                                        <DialogContent>
+                                            <TextField
+                                                fullWidth
+                                                multiline
+                                                defaultValue={
+                                                    JSON.stringify(this.props.gameData, (key, value) => {
+                                                        if (key == "isAsked") return undefined;
+                                                        else if (key == "isDailyDouble") return undefined;
+                                                        else if (key == "hasDailyDouble") return undefined;
+                                                        else if (key == "value") return undefined;
+                                                        else return value;
+                                                    }, 4)
+                                                }
+                                                onChange={ (event) => this.customCategoryJSON = event.target.value } />
+                                        </DialogContent>
+                                        <DialogActions>
+                                            <Button onClick={ () => { this.setState({ isCustomCategoryDialogOpen: false }) } }>
+                                                Cancel
                                         </Button>
-                                        <Button onClick={ this.loadCustomCategories } color="primary">
-                                            Load JSON
+                                            <Button onClick={ this.loadCustomCategories } color="primary">
+                                                Load JSON
                                         </Button>
-                                    </DialogActions>
-                                </Dialog>
+                                        </DialogActions>
+                                    </Dialog>
+                                }
 
                                 <Dialog
                                     open={ this.state.isCustomCategoryTsvDialogOpen }
