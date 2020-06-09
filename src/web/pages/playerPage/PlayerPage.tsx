@@ -177,6 +177,12 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                     playerPageState: PlayerPageState.FinalJeffpardy,
                     finalJeffpardyMaxWager: maxWager
                 })
+
+                // If max wager is 0, just set it.
+                if (maxWager == 0) {
+                    this.finalJeffpardyWagerTemp = 0;
+                    this.submitFinalJeffpardyWager();
+                }
             })
 
             this.state.hubConnection.on('showFinalJeffpardyClue', () => {
@@ -282,37 +288,41 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     submitFinalJeffpardyWager = () => {
 
         let fjBet = this.finalJeffpardyWagerTemp;
-        if (isNaN(fjBet) || fjBet > this.state.finalJeffpardyMaxWager || fjBet < 0) {
-            alert("Please enter a wager between 0 and " + this.state.finalJeffpardyMaxWager + ".");
-            return;
-        } else {
-            this.state.hubConnection
-                .invoke('submitWager', this.state.gameCode, this.finalJeffpardyWagerTemp)
-                .catch(err => console.error(err));
+        if (this.state.finalJeffpardyWagerEnabled) {
+            if (isNaN(fjBet) || fjBet > this.state.finalJeffpardyMaxWager || fjBet < 0) {
+                alert("Please enter a wager between 0 and " + this.state.finalJeffpardyMaxWager + ".");
+                return;
+            } else {
+                this.state.hubConnection
+                    .invoke('submitWager', this.state.gameCode, this.finalJeffpardyWagerTemp)
+                    .catch(err => console.error(err));
 
-            this.setState({
-                finalJeffpardyWager: this.finalJeffpardyWagerTemp,
-                finalJeffpardyWagerEnabled: false
-            })
+                this.setState({
+                    finalJeffpardyWager: this.finalJeffpardyWagerTemp,
+                    finalJeffpardyWagerEnabled: false
+                })
+            }
         }
     }
 
     submitFinalJeffpardyAnswer = () => {
-        if (this.finalJeffpardyClueShownTime == null) {
-            alert("You can't submit your answer before the clue is shown.");
-            return;
+        if (this.state.finalJeffpardyAnswerEnabled) {
+            if (this.finalJeffpardyClueShownTime == null) {
+                alert("You can't submit your answer before the clue is shown.");
+                return;
+            }
+
+            let reactionTime: number = new Date().getTime() - this.finalJeffpardyClueShownTime.getTime();
+
+            this.state.hubConnection
+                .invoke('submitAnswer', this.state.gameCode, this.finalJeffpardyAnswerTemp, reactionTime)
+                .catch(err => console.error(err));
+
+            this.setState({
+                finalJeffpardyAnswer: this.finalJeffpardyAnswerTemp,
+                finalJeffpardyAnswerEnabled: false
+            })
         }
-
-        let reactionTime: number = new Date().getTime() - this.finalJeffpardyClueShownTime.getTime();
-
-        this.state.hubConnection
-            .invoke('submitAnswer', this.state.gameCode, this.finalJeffpardyAnswerTemp, reactionTime)
-            .catch(err => console.error(err));
-
-        this.setState({
-            finalJeffpardyAnswer: this.finalJeffpardyAnswerTemp,
-            finalJeffpardyAnswerEnabled: false
-        })
     }
 
     handleKeyDown = (event: KeyboardEvent) => {
@@ -458,41 +468,51 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                     <h1>{ this.state.name }</h1>
                                     <h2>Team: { this.state.team }</h2>
                                     <div>Wager Amount</div>
-                                    <input
-                                        type="number"
-                                        min={ 0 }
-                                        max={ this.state.finalJeffpardyMaxWager }
-                                        step={ 100 }
-                                        onChange={ e => { this.finalJeffpardyWagerTemp = Number.parseInt(e.target.value, 10) } }
-                                        disabled={ !this.state.finalJeffpardyWagerEnabled } />
-                                    <div><i>Enter a value up to { this.state.finalJeffpardyMaxWager }.</i></div>
-                                    { this.state.finalJeffpardyWagerEnabled &&
-                                        <button onClick={ this.submitFinalJeffpardyWager }>Submit Wager</button>
-                                    }
-                                    { !this.state.finalJeffpardyWagerEnabled &&
-                                        <div>Wager Locked</div>
-                                    }
+                                    <form
+                                        onSubmit={ (e) => { e.preventDefault(); this.submitFinalJeffpardyWager() } } >
+                                        <input
+                                            autoFocus
+                                            type="number"
+                                            min={ 0 }
+                                            max={ this.state.finalJeffpardyMaxWager }
+                                            onChange={ e => { this.finalJeffpardyWagerTemp = Number.parseInt(e.target.value, 10) } }
+                                            disabled={ !this.state.finalJeffpardyWagerEnabled }
+                                            defaultValue={ this.state.finalJeffpardyMaxWager == 0 ? "0" : "" } />
+                                        { this.state.finalJeffpardyMaxWager > 0 &&
+                                            <div><i>Enter a value up to { this.state.finalJeffpardyMaxWager }.</i></div>
+                                        }
+                                        { this.state.finalJeffpardyWagerEnabled &&
+                                            <button type="submit">Submit Wager</button>
+                                        }
+                                        { !this.state.finalJeffpardyWagerEnabled &&
+                                            <div>Wager Locked</div>
+                                        }
+                                    </form>
                                     <p />
                                     { this.state.finalJeffpardyWager >= 0 &&
                                         <div>
-                                            <div>Answer</div>
-                                            <input
-                                                disabled={ !this.state.finalJeffpardyAnswerEnabled }
-                                                onChange={ e => { this.finalJeffpardyAnswerTemp = e.target.value } } />
-                                            <br />
-                                            { this.state.finalJeffpardyAnswerEnabled &&
-                                                <button onClick={ this.submitFinalJeffpardyAnswer }>Submit Answer</button>
-                                            }
-                                            { !this.state.finalJeffpardyAnswerEnabled &&
-                                                this.state.finalJeffpardyAnswer != null &&
+                                            <form
+                                                onSubmit={ (e) => { e.preventDefault(); this.submitFinalJeffpardyAnswer() } } >
+                                                <div>Answer</div>
+                                                <input
+                                                    autoFocus
+                                                    disabled={ !this.state.finalJeffpardyAnswerEnabled }
+                                                    onChange={ e => { this.finalJeffpardyAnswerTemp = e.target.value } } />
+                                                <br />
+                                                { this.state.finalJeffpardyAnswerEnabled &&
+                                                    <button type="submit">Submit Answer</button>
+                                                }
+                                                { !this.state.finalJeffpardyAnswerEnabled &&
+                                                    this.state.finalJeffpardyAnswer != null &&
 
-                                                <div>Answer Submitted</div>
-                                            }
-                                            { !this.state.finalJeffpardyAnswerEnabled &&
-                                                this.state.finalJeffpardyAnswer == null &&
+                                                    <div>Answer Submitted</div>
+                                                }
+                                                { !this.state.finalJeffpardyAnswerEnabled &&
+                                                    this.state.finalJeffpardyAnswer == null &&
 
-                                                <div>Answer Not Submitted in Time</div>
-                                            }
+                                                    <div>Answer Not Submitted in Time</div>
+                                                }
+                                            </form>
                                         </div>
                                     }
                                 </div>

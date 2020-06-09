@@ -55,8 +55,8 @@ export class AnswerKey extends React.Component<IAnswerKeyProps, any> {
                     boardGridElements.push(
                         <div className="answerKeyClue" key={ keyCounter++ } style={ { gridRow: j + 2, gridColumn: i + 1 } }>
                             <div className="value">{ clue.value }{ clue.isDailyDouble ? " - DD" : "" }</div>
-                            <div className="clue">{ clue.clue }</div>
-                            <div className="question">{ clue.question }</div>
+                            <div className="clue" dangerouslySetInnerHTML={ { __html: "<span>" + clue.clue + "</span>" } } />
+                            <div className="question" dangerouslySetInnerHTML={ { __html: "<span>" + clue.question + "</span>" } } />
                         </div>
                     );
                 }

@@ -287,9 +287,9 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                         { (this.state.jeopardyBoardView == JeopardyBoardView.Clue || this.state.jeopardyBoardView == JeopardyBoardView.Question) &&
                             <div className="jeffpardyActiveClue">
                                 <div className="header">{ this.state.activeCategory.title } for { this.state.activeClue.value }</div>
-                                <div className="clue">{ this.state.activeClue.clue }</div>
-                                <div className="question">
-                                    { this.state.jeopardyBoardView == JeopardyBoardView.Question ? this.state.activeClue.question : '\u00A0' }
+                                <div className="clue" dangerouslySetInnerHTML={ { __html: "<span>" + this.state.activeClue.clue + "</span>" } }></div>
+                                <div className="question"
+                                    dangerouslySetInnerHTML={ { __html: "<span>" + (this.state.jeopardyBoardView == JeopardyBoardView.Question ? this.state.activeClue.question : '\u00A0') + "</span>" } }>
                                 </div>
                                 <Timer percentageRemaining={ this.state.timerPercentageRemaining }></Timer>
                             </div>
@@ -309,7 +309,6 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                                             type="number"
                                             min={ 0 }
                                             max={ dailyDoubleMaxBet }
-                                            step={ 100 }
                                             onChange={ e => { this.dailyDoubleBetTemp = e.target.value } } />
                                     </div>
                                     <div><i>Enter a value up to { dailyDoubleMaxBet }.</i></div>

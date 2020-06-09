@@ -18,6 +18,7 @@ export enum DebugFlags {
 // Some helpful values:
 // Skip Intro Only: 4
 // Skip Intro & Local Categories:  6
+// Skip Intro & Local Categories & DD:  1E
 
 export class Debug {
     static flags = DebugFlags.None;
