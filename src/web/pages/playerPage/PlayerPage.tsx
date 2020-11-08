@@ -95,7 +95,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         window.addEventListener("keydown", this.handleKeyDown);
 
         const hubConnection: signalR.HubConnection = new signalR.HubConnectionBuilder()
-            .withUrl('/hub/buzzer')
+            .withUrl('/hub/game')
             .withAutomaticReconnect()
             .build();
 
@@ -261,14 +261,13 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             Logger.debug("Buzzer clicked when active. Time:", new Date().getTime());
 
             let reactionTime: number = new Date().getTime() - this.buzzerActivateTime.getTime();
-            reactionTime += this.handicap;
 
             this.state.hubConnection
-                .invoke('buzzIn', this.state.gameCode, reactionTime)
+                .invoke('buzzIn', this.state.gameCode, reactionTime, this.handicap)
                 .catch(err => console.error(err));
             this.setState({
                 buzzed: true,
-                reactionTime: reactionTime
+                reactionTime: reactionTime + this.handicap
             });
         } else {
             Logger.debug("Buzzer clicked when not active - applying lockout. Time:", new Date().getTime());

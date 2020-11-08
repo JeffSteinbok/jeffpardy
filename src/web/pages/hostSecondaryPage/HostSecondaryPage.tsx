@@ -40,7 +40,7 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
 
     componentDidMount = () => {
         const hubConnection: signalR.HubConnection = new signalR.HubConnectionBuilder()
-            .withUrl('/hub/buzzer')
+            .withUrl('/hub/game')
             .withAutomaticReconnect()
             .build();
 

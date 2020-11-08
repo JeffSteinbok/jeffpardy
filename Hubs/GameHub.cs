@@ -1,26 +1,23 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.SignalR;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Timers;
-using Microsoft.AspNetCore.SignalR;
-using Jeffpardy;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Jeffpardy.Hubs
 {
-    public class BuzzerHub : Hub
+    public class GameHub : Hub
     {
-        Buzzer buzzer;
+        GameCache gameCache;
 
-        public BuzzerHub(Buzzer buzzer)
+        public GameHub(GameCache gameCache)
         {
-            this.buzzer = buzzer;
+            this.gameCache = gameCache;
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            await this.buzzer.RemoveUserAsync(Context.ConnectionId);
+            await this.gameCache.RemoveUserAsync(Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
         }
 
@@ -30,7 +27,7 @@ namespace Jeffpardy.Hubs
             {
                 if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
                 if (string.IsNullOrEmpty(hostCode)) { throw new ArgumentNullException("hostCode"); }
-                await this.buzzer.ConnectHostAsync(Context.ConnectionId, gameCode, hostCode);
+                await this.gameCache.ConnectHostAsync(Context.ConnectionId, gameCode, hostCode);
             } catch (Exception ex)
             {
                 Debug.WriteLine(ex);
@@ -41,7 +38,7 @@ namespace Jeffpardy.Hubs
             try
             {
                 if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
-                await this.buzzer.ConnectPlayerLobbyAsync(Context.ConnectionId, gameCode);
+                await this.gameCache.ConnectPlayerLobbyAsync(Context.ConnectionId, gameCode);
             }
             catch (Exception ex)
             {
@@ -56,7 +53,7 @@ namespace Jeffpardy.Hubs
                 if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
                 if (string.IsNullOrEmpty(team)) { throw new ArgumentNullException("team"); }
                 if (string.IsNullOrEmpty(name)) { throw new ArgumentNullException("name"); }
-                await this.buzzer.ConnectPlayerAsync(Context.ConnectionId, gameCode, team, name);
+                await this.gameCache.ConnectPlayerAsync(Context.ConnectionId, gameCode, team, name);
             }
             catch (Exception ex)
             {
@@ -69,7 +66,7 @@ namespace Jeffpardy.Hubs
             try
             {
                 if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
-                await this.buzzer.ResetBuzzerAsync(gameCode);
+                await this.gameCache.ResetBuzzerAsync(gameCode);
             }
             catch (Exception ex)
             {
@@ -82,7 +79,7 @@ namespace Jeffpardy.Hubs
             try
             {
                 if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
-                await this.buzzer.ActivateBuzzerAsync(gameCode);
+                await this.gameCache.ActivateBuzzerAsync(gameCode);
             }
             catch (Exception ex)
             {
@@ -90,12 +87,12 @@ namespace Jeffpardy.Hubs
             }
         }
 
-        public void BuzzIn(string gameCode, int timeInMillisenconds)
+        public void BuzzIn(string gameCode, int timeInMillisenconds, int handicapInMilliseconds)
         {
             try
             {
                 if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
-                buzzer.BuzzIn(gameCode, Context.ConnectionId, timeInMillisenconds);
+                gameCache.BuzzIn(gameCode, Context.ConnectionId, timeInMillisenconds, handicapInMilliseconds);
             }
             catch (Exception ex)
             {
@@ -108,7 +105,7 @@ namespace Jeffpardy.Hubs
             try
             {
                 if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
-                await buzzer.ShowClueAsync(gameCode, clue);
+                await gameCache.ShowClueAsync(gameCode, clue);
             }
             catch (Exception ex)
             {
@@ -120,7 +117,7 @@ namespace Jeffpardy.Hubs
         {
             try {
                 if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
-                await buzzer.StartFinalJeffpardyAsync(gameCode, scores);
+                await gameCache.StartFinalJeffpardyAsync(gameCode, scores);
             }
             catch (Exception ex)
             {
@@ -133,7 +130,7 @@ namespace Jeffpardy.Hubs
             try
             {
                 if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
-                await buzzer.SubmitWagerAsync(gameCode, Context.ConnectionId, wagerAmount);
+                await gameCache.SubmitWagerAsync(gameCode, Context.ConnectionId, wagerAmount);
 
             }
             catch (Exception ex)
@@ -147,7 +144,7 @@ namespace Jeffpardy.Hubs
             try
             {
                 if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
-                await buzzer.SubmitAnswerAsync(gameCode, Context.ConnectionId, answer, timeInMilliseconds);
+                await gameCache.SubmitAnswerAsync(gameCode, Context.ConnectionId, answer, timeInMilliseconds);
             }
             catch (Exception ex)
             {
@@ -160,7 +157,7 @@ namespace Jeffpardy.Hubs
             try
             {
                 if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
-                await buzzer.ShowFinalJeffpardyClueAsync(gameCode);
+                await gameCache.ShowFinalJeffpardyClueAsync(gameCode);
             }
             catch (Exception ex)
             {
@@ -173,7 +170,7 @@ namespace Jeffpardy.Hubs
             try
             {
                 if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
-                await buzzer.EndFinalJeffpardyAsync(gameCode);
+                await gameCache.EndFinalJeffpardyAsync(gameCode);
             }
             catch (Exception ex)
             {

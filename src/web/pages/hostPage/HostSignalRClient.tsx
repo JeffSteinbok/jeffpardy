@@ -33,7 +33,7 @@ export class HostSignalRClient implements IHostSignalRClient {
         this.hostCode = hostCode;
 
         this.hubConnection = new signalR.HubConnectionBuilder()
-            .withUrl('/hub/buzzer')
+            .withUrl('/hub/game')
             .withAutomaticReconnect()
             .configureLogging(signalR.LogLevel.Trace)
             .build();

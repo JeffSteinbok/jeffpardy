@@ -23,7 +23,7 @@ namespace Jeffpardy
             // Load the category cache
             // AzureFilesCategoryLoader.Instance.PopulateSeasonManifest(SeasonManifestCache.Instance);
 
-            
+
         }
 
         public IConfiguration Configuration { get; }
@@ -34,7 +34,7 @@ namespace Jeffpardy
             services.AddRazorPages();
             services.AddControllers();
             services.AddSignalR();
-            services.AddSingleton<Buzzer>();           
+            services.AddSingleton<GameCache>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,7 +51,7 @@ namespace Jeffpardy
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -71,7 +71,7 @@ namespace Jeffpardy
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<BuzzerHub>("/hub/buzzer");
+                endpoints.MapHub<GameHub>("/hub/game");
             });
         }
     }
