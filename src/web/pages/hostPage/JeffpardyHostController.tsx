@@ -8,7 +8,19 @@ import { IPlayer, TeamDictionary, ITeam } from "../../Types";
 import { Debug, DebugFlags } from "../../utilities/Debug";
 import { RoundDescriptor, IGameData, IGameRound, FinalJeffpardyWagerDictionary, FinalJeffpardyAnswerDictionary } from "./Types";
 import { ICategory, IClue } from "../../Types";
+import { ApplicationInsights, IEventTelemetry } from '@microsoft/applicationinsights-web'
 import createTypography from "@material-ui/core/styles/createTypography";
+
+const appInsights = new ApplicationInsights({
+    config: {
+        instrumentationKey: 'bd4b6a26-6089-4825-b9d4-0f7db9f5631a'
+        /* ...Other Configuration Options... */
+    }
+});
+
+appInsights.loadAppInsights();
+appInsights.trackPageView(); // Manually call trackPageView to establish the current user/session/pageview
+
 
 /**
  * This class is to be passed down to pages and components so they can interact with
@@ -59,6 +71,8 @@ export class JeffpardyHostController {
     }
 
     public updateSingleCategory(category: ICategory) {
+
+        appInsights.trackEvent({ name: "UpdateSingleCategory" });
 
         // Find the category in GameData
         let existingRound: IGameRound = null;

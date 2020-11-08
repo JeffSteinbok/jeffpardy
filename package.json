@@ -32,5 +32,7 @@
     "buildProd": "set NODE_ENV=production && webpack -p --color",
     "scss": "node-sass src/web -o wwwroot/css/dist"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@microsoft/applicationinsights-web": "^2.5.9"
+  }
 }
