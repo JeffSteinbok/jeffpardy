@@ -128,6 +128,8 @@ export class JeffpardyHostController {
 
 
     public updateRound(round: IGameRound) {
+        appInsights.trackEvent({ name: "UpdateRound" });
+
         let updateRoundId = round.id;
 
         if (!Debug.IsFlagSet(DebugFlags.LocalCategories)) {
@@ -351,6 +353,7 @@ export class JeffpardyHostController {
     }
 
     public endFinalJeffpardy = () => {
+        appInsights.trackEvent({ name: "EndGame" });
         this.hostSignalRClient.endFinalJeffpardy();
     }
 }
