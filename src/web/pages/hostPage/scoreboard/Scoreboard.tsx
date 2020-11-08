@@ -22,6 +22,7 @@ export interface IScoreboardProps {
     teams: TeamDictionary;
     controllingTeam: ITeam;
     hilightWinningTeams: boolean;
+    hostSecondaryWindowUri: string;
 }
 
 export interface IScoreboardState {
@@ -280,7 +281,10 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                     </div>
                     <div>Fixup:</div>
                     <div>
-                        <button disabled={ this.state.gameBoardState != GameBoardState.Normal } onClick={ this.adjustTeamInfo }>Adjust Team Info</button>
+                        <button disabled={ this.state.gameBoardState != GameBoardState.Normal } onClick={ this.adjustTeamInfo }>Scores</button>
+                        <button onClick={ () => {
+                            window.open(this.props.hostSecondaryWindowUri, 'Jeffpardy Host Secondary Window', 'width=600,height=400');
+                        } }>Host Window</button>
                     </div>
                 </div>
 
@@ -334,7 +338,8 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                     }) }
                 </div>
 
-                { this.state.isTeamFixupDialogShown &&
+                {
+                    this.state.isTeamFixupDialogShown &&
                     <Dialog
                         open={ this.state.isTeamFixupDialogShown }
                         keepMounted

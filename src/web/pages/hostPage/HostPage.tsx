@@ -293,7 +293,13 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                                     jeffpardyHostController={ this.jeffpardyHostController }
                                     teams={ this.state.teams }
                                     controllingTeam={ this.state.controllingTeam }
-                                    hilightWinningTeams={ this.state.viewMode == HostPageViewMode.End } />
+                                    hilightWinningTeams={ this.state.viewMode == HostPageViewMode.End }
+                                    hostSecondaryWindowUri={ "https://" +
+                                        window.location.hostname +
+                                        (window.location.port != "" ? ":" + window.location.port : "") +
+                                        "/hostSecondary#" +
+                                        this.gameCode +
+                                        this.hostCode } />
                             </div>
                         </div>
                     </div>
