@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { WebServerApiManager, IApiExecutionContext } from "../../utilities/WebServerApiManager";
-import { ICategory, IGameData } from "../hostPage/Types";
+import { IGameData } from "../hostPage/Types";
+import { ICategory } from "../../Types";
 import { TextField } from "@material-ui/core";
 
 interface IFromJeopardyLabsState {

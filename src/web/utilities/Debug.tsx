@@ -1,6 +1,7 @@
 import { Logger } from "./Logger";
-import { ICategory, IGameData, IClue } from "../pages/hostPage/Types";
+import { IGameData } from "../pages/hostPage/Types";
 import { LoremIpsum } from "./LoremIpsum";
+import { IClue, ICategory } from "../Types";
 
 export enum DebugFlags {
     None = 0,
@@ -18,6 +19,7 @@ export enum DebugFlags {
 // Some helpful values:
 // Skip Intro Only: 4
 // Skip Intro & Local Categories:  6
+// Skip Intro & Local Categories & Quick Timers:  46
 // Skip Intro & Local Categories & DD:  1E
 
 export class Debug {

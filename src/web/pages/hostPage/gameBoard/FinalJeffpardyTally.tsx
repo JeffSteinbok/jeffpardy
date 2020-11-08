@@ -1,7 +1,8 @@
 import * as React from "react";
 import { IPlayer, TeamDictionary, ITeam } from "../../../Types";
 import { Logger } from "../../../utilities/Logger";
-import { FinalJeffpardySubmissionDictionary, FinalJeffpardyAnswerDictionary, FinalJeffpardyWagerDictionary, IClue } from "../Types";
+import { FinalJeffpardySubmissionDictionary, FinalJeffpardyAnswerDictionary, FinalJeffpardyWagerDictionary } from "../Types";
+import { IClue } from "../../../Types";
 import { SpecialKey } from "../../../utilities/Key";
 import { stringify } from "querystring";
 

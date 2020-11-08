@@ -4,8 +4,8 @@ import { Logger } from "../../../utilities/Logger";
 import { JeffpardyHostController } from "../JeffpardyHostController";
 import { JeffpardyClue } from "./JeffpardyClue"
 import { Timer } from "./Timer"
-import { ICategory, IClue, FinalJeffpardyAnswerDictionary, FinalJeffpardyWagerDictionary } from "../Types";
-import { ITeam, TeamDictionary } from "../../../Types";
+import { FinalJeffpardyAnswerDictionary, FinalJeffpardyWagerDictionary } from "../Types";
+import { ICategory, IClue, ITeam, TeamDictionary } from "../../../Types";
 import { Debug, DebugFlags } from "../../../utilities/Debug";
 import { FinalJeffpardySubmissionList } from "./FinalJeffpardySubmissionList";
 import { FinalJeffpardyTally } from "./FinalJeffpardyTally";
@@ -154,7 +154,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
     }
 
     showFinalJeffpardyClue = () => {
-        this.props.jeffpardyHostController.showFinalJeffpardyClue();
+        this.props.jeffpardyHostController.showFinalJeffpardyClue(this.props.categories[0].clues[0]);
         this.setState({
             jeopardyBoardView: JeopardyBoardView.FinalClue
         })

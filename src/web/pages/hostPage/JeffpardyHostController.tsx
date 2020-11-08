@@ -6,7 +6,8 @@ import { IHostPage, HostPageViewMode } from "./HostPage";
 import { IHostSignalRClient, HostSignalRClient } from "./HostSignalRClient";
 import { IPlayer, TeamDictionary, ITeam } from "../../Types";
 import { Debug, DebugFlags } from "../../utilities/Debug";
-import { RoundDescriptor, IGameData, ICategory, IGameRound, IClue, FinalJeffpardyWagerDictionary, FinalJeffpardyAnswerDictionary } from "./Types";
+import { RoundDescriptor, IGameData, IGameRound, FinalJeffpardyWagerDictionary, FinalJeffpardyAnswerDictionary } from "./Types";
+import { ICategory, IClue } from "../../Types";
 import createTypography from "@material-ui/core/styles/createTypography";
 
 /**
@@ -30,8 +31,8 @@ export class JeffpardyHostController {
     finalJeffpardyWagers: FinalJeffpardyWagerDictionary = {};
     finalJeffpardyAnswers: FinalJeffpardyAnswerDictionary = {};
 
-    constructor(gameCode: string) {
-        this.hostSignalRClient = new HostSignalRClient(this, gameCode)
+    constructor(gameCode: string, hostCode: string) {
+        this.hostSignalRClient = new HostSignalRClient(this, gameCode, hostCode)
     }
 
     public loadGameData() {
@@ -263,6 +264,7 @@ export class JeffpardyHostController {
     }
 
     public showClue(clue: IClue) {
+        this.hostSignalRClient.showClue(clue);
         this.scoreboard.onClueShown(clue);
     }
 
@@ -303,7 +305,8 @@ export class JeffpardyHostController {
         this.hostSignalRClient.startFinalJeffpardy(scores);
     }
 
-    public showFinalJeffpardyClue = () => {
+    public showFinalJeffpardyClue = (clue: IClue) => {
+        this.hostSignalRClient.showClue(clue);
         this.hostSignalRClient.showFinalJeffpardyClue();
     }
 

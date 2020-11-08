@@ -1,6 +1,6 @@
 import * as React from "react";
 import { IJeffpardyBoard } from "./JeffpardyBoard";
-import { ICategory } from "../Types";
+import { ICategory } from "../../../Types";
 
 export interface IJeffpardyCategoryState {
 }

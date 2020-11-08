@@ -1,7 +1,7 @@
 import * as signalR from "@microsoft/signalr";
 import { Logger } from "../../utilities/Logger";
 import { JeffpardyHostController } from "./JeffpardyHostController";
-import { IPlayer, TeamDictionary } from "../../Types";
+import { IClue, IPlayer, TeamDictionary } from "../../Types";
 
 enum GameBoardState {
     Normal,
@@ -14,6 +14,7 @@ enum GameBoardState {
 export interface IHostSignalRClient {
     resetBuzzer: () => void;
     activateBuzzer: () => void;
+    showClue: (clue: IClue) => void;
     startFinalJeffpardy: (scores: { [key: string]: number }) => void;
     showFinalJeffpardyClue: () => void;
     endFinalJeffpardy: () => void;
@@ -24,10 +25,12 @@ export class HostSignalRClient implements IHostSignalRClient {
     hubConnection: signalR.HubConnection;
     jeffpardyHostController: JeffpardyHostController;
     gameCode: string;
+    hostCode: string;
 
-    constructor(jeffpardyHostController: JeffpardyHostController, gameCode: string) {
+    constructor(jeffpardyHostController: JeffpardyHostController, gameCode: string, hostCode: string) {
         this.jeffpardyHostController = jeffpardyHostController;
         this.gameCode = gameCode;
+        this.hostCode = hostCode;
 
         this.hubConnection = new signalR.HubConnectionBuilder()
             .withUrl('/hub/buzzer')
@@ -42,7 +45,7 @@ export class HostSignalRClient implements IHostSignalRClient {
                 window.addEventListener("unload", () => { this.hubConnection.stop() });
 
                 this.hubConnection
-                    .invoke('connectHost', this.gameCode);
+                    .invoke('connectHost', this.gameCode, this.hostCode);
             })
             .catch(err => console.log('Error while establishing connection :('));
 
@@ -79,6 +82,14 @@ export class HostSignalRClient implements IHostSignalRClient {
             .invoke('activateBuzzer', this.gameCode)
             .catch(err => console.error(err));
     };
+
+    public showClue = (clue: IClue) => {
+        Logger.debug("HostSignalRClient:showClue")
+
+        this.hubConnection
+            .invoke('showClue', this.gameCode, clue)
+            .catch(err => console.error(err));
+    }
 
     public startFinalJeffpardy = (scores: { [key: string]: number }) => {
         Logger.debug("HostSignalRClient:startFinalJeffpardy")

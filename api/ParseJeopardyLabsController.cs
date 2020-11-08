@@ -64,7 +64,7 @@ namespace Jeffpardy.api
 
                 int cluesInCategory = clues.Count / categories.Count;
 
-                category.Clues = new CategoryQuestion[cluesInCategory];
+                category.Clues = new CategoryClue[cluesInCategory];
 
                 // In JeopardyLabs, the order in the file is by row, so we take all the 
                 // 100 clues, then 200, etc...
@@ -73,7 +73,7 @@ namespace Jeffpardy.api
                 int overallClueIndex = categoryIndex;
                 for (int clueIndex = 0; clueIndex < cluesInCategory; clueIndex++)
                 {
-                    category.Clues[clueIndex] = new CategoryQuestion
+                    category.Clues[clueIndex] = new CategoryClue
                     {
                         Clue = this.CleanUpString(clues[clueIndex]),
                         Question = this.CleanUpString(questions[clueIndex])

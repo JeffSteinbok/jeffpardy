@@ -7,6 +7,7 @@ module.exports = {
     entry: {
         index: './src/web/pages/startPage/StartPage.tsx',
         host: './src/web/pages/hostPage/HostPage.tsx',
+        hostSecondary: './src/web/pages/hostSecondaryPage/HostSecondaryPage.tsx',
         player: './src/web/pages/playerPage/PlayerPage.tsx',
         fromJeopardyLabs: './src/web/pages/fromJeopardyLabs/FromJeopardyLabs.tsx',
     },

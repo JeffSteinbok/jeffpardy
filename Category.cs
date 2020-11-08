@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Jeffpardy
 {
-    public class CategoryQuestion
+    public class CategoryClue
     {
         public string Clue { get; set; }
 
@@ -19,6 +19,7 @@ namespace Jeffpardy
         public DateTime AirDate { get; set; }
 
         public string Comment { get; set; }
-        public CategoryQuestion[] Clues { get; set; }
+
+        public CategoryClue[] Clues { get; set; }
     }
 }

@@ -11,11 +11,14 @@ namespace Jeffpardy
     class BuzzerGame
     {
         public string GameCode { get; private set; }
+        public string HostCode { get; private set; }
+
         private readonly string hostGroupName;
 
         private readonly IHubContext<BuzzerHub> buzzerHubContext;
 
         readonly Dictionary<string, Player> players = new Dictionary<string, Player>();
+        readonly Dictionary<string, bool> connections = new Dictionary<string, bool>();
 
         private Dictionary<string, Team> teamDictionary
         {
@@ -44,9 +47,10 @@ namespace Jeffpardy
 
         readonly Timer buzzerWindowTimer;
 
-        public BuzzerGame(IHubContext<BuzzerHub> buzzerHubContext, string gameCode)
+        public BuzzerGame(IHubContext<BuzzerHub> buzzerHubContext, string gameCode, string hostCode)
         {
             this.GameCode = gameCode;
+            this.HostCode = hostCode;
             this.hostGroupName = gameCode + "-HOST";
             this.buzzerHubContext = buzzerHubContext;
 
@@ -58,7 +62,7 @@ namespace Jeffpardy
 
         }
 
-        public bool IsEmptyGame => this.players.Count == 0;
+        public bool IsEmptyGame => this.connections.Count == 0;
 
         public async Task ConnectHostAsync(string connectionId)
         {
@@ -161,6 +165,11 @@ namespace Jeffpardy
             }
         }
 
+        public async Task ShowClueAsync(CategoryClue clue)
+        {
+            await buzzerHubContext.Clients.Groups(this.hostGroupName).SendAsync("showClue", clue);
+        }
+
         public async Task StartFinalJeffpardyAsync(Dictionary<string, int> scores)
         {
             await buzzerHubContext.Clients.Group(this.GameCode).SendAsync("startFinalJeffpardy", scores);
@@ -193,6 +202,7 @@ namespace Jeffpardy
 
         private async Task AddConnectionToGame(string connectionId)
         {
+            this.connections[connectionId] = true;
             await this.buzzerHubContext.Groups.AddToGroupAsync(connectionId, this.GameCode);
         }
 

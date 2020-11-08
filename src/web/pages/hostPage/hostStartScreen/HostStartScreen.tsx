@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { IGameRound, ICategory, IClue, IGameData } from "../Types";
+import { ICategory } from "../../../Types";
+import { IGameData } from "../Types";
 import { Logger } from "../../../utilities/Logger";
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -14,6 +15,7 @@ import { AnswerKey } from "./AnswerKey";
 import { Attribution } from "../../../components/attribution/Attribution";
 import { TeamDictionary } from "../../../Types";
 import { JeffpardyHostController } from "../JeffpardyHostController";
+import * as QRCode from "qrcode.react";
 
 export enum HostStartScreenViewMode {
     Normal,
@@ -23,6 +25,7 @@ export enum HostStartScreenViewMode {
 
 export interface IHostStartScreenProps {
     gameCode: string;
+    hostCode: string;
     gameData: IGameData;
     teams: TeamDictionary;
     jeffpardyHostController: JeffpardyHostController;
@@ -175,6 +178,13 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
         let finalCategory: ICategory;
         let finalAirDate: Date;
 
+        let hostSecondaryWindowUri: string = "https://" +
+            window.location.hostname +
+            (window.location.port != "" ? ":" + window.location.port : "") +
+            "/hostSecondary#" +
+            this.props.gameCode +
+            this.props.hostCode;
+
         if (this.props.gameData != null) {
             finalCategory = this.props.gameData.finalJeffpardyCategory;
             finalAirDate = new Date(finalCategory.airDate);
@@ -193,13 +203,6 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                         }
                         { this.props.gameData != null &&
                             <div className="gameDataLoaded">
-                                <div className="gameCode">Use Game Code: { this.props.gameCode }</div>
-                                    Give the above game code to the players or give them this direct link:<br />
-                                <a target="#" href={ "/player#" + this.props.gameCode }>https://{ window.location.hostname }{ window.location.port != "" ? ":" + window.location.port : "" }/player#{ this.props.gameCode }</a>
-                                <p></p>
-                                    Don't forget to save or print the answer key before you start. <br />
-                                    If you don't, you won't be able to during the game.
-                                <p></p>
                                 <div className="categoryListContainer">
                                     <ul className="categoryList">
                                         {
@@ -241,16 +244,32 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                     <div className="buttons">
                                         <button onClick={ () => { this.setState({ isCustomCategoryDialogOpen: true }) } }>Edit Game Data JSON</button>
                                         <button onClick={ () => { this.setState({ isCustomCategoryTsvDialogOpen: true }) } }>Paste from Excel Template</button>
+                                        <button onClick={ this.showAnswerKey }>Show Clues &amp; Answers</button>
                                     </div>
 
                                     <a href="/fromJeopardyLabs">Pull from JeopardyLabs</a>&nbsp;|&nbsp;
                                     <a href="/JeffpardyGameDataTemplate.xlsx" target="#">Download Excel Template</a>
                                 </div>
                                 <p></p>
-                                <button onClick={ this.showAnswerKey }>Show Answers</button>
+
+                                <div className="secondaryWindow">
+                                    <button onClick={ () => {
+                                        window.open(hostSecondaryWindowUri, 'Jeffpardy Host Secondary Window', 'width=600,height=400');
+                                    } }> Host Secondary Window</button><br />
+                                    Show this page on another window to show the answer to just the host.  Do not share this link with the players.
+                                    <p />
+                                    <QRCode
+                                        value={ hostSecondaryWindowUri }
+                                        size={ 128 }
+                                        includeMargin={ true } />
+                                </div>
                                 <p />
 
                                 <button onClick={ this.props.onEnterLobby }>Enter Game Lobby</button>
+                                <br />
+                                Don't forget to save or print the answer key before you start, or use the host secondary screen.<br />
+                                If you don't, you won't be able to during the game.
+
                                 <div className="flexGrowSpacer"></div>
                                 <Attribution />
                                 { this.state.isCustomCategoryDialogOpen &&
@@ -323,7 +342,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                         gameData={ this.props.gameData }
                         onHide={ this.hideAnswerKey } />
                 }
-            </div>
+            </div >
         );
     }
 }

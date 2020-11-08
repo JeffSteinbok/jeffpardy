@@ -2,7 +2,8 @@ import * as React from "react";
 import { SpecialKey } from "../../../utilities/Key";
 import { HostPageViewMode } from "../HostPage";
 import { Logger } from "../../../utilities/Logger";
-import { IGameRound, ICategory, IClue, IGameData } from "../Types";
+import { IGameRound, IGameData } from "../Types";
+import { IClue, ICategory } from "../../../Types";
 
 export interface IAnswerKeyProps {
     gameData: IGameData;

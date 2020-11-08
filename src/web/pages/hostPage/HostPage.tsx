@@ -8,8 +8,8 @@ import { Debug, DebugFlags } from "../../utilities/Debug";
 import { HostStartScreen } from "./hostStartScreen/HostStartScreen";
 import { PlayerList } from "../../components/playerList/PlayerList";
 import { HostLobby } from "./HostLobby";
-import { ICategory, IGameData, FinalJeffpardyAnswerDictionary, FinalJeffpardyWagerDictionary } from "./Types";
-import { ITeam, TeamDictionary } from "../../Types";
+import { IGameData, FinalJeffpardyAnswerDictionary, FinalJeffpardyWagerDictionary } from "./Types";
+import { ICategory, ITeam, TeamDictionary } from "../../Types";
 
 export enum HostPageViewMode {
     Start,
@@ -50,6 +50,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
 
     jeffpardyHostController: JeffpardyHostController;
     gameCode: string;
+    hostCode: string;
     customCategoryJSON: string;
 
     constructor(props: any) {
@@ -63,11 +64,13 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
 
         if (!Debug.IsFlagSet(DebugFlags.FixedGameCode)) {
             this.gameCode = this.makeGameCode();
+            this.hostCode = this.makeGameCode();
         } else {
             this.gameCode = "AAAAAA";
+            this.hostCode = "BBBBBB"
         }
 
-        this.jeffpardyHostController = new JeffpardyHostController(this.gameCode);
+        this.jeffpardyHostController = new JeffpardyHostController(this.gameCode, this.hostCode);
         this.jeffpardyHostController.hostPage = this;
 
         this.state = {
@@ -242,6 +245,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                     this.state.viewMode == HostPageViewMode.Start &&
                     <HostStartScreen
                         gameCode={ this.gameCode }
+                        hostCode={ this.hostCode }
                         gameData={ this.state.gameData }
                         teams={ this.state.teams }
                         onModifyGameData={ (gameData) => { this.jeffpardyHostController.setCustomGameData(gameData) } }

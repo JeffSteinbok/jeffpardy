@@ -4,7 +4,7 @@ import { Logger } from "../../../utilities/Logger";
 import { JeffpardyHostController } from "../JeffpardyHostController";
 import { Key, SpecialKey } from "../../../utilities/Key";
 import { IPlayer, TeamDictionary, ITeam } from "../../../Types";
-import { IClue } from "../Types";
+import { IClue } from "../../../Types";
 import { Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button } from "@material-ui/core";
 
 

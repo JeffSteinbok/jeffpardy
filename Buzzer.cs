@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
+using Microsoft.Extensions.Hosting;
 
 namespace Jeffpardy
 {
@@ -21,9 +22,9 @@ namespace Jeffpardy
             this.buzzerHubContext = buzzerHubContext;
         }
 
-        public async Task ConnectHostAsync(string connectionId, string gameCode)
+        public async Task ConnectHostAsync(string connectionId, string gameCode, string hostCode)
         {
-            BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
+            BuzzerGame buzzerGame = this.GetBuzzerGameAsHost(gameCode, hostCode);
 
             connectionToGameDictionary[connectionId] = gameCode;
             
@@ -79,6 +80,12 @@ namespace Jeffpardy
             buzzerGame.BuzzIn(connectionId, timeInMilliseconds);
         }
 
+        public async Task ShowClueAsync(string gameCode, CategoryClue clue)
+        {
+            BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
+            await buzzerGame.ShowClueAsync(clue);
+        }
+
         public async Task StartFinalJeffpardyAsync(string gameCode, Dictionary<string, int> scores)
         {
             BuzzerGame buzzerGame = this.GetBuzzerGame(gameCode);
@@ -122,9 +129,31 @@ namespace Jeffpardy
             {
                 buzzerGame = buzzerGames[gameCode];
             }
+
+            return buzzerGame;
+        }
+
+        private BuzzerGame GetBuzzerGameAsHost(string gameCode, string hostCode)
+        {
+            gameCode = gameCode.ToUpperInvariant();
+            hostCode = hostCode.ToUpperInvariant();
+
+            BuzzerGame buzzerGame = null;
+
+            if (buzzerGames.ContainsKey(gameCode))
+            {
+                if (buzzerGames[gameCode].HostCode == hostCode)
+                {
+                    buzzerGame = buzzerGames[gameCode];
+                }
+                else
+                {
+                    throw new ArgumentException("Incorrect HostCode");
+                }
+            }
             else
             {
-                buzzerGame = new BuzzerGame(this.buzzerHubContext, gameCode);
+                buzzerGame = new BuzzerGame(this.buzzerHubContext, gameCode, hostCode);
                 lock (this)
                 {
                     buzzerGames[gameCode] = buzzerGame;
