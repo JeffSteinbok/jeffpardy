@@ -72,7 +72,7 @@ export class JeffpardyHostController {
 
     public updateSingleCategory(category: ICategory) {
 
-        appInsights.trackEvent({ name: "UpdateSingleCategory" });
+        appInsights.trackEvent({ name: "UpdateSingleCategory" }, { "OldCategory": category.title });
 
         // Find the category in GameData
         let existingRound: IGameRound = null;
