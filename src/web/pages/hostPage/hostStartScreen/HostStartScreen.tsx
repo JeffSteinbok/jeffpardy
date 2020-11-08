@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { ICategory } from "../../../Types";
-import { IGameData } from "../Types";
+import { IGameData, IGameRound } from "../Types";
 import { Logger } from "../../../utilities/Logger";
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -155,6 +155,11 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
         this.props.jeffpardyHostController.updateSingleCategory(category);
     }
 
+    public updateRound = (round: IGameRound) => {
+        this.props.jeffpardyHostController.updateRound(round);
+    }
+
+
     public showAnswerKey = () => {
         this.setState({
             viewMode: HostStartScreenViewMode.AnswerKey
@@ -208,7 +213,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                         {
                                             this.props.gameData.rounds.map((round, index) => {
                                                 return (
-                                                    <li key={ index }>{ round.name }
+                                                    <li key={ index }><a href="#" onClick={ (e) => { this.updateRound(round); } }>🔄</a>{ round.name }
                                                         <ul>
                                                             {
                                                                 round.categories.map((category, index) => {

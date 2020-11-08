@@ -54,7 +54,7 @@ export class JeffpardyHostController {
             wsam.executeApi(context);
         }
         else {
-            this.onGameDataLoaded(Debug.GameData);
+            this.onGameDataLoaded(Debug.generateGameData());
         }
     }
 
@@ -108,6 +108,32 @@ export class JeffpardyHostController {
             else {
                 this.gameData.finalJeffpardyCategory = Debug.generateFinalCategory();
             }
+            this.onGameDataLoaded(this.gameData);
+        }
+    }
+
+
+    public updateRound(round: IGameRound) {
+        let updateRoundId = round.id;
+
+        if (!Debug.IsFlagSet(DebugFlags.LocalCategories)) {
+            let context: IApiExecutionContext = {
+                showProgressIndicator: true,
+                apiName: "/api/Categories/GameData",
+                formData: {},
+                json: true,
+                success: (results: IGameData) => {
+                    this.gameData.rounds[updateRoundId] = results.rounds[updateRoundId];
+                    this.onGameDataLoaded(this.gameData);
+                },
+                error: null
+            };
+
+            let wsam: WebServerApiManager = new WebServerApiManager();
+            wsam.executeApi(context);
+        }
+        else {
+            this.gameData.rounds[updateRoundId] = Debug.generateGameData().rounds[updateRoundId];
             this.onGameDataLoaded(this.gameData);
         }
     }

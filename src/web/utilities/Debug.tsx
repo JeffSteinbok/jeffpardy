@@ -73,33 +73,35 @@ export class Debug {
     }
 
 
-    public static GameData: IGameData = {
-        rounds: [
-            {
-                id: 0,
-                name: "Jeffpardy",
-                categories: [
-                    Debug.generateCategory(),
-                    Debug.generateCategory(),
-                    Debug.generateCategory(),
-                    Debug.generateCategory(),
-                    Debug.generateCategory(),
-                    Debug.generateCategory()
-                ],
-            },
-            {
-                id: 1,
-                name: "Super Jeffpardy",
-                categories: [
-                    Debug.generateCategory(),
-                    Debug.generateCategory(),
-                    Debug.generateCategory(),
-                    Debug.generateCategory(),
-                    Debug.generateCategory(),
-                    Debug.generateCategory()
-                ],
-            }
-        ],
-        finalJeffpardyCategory: Debug.generateFinalCategory()
+    public static generateGameData(): IGameData {
+        return {
+            rounds: [
+                {
+                    id: 0,
+                    name: "Jeffpardy",
+                    categories: [
+                        Debug.generateCategory(),
+                        Debug.generateCategory(),
+                        Debug.generateCategory(),
+                        Debug.generateCategory(),
+                        Debug.generateCategory(),
+                        Debug.generateCategory()
+                    ],
+                },
+                {
+                    id: 1,
+                    name: "Super Jeffpardy",
+                    categories: [
+                        Debug.generateCategory(),
+                        Debug.generateCategory(),
+                        Debug.generateCategory(),
+                        Debug.generateCategory(),
+                        Debug.generateCategory(),
+                        Debug.generateCategory()
+                    ],
+                }
+            ],
+            finalJeffpardyCategory: Debug.generateFinalCategory()
+        }
     }
 }
