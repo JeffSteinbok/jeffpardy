@@ -100,6 +100,19 @@ namespace Jeffpardy.Hubs
             }
         }
 
+        public async void StartRound(string gameCode, GameRound round)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
+                await gameCache.StartRoundAsync(gameCode, round);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+        }
+
         public async void ShowClue(string gameCode, CategoryClue clue)
         {
             try

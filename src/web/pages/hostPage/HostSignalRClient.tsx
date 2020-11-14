@@ -2,6 +2,7 @@ import * as signalR from "@microsoft/signalr";
 import { Logger } from "../../utilities/Logger";
 import { JeffpardyHostController } from "./JeffpardyHostController";
 import { IClue, IPlayer, TeamDictionary } from "../../Types";
+import { IGameRound } from "./Types";
 
 enum GameBoardState {
     Normal,
@@ -15,6 +16,7 @@ export interface IHostSignalRClient {
     resetBuzzer: () => void;
     activateBuzzer: () => void;
     showClue: (clue: IClue) => void;
+    startRound: (round: IGameRound) => void;
     startFinalJeffpardy: (scores: { [key: string]: number }) => void;
     showFinalJeffpardyClue: () => void;
     endFinalJeffpardy: () => void;
@@ -82,6 +84,14 @@ export class HostSignalRClient implements IHostSignalRClient {
             .invoke('activateBuzzer', this.gameCode)
             .catch(err => console.error(err));
     };
+
+    public startRound = (round: IGameRound) => {
+        Logger.debug("HostSignalRClient:showClue")
+
+        this.hubConnection
+            .invoke('startRound', this.gameCode, round)
+            .catch(err => console.error(err));
+    }
 
     public showClue = (clue: IClue) => {
         Logger.debug("HostSignalRClient:showClue")

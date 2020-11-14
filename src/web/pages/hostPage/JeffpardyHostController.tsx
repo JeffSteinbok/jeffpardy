@@ -310,6 +310,12 @@ export class JeffpardyHostController {
         this.scoreboard.onClueShown(clue);
     }
 
+    // This is ugly; the controller should have the GameData and send it to the
+    // host page rather than the host sending it back up here.
+    public startRound(round: IGameRound) {
+        this.hostSignalRClient.startRound(round);
+    }
+
     public setDailyDoubleWager(wager: number) {
         this.scoreboard.onSetDailyDoubleWager(wager);
     }

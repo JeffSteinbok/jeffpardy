@@ -170,6 +170,8 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                 categories: this.state.gameData.rounds[0].categories
             });
         }
+
+        this.jeffpardyHostController.startRound(this.state.gameData.rounds[0]);
     }
 
     public startNewRound = () => {
@@ -181,6 +183,8 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
             round: this.state.round + 1,
             categories: this.state.gameData.rounds[this.state.round + 1].categories
         })
+
+        this.jeffpardyHostController.startRound(this.state.gameData.rounds[this.state.round + 1]);
     }
 
     public startFinalJeffpardy = () => {
@@ -188,6 +192,12 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
             round: this.state.round + 1,
             categories: [this.state.gameData.finalJeffpardyCategory]
         })
+
+        this.jeffpardyHostController.startRound({
+            id: 2,
+            name: "Final Jeffpardy",
+            categories: [this.state.gameData.finalJeffpardyCategory]
+        });
     }
 
     public setViewMode = (viewMode: HostPageViewMode) => {

@@ -259,7 +259,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
 
                                 <div className="secondaryWindow">
                                     <button onClick={ () => {
-                                        window.open(hostSecondaryWindowUri, 'Jeffpardy Host Secondary Window', 'width=600,height=400');
+                                        window.open(hostSecondaryWindowUri, 'Jeffpardy Host Secondary Window', 'width=600,height=600');
                                     } }> Host Secondary Window</button><br />
                                     Show this page on another window to show the answer to just the host.  Do not share this link with the players.
                                     <p />

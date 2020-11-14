@@ -635,6 +635,29 @@ div#hostSecondaryPage div.question {
     color:yellow;
 }
 
+div#hostSecondaryPage div.roundName {
+    padding-top: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+div#hostSecondaryPage ul.categories {
+    list-style: none;
+    padding-left:0px;
+}
+
+div#hostSecondaryPage ul.categories li {
+    padding-top: 5px;
+}
+
+div#hostSecondaryPage ul.categories li div {
+    text-align: left;
+}
+
+div#hostSecondaryPage ul.categories li span.categoryTitle {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
 
 
 /*----------------------------------------------------------------------------*/

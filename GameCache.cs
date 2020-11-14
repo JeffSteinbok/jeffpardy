@@ -80,6 +80,11 @@ namespace Jeffpardy
             Game game = this.GetGame(gameCode);
             game.BuzzIn(connectionId, timeInMilliseconds, handicapInMilliseconds);
         }
+        public async Task StartRoundAsync(string gameCode, GameRound round)
+        {
+            Game game = this.GetGame(gameCode);
+            await game.StartRoundAsync(round);
+        }
 
         public async Task ShowClueAsync(string gameCode, CategoryClue clue)
         {

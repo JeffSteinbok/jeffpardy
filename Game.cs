@@ -194,6 +194,11 @@ namespace Jeffpardy
             }
         }
 
+        public async Task StartRoundAsync(GameRound round)
+        {
+            await gameHubContext.Clients.Groups(this.hostGroupName).SendAsync("startRound", round);
+        }
+
         public async Task ShowClueAsync(CategoryClue clue)
         {
             await gameHubContext.Clients.Groups(this.hostGroupName).SendAsync("showClue", clue);

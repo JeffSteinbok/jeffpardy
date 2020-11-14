@@ -283,7 +283,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                     <div>
                         <button disabled={ this.state.gameBoardState != GameBoardState.Normal } onClick={ this.adjustTeamInfo }>Scores</button>
                         <button onClick={ () => {
-                            window.open(this.props.hostSecondaryWindowUri, 'Jeffpardy Host Secondary Window', 'width=600,height=400');
+                            window.open(this.props.hostSecondaryWindowUri, 'Jeffpardy Host Secondary Window', 'width=600,height=600');
                         } }>Host Window</button>
                     </div>
                 </div>
