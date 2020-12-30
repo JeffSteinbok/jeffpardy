@@ -14,12 +14,17 @@ using Microsoft.Azure.Storage.Auth;
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Jeffpardy
 {
     public class AzureBlobCategoryLoader
     {
         private static readonly Lazy<AzureBlobCategoryLoader> instance = new Lazy<AzureBlobCategoryLoader>(() => new AzureBlobCategoryLoader());
+
+        public static bool DevMode { get; set; }
+
+        public static string DevConnectionString { get; set; }
 
         public static AzureBlobCategoryLoader Instance
         {
@@ -33,8 +38,16 @@ namespace Jeffpardy
 
         private AzureBlobCategoryLoader()
         {
-            // Create a CloudFileClient object for credentialed access to Azure Files.
-            this.blobServiceClient = new BlobServiceClient("BlobEndpoint=https://jeffpardy.blob.core.windows.net/;QueueEndpoint=https://jeffpardy.queue.core.windows.net/;FileEndpoint=https://jeffpardy.file.core.windows.net/;TableEndpoint=https://jeffpardy.table.core.windows.net/;SharedAccessSignature=sv=2019-10-10&ss=b&srt=sco&sp=rl&se=2021-04-29T14:02:19Z&st=2020-04-29T06:02:19Z&spr=https&sig=MUv2FomRQ8c7%2FVycb%2F%2FHCIA3ZUcdpbyRs4JOm8Mngd0%3D");
+            if (AzureBlobCategoryLoader.DevMode)
+            {
+                this.blobServiceClient = new BlobServiceClient(AzureBlobCategoryLoader.DevConnectionString);
+            }
+            else
+            {
+                this.blobServiceClient = new BlobServiceClient(new Uri($"https://jeffpardy.blob.core.windows.net"),
+                                                               new DefaultAzureCredential());
+            }
+
         }
 
         public void PopulateSeasonManifest(ISeasonManifestCache seasonManifestCache)

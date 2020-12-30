@@ -17,13 +17,6 @@ namespace Jeffpardy
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-
-            AzureBlobCategoryLoader.Instance.PopulateSeasonManifest(SeasonManifestCache.Instance);
-
-            // Load the category cache
-            // AzureFilesCategoryLoader.Instance.PopulateSeasonManifest(SeasonManifestCache.Instance);
-
-
         }
 
         public IConfiguration Configuration { get; }
@@ -42,8 +35,9 @@ namespace Jeffpardy
         {
             if (env.IsDevelopment())
             {
+                AzureBlobCategoryLoader.DevMode = true;
+                AzureBlobCategoryLoader.DevConnectionString = Configuration["BlobConnectionString"];
                 app.UseDeveloperExceptionPage();
-                //app.UseWebpackDevMiddleware(new Microsoft.AspNetCore.SpaServices.Webpack.WebpackDevMiddlewareOptions { HotModuleReplacement = true });
             }
             else
             {
@@ -73,6 +67,8 @@ namespace Jeffpardy
             {
                 endpoints.MapHub<GameHub>("/hub/game");
             });
+
+            AzureBlobCategoryLoader.Instance.PopulateSeasonManifest(SeasonManifestCache.Instance);
         }
     }
 }

@@ -1,13 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <AssemblyName>Jeffpardy</AssemblyName>
     <RootNamespace>Jeffpardy</RootNamespace>
     <Configurations>Debug;Release;DebugServerOnly</Configurations>
+    <UserSecretsId>b808f0f8-3565-4c36-bfe8-e713ac91c711</UserSecretsId>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.1.1" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.4.1" />
@@ -18,10 +18,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
   </ItemGroup>
-
   <Target Name="NPM / WebPack Build" AfterTargets="Build">
     <Exec Condition="$(Configuration) == 'Debug'" Command="npm i &amp;&amp; npm run build &amp;&amp; npm run scss" />
     <Exec Condition="$(Configuration) == 'Release'" Command="npm i &amp;&amp; npm run buildProd &amp;&amp; npm run scss" />
   </Target>
-
 </Project>
