@@ -19,8 +19,7 @@ export enum JeopardyBoardView {
     Intermission,
     FinalCategory,
     FinalClue,
-    FinalTally,
-    End
+    FinalTally
 }
 
 export interface IJeffpardyBoardProps {
@@ -125,9 +124,6 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
         let newBoardView: JeopardyBoardView = JeopardyBoardView.Board;
         if (boardEmpty) {
             newBoardView = JeopardyBoardView.Intermission;
-            if (this.props.round == 2) {
-                newBoardView = JeopardyBoardView.End
-            }
         }
 
         this.setState({
@@ -182,7 +178,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
 
     public startTimer = () => {
         this.timerRemainingDurationInSeconds = this.timerDurationInSeconds;
-        this.timerHandle = setTimeout(this.onTimerFire, 250);
+        this.timerHandle = setTimeout(this.onTimerFire, 10);
     }
 
     public stopTimer = () => {
@@ -197,7 +193,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
 
     public onTimerFire = () => {
 
-        this.timerRemainingDurationInSeconds = this.timerRemainingDurationInSeconds - 0.25;
+        this.timerRemainingDurationInSeconds = this.timerRemainingDurationInSeconds - 0.01;
         let percentRemaing = (this.timerRemainingDurationInSeconds) / this.timerDurationInSeconds;
         if (percentRemaing != this.state.timerPercentageRemaining) {
             this.setState({
@@ -205,7 +201,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             })
         }
         if (percentRemaing > 0) {
-            this.timerHandle = setTimeout(this.onTimerFire, 250);
+            this.timerHandle = setTimeout(this.onTimerFire, 10);
         } else {
             // Time's up!
             if (this.state.jeopardyBoardView == JeopardyBoardView.FinalClue) {
@@ -223,9 +219,6 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
     onTallyCompleted = () => {
         Logger.debug("JeffpardyBoard:onTallyCompleted");
         this.props.jeffpardyHostController.setViewMode(HostPageViewMode.End);
-        this.setState({
-            jeopardyBoardView: JeopardyBoardView.End
-        })
     }
 
     public render() {
@@ -382,14 +375,6 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                                     </div>
                                 }
                             </div>
-                        }
-                        { this.state.jeopardyBoardView == JeopardyBoardView.End &&
-                            <div className="jeffpardyEnd">
-                                Thank you for playing<br />
-                                <div className="title">Jeffpardy!</div>
-                                <p />
-                                    Refresh your browser to start a new game.
-                                </div>
                         }
                     </div>
                 </div>

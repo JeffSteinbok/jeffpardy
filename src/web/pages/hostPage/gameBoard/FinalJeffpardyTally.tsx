@@ -154,6 +154,7 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
             this.setState({
                 isTallyCompleted: true
             })
+            this.props.onTallyCompleted();
         }
         this.setState({
             currentTeamIndex: newTeamIndex,
@@ -236,7 +237,7 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
                         <i>Hit SPACE to reveal responses</i>
                     }
                     { this.state.isTallyCompleted &&
-                        <button onClick={ this.props.onTallyCompleted }>End Game</button>
+                        <div>Thank you for playing.  Refresh your browser to start a new game.</div>
                     }
                 </div>
             </div>
