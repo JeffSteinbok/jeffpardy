@@ -1,20 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Threading.Tasks;
-using Microsoft.Azure; // Namespace for Azure Configuration Manager
-using Microsoft.Azure.Storage; // Namespace for Storage Client Library
-using Microsoft.Azure.Storage.File; // Namespace for Azure Files
-using Microsoft.Azure.Services.AppAuthentication;
-using Microsoft.Azure.Storage.Auth;
-using Azure.Identity;
+﻿using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Newtonsoft.Json;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Jeffpardy
 {

@@ -178,7 +178,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
 
     public startTimer = () => {
         this.timerRemainingDurationInSeconds = this.timerDurationInSeconds;
-        this.timerHandle = setTimeout(this.onTimerFire, 10);
+        this.timerHandle = setTimeout(this.onTimerFire, 250);
     }
 
     public stopTimer = () => {
@@ -193,7 +193,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
 
     public onTimerFire = () => {
 
-        this.timerRemainingDurationInSeconds = this.timerRemainingDurationInSeconds - 0.01;
+        this.timerRemainingDurationInSeconds = this.timerRemainingDurationInSeconds - 0.25;
         let percentRemaing = (this.timerRemainingDurationInSeconds) / this.timerDurationInSeconds;
         if (percentRemaing != this.state.timerPercentageRemaining) {
             this.setState({
@@ -201,7 +201,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             })
         }
         if (percentRemaing > 0) {
-            this.timerHandle = setTimeout(this.onTimerFire, 10);
+            this.timerHandle = setTimeout(this.onTimerFire, 250);
         } else {
             // Time's up!
             if (this.state.jeopardyBoardView == JeopardyBoardView.FinalClue) {
