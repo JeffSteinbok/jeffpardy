@@ -316,6 +316,10 @@ export class JeffpardyHostController {
         this.hostSignalRClient.startRound(round);
     }
 
+    public endRound() {
+        this.jeffpardyBoard.endRound();
+    }
+
     public setDailyDoubleWager(wager: number) {
         this.scoreboard.onSetDailyDoubleWager(wager);
     }
@@ -330,6 +334,11 @@ export class JeffpardyHostController {
 
     public startNewRound = () => {
         this.hostPage.startNewRound();
+        this.scoreboard.onStartNormalRound();
+    }
+
+    public startIntermission = () => {
+        this.scoreboard.onStartIntermission();
     }
 
     public buzzerTimeout = () => {
@@ -340,7 +349,7 @@ export class JeffpardyHostController {
     public startFinalJeffpardy = () => {
         // This line should move most likely.
         this.controllingTeamChange(null);
-        this.scoreboard.clearControl();
+        this.scoreboard.onStartFinalJeffpardy();
         this.hostPage.startFinalJeffpardy();
 
         let scores: { [key: string]: number } = {};

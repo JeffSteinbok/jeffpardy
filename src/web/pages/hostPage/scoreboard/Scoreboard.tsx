@@ -14,6 +14,8 @@ enum GameBoardState {
     ClueGivenBuzzerActive,
     ClueAnswered,
     Question,
+    Intermission,
+    FinalJeffpardy,
     Completed
 }
 
@@ -43,6 +45,9 @@ export interface IScoreboard {
     onBuzzerTimeout: () => void;
     onAssignBuzzedInUser: (user: IPlayer) => void;
     onSetDailyDoubleWager: (wager: number) => void;
+    onStartIntermission: () => void;
+    onStartNormalRound: () => void;
+    onStartFinalJeffpardy: () => void;
     clearControl: () => void;
 }
 /**
@@ -116,6 +121,24 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         });
     }
 
+    onStartNormalRound = () => {
+        this.setState({
+            gameBoardState: GameBoardState.Normal
+        });
+    }
+
+    onStartIntermission = () => {
+        this.setState({
+            gameBoardState: GameBoardState.Intermission
+        });
+    }
+
+    onStartFinalJeffpardy = () => {
+        this.clearControl();
+        this.setState({
+            gameBoardState: GameBoardState.FinalJeffpardy
+        });
+    }
     public clearControl = () => {
         this.setState({
             controllingUser: null
@@ -141,6 +164,12 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
             this.resetBuzzer();
         }
     };
+
+    endRound = () => {
+        if (this.state.gameBoardState == GameBoardState.Normal) {
+            this.props.jeffpardyHostController.endRound();
+        }
+    }
 
     correctResponse = () => {
         this.processResponse(true);
@@ -269,6 +298,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                     <div>Board:</div>
                     <div>
                         <button disabled={ this.state.gameBoardState != GameBoardState.Question } onClick={ this.showBoard }>Cont (sp)</button>
+                        <button disabled={ this.state.gameBoardState != GameBoardState.Normal } onClick={ this.endRound }>End Round</button>
                     </div>
                     <div>Buzzer:</div>
                     <div>
@@ -281,7 +311,9 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                     </div>
                     <div>Fixup:</div>
                     <div>
-                        <button disabled={ this.state.gameBoardState != GameBoardState.Normal } onClick={ this.adjustTeamInfo }>Scores</button>
+                        <button disabled={ this.state.gameBoardState != GameBoardState.Normal &&
+                            this.state.gameBoardState != GameBoardState.Intermission &&
+                            this.state.gameBoardState != GameBoardState.FinalJeffpardy } onClick={ this.adjustTeamInfo }>Scores</button>
                         <button onClick={ () => {
                             window.open(this.props.hostSecondaryWindowUri, 'Jeffpardy Host Secondary Window', 'width=600,height=600');
                         } }>Host Window</button>

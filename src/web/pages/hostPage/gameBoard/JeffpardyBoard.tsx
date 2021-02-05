@@ -47,6 +47,7 @@ export interface IJeffpardyBoard {
     showBoard: () => void;
     startTimer: () => void;
     stopTimer: () => void;
+    endRound: () => void;
 }
 
 export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffpardyBoardState> implements IJeffpardyBoard {
@@ -122,6 +123,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
         }
 
         let newBoardView: JeopardyBoardView = JeopardyBoardView.Board;
+        this.props.jeffpardyHostController.startIntermission();
         if (boardEmpty) {
             newBoardView = JeopardyBoardView.Intermission;
         }
@@ -147,6 +149,15 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                 jeopardyBoardView: JeopardyBoardView.FinalCategory
             })
         }
+    }
+
+    public endRound = () => {
+        // Mark all the questions completed and show the board.
+        for (var i = 0; i < this.props.categories.length; i++) {
+            this.props.categories[i].isAsked = true;
+        }
+
+        this.showBoard();
     }
 
     showFinalJeffpardyClue = () => {

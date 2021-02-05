@@ -36,6 +36,7 @@ export interface IHostPageState {
 export interface IHostPage {
     setViewMode: (viewMode: HostPageViewMode) => void;
     startNewRound: () => void;
+    startIntermission: () => void;
     startFinalJeffpardy: () => void;
     onGameDataLoaded: (gameData: IGameData) => void;
     onUpdateTeams: (teams: TeamDictionary) => void;
@@ -185,6 +186,10 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
         })
 
         this.jeffpardyHostController.startRound(this.state.gameData.rounds[this.state.round + 1]);
+    }
+
+    public startIntermission = () => {
+
     }
 
     public startFinalJeffpardy = () => {
