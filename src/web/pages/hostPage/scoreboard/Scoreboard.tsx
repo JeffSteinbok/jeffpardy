@@ -167,7 +167,9 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
     endRound = () => {
         if (this.state.gameBoardState == GameBoardState.Normal) {
-            this.props.jeffpardyHostController.endRound();
+            if (window.confirm("Are you sure you want to end the round?")) {
+                this.props.jeffpardyHostController.endRound();
+            }
         }
     }
 
