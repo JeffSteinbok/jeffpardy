@@ -3,14 +3,14 @@ import * as ReactDOM from "react-dom";
 import { ICategory } from "../../../Types";
 import { IGameData, IGameRound } from "../Types";
 import { Logger } from "../../../utilities/Logger";
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Slide from '@material-ui/core/Slide';
-import { TextField, Link } from "@material-ui/core";
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
+import { TextField, Link } from "@mui/material";
 import { AnswerKey } from "./AnswerKey";
 import { Attribution } from "../../../components/attribution/Attribution";
 import { TeamDictionary } from "../../../Types";
@@ -263,7 +263,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                     } }> Host Secondary Window</button><br />
                                     Show this page on another window to show the answer to just the host.  Do not share this link with the players.
                                     <p />
-                                    <QRCode
+                                    <QRCode.QRCodeCanvas
                                         value={ hostSecondaryWindowUri }
                                         size={ 128 }
                                         includeMargin={ true } />
@@ -303,10 +303,10 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                         <DialogActions>
                                             <Button onClick={ () => { this.setState({ isCustomCategoryDialogOpen: false }) } }>
                                                 Cancel
-                                        </Button>
+                                            </Button>
                                             <Button onClick={ this.loadCustomCategories } color="primary">
                                                 Load JSON
-                                        </Button>
+                                            </Button>
                                         </DialogActions>
                                     </Dialog>
                                 }

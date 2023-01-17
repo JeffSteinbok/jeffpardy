@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom";
 import { WebServerApiManager, IApiExecutionContext } from "../../utilities/WebServerApiManager";
 import { IGameData } from "../hostPage/Types";
 import { ICategory } from "../../Types";
-import { TextField } from "@material-ui/core";
+import TextField from '@mui/material/TextField';
 
 interface IFromJeopardyLabsState {
     categories: ICategory[]
