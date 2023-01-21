@@ -64,11 +64,16 @@ namespace Jeffpardy
 
         public async Task<Category> LoadCategoryAsync(ManifestCategory manifestCategory)
         {
+            return await LoadCategoryAsync(manifestCategory.Season, manifestCategory.FileName);
+        }
+
+        public async Task<Category> LoadCategoryAsync(int season, string fileName)
+        {
             Category ret = null;
 
             var categoriesContainerClient = this.blobServiceClient.GetBlobContainerClient("categories");
 
-            var categoryClient = categoriesContainerClient.GetBlobClient(manifestCategory.Season.ToString("000") + "/" + manifestCategory.FileName);
+            var categoryClient = categoriesContainerClient.GetBlobClient(season.ToString("000") + "/" + fileName);
             var categoryDownloadInfo = await categoryClient.DownloadAsync();
 
             using (StreamReader sr = new StreamReader(categoryDownloadInfo.Value.Content))

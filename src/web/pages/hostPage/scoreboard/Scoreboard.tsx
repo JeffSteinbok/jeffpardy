@@ -5,7 +5,7 @@ import { JeffpardyHostController } from "../JeffpardyHostController";
 import { Key, SpecialKey } from "../../../utilities/Key";
 import { IPlayer, TeamDictionary, ITeam } from "../../../Types";
 import { IClue } from "../../../Types";
-import { Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button } from "@material-ui/core";
+import { Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button } from "@mui/material"
 
 
 enum GameBoardState {
@@ -406,7 +406,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                         <DialogActions>
                             <Button onClick={ () => { this.setState({ isTeamFixupDialogShown: false }) } } color="primary">
                                 OK
-                        </Button>
+                            </Button>
                         </DialogActions>
                     </Dialog>
                 }

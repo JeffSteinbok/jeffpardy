@@ -43,10 +43,10 @@ export class HostLobby extends React.Component<IHostLobbyProps, IHostLobbyState>
             <div className="hostStartPage">
                 <div className="title">Jeffpardy!</div>
                 <div className="gameCode">Use Game Code: { this.props.gameCode }</div>
-                    Give the above game code to the players or give them this direct link:<br />
+                Give the above game code to the players or give them this direct link:<br />
                 <a target="#" href={ playerUri }>{ playerUri }</a>
                 <p />
-                <QRCode
+                <QRCode.QRCodeCanvas
                     value={ playerUri }
                     size={ 256 }
                     includeMargin={ true } />
