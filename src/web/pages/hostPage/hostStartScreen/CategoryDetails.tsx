@@ -139,7 +139,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                 formData: {},
                 json: true,
                 success: (results: ICategory) => {
-                    this.setState({ category: results })
+                    this.setCategory(results)
                 },
                 error: null
             };
@@ -170,7 +170,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                 formData: {},
                 json: true,
                 success: (results: ICategory) => {
-                    this.setState({ category: results })
+                    this.setCategory(results);
                 },
                 error: null
             };
@@ -206,5 +206,21 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
             // TODO
             alert("Can't Search Local Categories")
         }
+    }
+
+    public setCategory = (category: ICategory) => {
+        // This sucks that I have to do this here too and in the controller
+
+        if (this.props.roundDescriptor != RoundDescriptor.FinalJeffpardy) {
+            let roundMultiplier: number = 1;
+            if (this.props.roundDescriptor == RoundDescriptor.SuperJeffpardy) {
+                roundMultiplier = 2;
+            }
+            // Assign the scores
+            for (var i: number = 0; i < category.clues.length; i++) {
+                category.clues[i].value = (i + 1) * 100 * roundMultiplier;
+            }
+        }
+        this.setState({ category: category });
     }
 }
