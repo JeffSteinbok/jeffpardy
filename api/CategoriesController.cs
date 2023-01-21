@@ -6,13 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Jeffpardy
 {
-    public enum RoundDescriptor
-    {
-        Jeffpardy,
-        SuperJeffpardy,
-        FinalJeffpardy
-    }
-
     [ApiController]
     [Route("api/Categories")]
     public class CategoriesController : Controller
@@ -68,6 +61,14 @@ namespace Jeffpardy
             return category;
         }
 
+        [Route("{season}/{fileName}")]
+        public async Task<Category> GetCategoryFromFilename(int season, string fileName)
+        {
+            var category = await AzureBlobCategoryLoader.Instance.LoadCategoryAsync(season, fileName);
+
+            return category;
+        }
+
         private async Task<Category[]> GetCategoriesAsync(IReadOnlyList<ManifestCategory> categoryList)
         {
             int categoryCount = categoryList.Count;
@@ -82,6 +83,11 @@ namespace Jeffpardy
                 manifestCategories.Add(categoryList[i]);
             }
 
+            return await LoadCategoriesAsync(manifestCategories);
+        }
+
+        private async Task<Category[]> LoadCategoriesAsync(List<ManifestCategory> manifestCategories)
+        {
             var categoryLoadTasks = manifestCategories.Select((mc) => AzureBlobCategoryLoader.Instance.LoadCategoryAsync(mc));
 
             await Task.WhenAll(categoryLoadTasks);

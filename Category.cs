@@ -22,4 +22,15 @@ namespace Jeffpardy
 
         public CategoryClue[] Clues { get; set; }
     }
+
+    public class CategoryMetadata
+    {
+        public string Title { get; set; }
+
+        public DateTime AirDate { get; set; }
+
+        public int Season { get; set; }
+
+        public string FileName { get; set; }
+    }
 }
