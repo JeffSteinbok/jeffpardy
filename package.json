@@ -34,8 +34,8 @@
     "webpack-dev-middleware": "^6.0.1"
   },
   "scripts": {
-    "build": "set NODE_OPTIONS=--openssl-legacy-provider && webpack --mode=production --node-env=production",
-    "buildProd": "set NODE_ENV=production && webpack -p --color",
+    "build": "set NODE_OPTIONS=--openssl-legacy-provider && webpack --mode=development --node-env=development",
+    "buildProd": "set NODE_OPTIONS=--openssl-legacy-provider && webpack --mode=production --node-env=production",
     "scss": "node-sass src/web -o wwwroot/css/dist"
   },
   "dependencies": {
