@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { ICategory } from "../../../Types";
-import { IGameData, IGameRound } from "../Types";
+import { IGameData, IGameRound, RoundDescriptor } from "../Types";
 import { Logger } from "../../../utilities/Logger";
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -12,16 +12,17 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import { TextField, Link } from "@mui/material";
 import { AnswerKey } from "./AnswerKey";
+import { CategoryDetails } from "./CategoryDetails";
 import { Attribution } from "../../../components/attribution/Attribution";
 import { TeamDictionary } from "../../../Types";
 import { JeffpardyHostController } from "../JeffpardyHostController";
+
 import * as QRCode from "qrcode.react";
 
 export enum HostStartScreenViewMode {
     Normal,
     AnswerKey
 }
-
 
 export interface IHostStartScreenProps {
     gameCode: string;
@@ -35,8 +36,11 @@ export interface IHostStartScreenProps {
 
 export interface IHostStartScreenState {
     viewMode: HostStartScreenViewMode;
+    selectedCategory: ICategory;
+    selectedCategoryRoundDescriptor: RoundDescriptor;
     isCustomCategoryDialogOpen: boolean;
     isCustomCategoryTsvDialogOpen: boolean;
+    isCategoryDetailsDialogOpen: boolean;
 }
 
 /**
@@ -47,14 +51,18 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
     customCategoryJSON: string;
     customCategoryTsv: string;
     isCustomCategoryDialogOpen: boolean = false;
+    isCategoryDetailsDialogOpen: boolean = false;
 
     constructor(props: any) {
         super(props);
 
         this.state = {
             viewMode: HostStartScreenViewMode.Normal,
+            selectedCategory: null,
+            selectedCategoryRoundDescriptor: null,
             isCustomCategoryDialogOpen: false,
-            isCustomCategoryTsvDialogOpen: false
+            isCustomCategoryTsvDialogOpen: false,
+            isCategoryDetailsDialogOpen: false,
         }
     }
 
@@ -159,6 +167,21 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
         this.props.jeffpardyHostController.updateRound(round);
     }
 
+    public showCategoryDetails = (round: IGameRound, category: ICategory) => {
+        let roundDescriptor: RoundDescriptor = RoundDescriptor.Jeffpardy;
+        if (round == null) {
+            roundDescriptor = RoundDescriptor.FinalJeffpardy;
+        } else if (round.id == 1) {
+            roundDescriptor = RoundDescriptor.SuperJeffpardy;
+        }
+
+
+        this.setState({
+            selectedCategory: category,
+            selectedCategoryRoundDescriptor: roundDescriptor,
+            isCategoryDetailsDialogOpen: true
+        })
+    }
 
     public showAnswerKey = () => {
         this.setState({
@@ -213,7 +236,8 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                         {
                                             this.props.gameData.rounds.map((round, index) => {
                                                 return (
-                                                    <li key={ index }><a href="#" onClick={ (e) => { this.updateRound(round); } }>🔄</a>{ round.name }
+                                                    <li key={ index }><a href="#" onClick={ (e) => { this.updateRound(round); } }>🔄</a>
+                                                        { round.name }
                                                         <ul>
                                                             {
                                                                 round.categories.map((category, index) => {
@@ -221,6 +245,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                                                     return (
                                                                         <li key={ index }>
                                                                             <a href="#" onClick={ (e) => { this.updateSingleCategory(category); } }>🔄</a>
+                                                                            <a href="#" onClick={ (e) => { this.showCategoryDetails(round, category); } }>🔎</a>
                                                                             { category.title } - { airDate.getMonth() + 1 + "/" + airDate.getDay() + "/" + airDate.getFullYear() }
                                                                         </li>
                                                                     )
@@ -237,6 +262,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                             <ul>
                                                 <li>
                                                     <a href="#" onClick={ (e) => { this.updateSingleCategory(finalCategory); } }>🔄</a>
+                                                    <a href="#" onClick={ (e) => { this.showCategoryDetails(null, finalCategory); } }>🔎</a>
                                                     { finalCategory.title } - { finalAirDate.getMonth() + 1 + "/" + finalAirDate.getDay() + "/" + finalAirDate.getFullYear() }</li>
                                             </ul>
                                         </li>
@@ -337,6 +363,22 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                         </Button>
                                     </DialogActions>
                                 </Dialog>
+
+                                { this.state.isCategoryDetailsDialogOpen &&
+                                    <CategoryDetails
+                                        roundDescriptor={ this.state.selectedCategoryRoundDescriptor }
+                                        category={ this.state.selectedCategory }
+                                        onSave={ (category: ICategory) => {
+                                            this.props.jeffpardyHostController.replaceSingleCategory(this.state.selectedCategory, category)
+                                            this.setState({ isCategoryDetailsDialogOpen: false });
+                                        } }
+                                        onCancel={ () => {
+                                            this.setState({ isCategoryDetailsDialogOpen: false })
+                                        } }
+
+                                    />
+                                }
+
                             </div>
                         }
                     </div>

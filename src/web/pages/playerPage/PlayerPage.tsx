@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import * as ReactDOM from "react-dom";
+import { createRoot } from 'react-dom/client';
 import * as signalR from "@microsoft/signalr";
 import { Logger } from "../../utilities/Logger";
 import { IPlayer, TeamDictionary } from "../../Types"
@@ -431,7 +431,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                     <h2>Team: { this.state.team }</h2>
 
                                     <div><i>Wait for the button to turn green before buzzing in.<br />
-                                            Click, touch or press SPACE to activate.</i></div>
+                                        Click, touch or press SPACE to activate.</i></div>
 
                                     <button id="buzzer" className={ buzzerClassName } onMouseDown={ this.buzzIn }>
                                         <div>{ buzzerButtonText }</div>
@@ -440,7 +440,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
                                     <div style={ { paddingTop: 10 } } >
                                         Buzzer handicap:
-                                    <select id="handicap" onChange={ (e) => this.handicap = Number.parseInt(e.target.value, 10) }>
+                                        <select id="handicap" onChange={ (e) => this.handicap = Number.parseInt(e.target.value, 10) }>
                                             <option value="0">0 ms</option>
                                             <option value="50">50 ms</option>
                                             <option value="100">100 ms</option>
@@ -538,7 +538,5 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 let root = document.createElement("div");
 root.id = 'main';
 document.body.appendChild(root);
-ReactDOM.render(
-    <PlayerPage />,
-    document.getElementById("main")
-);
+const reactRoot = createRoot(root)
+reactRoot.render(<PlayerPage />);

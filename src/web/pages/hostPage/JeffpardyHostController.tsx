@@ -126,6 +126,40 @@ export class JeffpardyHostController {
         }
     }
 
+    public replaceSingleCategory(oldCategory: ICategory, newCategory: ICategory) {
+        appInsights.trackEvent({ name: "ReplaceSingleCategory" }, {
+            "OldCategory": oldCategory.title,
+            "NewCategory": newCategory.title
+        });
+
+        // Find the category in GameData
+        let existingRound: IGameRound = null;
+        let categoryIndex: number = -1;
+
+        this.gameData.rounds.forEach((gameRound: IGameRound, index: number) => {
+            if (categoryIndex == -1) {
+                categoryIndex = gameRound.categories.indexOf(oldCategory);
+                if (categoryIndex >= 0) {
+                    existingRound = gameRound;
+                }
+            }
+        });
+
+        let roundDescriptor: RoundDescriptor = RoundDescriptor.Jeffpardy;
+        if (existingRound == null) {
+            roundDescriptor = RoundDescriptor.FinalJeffpardy;
+        } else if (existingRound.id == 1) {
+            roundDescriptor = RoundDescriptor.SuperJeffpardy;
+        }
+
+        if (existingRound != null) {
+            existingRound.categories[categoryIndex] = newCategory;
+        }
+        else {
+            this.gameData.finalJeffpardyCategory = newCategory;
+        }
+        this.onGameDataLoaded(this.gameData);
+    }
 
     public updateRound(round: IGameRound) {
         appInsights.trackEvent({ name: "UpdateRound" });

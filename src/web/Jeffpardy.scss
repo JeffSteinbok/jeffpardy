@@ -2,48 +2,44 @@ $colorGameBoard: #060CE9;
 $colorBrown: #2b0f01;
 
 /* Font Families */
-@font-face
-{
+@font-face {
     font-family: "Segoe UI Web Light";
     font-style: normal;
     font-weight: 100;
-    src: local("Segoe UI Light"),local("Segoe UI"),local("HelveticaNeue-Light");
-    unicode-range: U+0-FF,U+300-36F;
+    src: local("Segoe UI Light"), local("Segoe UI"), local("HelveticaNeue-Light");
+    unicode-range: U+0-FF, U+300-36F;
 }
 
-@font-face
-{
+@font-face {
     font-family: "Segoe UI Web Regular";
     font-style: normal;
     font-weight: normal;
-    src: local("Segoe UI"),local("Helvetica Neue");
-    unicode-range: U+0-FF,U+300-36F;
+    src: local("Segoe UI"), local("Helvetica Neue");
+    unicode-range: U+0-FF, U+300-36F;
 }
 
-@font-face
-{
+@font-face {
     font-family: "Segoe UI Web Semibold";
     font-style: normal;
     font-weight: bold;
-    src: local("Segoe UI Semibold"),local("Segoe UI Bold"),local("Segoe UI"),local("HelveticaNeue-Medium");
-    unicode-range: U+0-FF,U+300-36F;
+    src: local("Segoe UI Semibold"), local("Segoe UI Bold"), local("Segoe UI"), local("HelveticaNeue-Medium");
+    unicode-range: U+0-FF, U+300-36F;
 }
 
-@media print{
-    .noprint{
-        display:none !important
+@media print {
+    .noprint {
+        display: none !important
     }
 
     .pageBreakAfter {
         page-break-after: always;
     }
- }
+}
 
 
 /* Core CSS */
-html
-{
-    background-color:$colorGameBoard;
+html {
+    background-color: $colorGameBoard;
     margin: 0;
     padding: 0;
     height: 100%;
@@ -51,19 +47,21 @@ html
 
 body {
     font-size: 14px;
-    font-family: "Segoe UI","Segoe UI Web Regular","Segoe UI Symbol","Helvetica Neue","BBAlpha Sans","S60 Sans",Arial,"sans-serif";
-    background-color:$colorGameBoard;
+    font-family: "Segoe UI", "Segoe UI Web Regular", "Segoe UI Symbol", "Helvetica Neue", "BBAlpha Sans", "S60 Sans", Arial, "sans-serif";
+    background-color: $colorGameBoard;
     color: #000;
     margin: 0;
     padding: 0;
     height: 100%;
 }
 
-button { cursor:pointer; }
+button {
+    cursor: pointer;
+}
 
 /* Base Styles to inherit from */
 %jeffpardyMainFont {
-    color:white;
+    color: white;
     text-transform: uppercase;
     text-shadow: 2px 2px black;
     font-family: Arial, Helvetica, sans-serif;
@@ -73,8 +71,8 @@ button { cursor:pointer; }
 
 
 %bigButton {
-    font-size:1.5rem;
-    padding:5px 20px 5px 20px;
+    font-size: 1.5rem;
+    padding: 5px 20px 5px 20px;
 }
 
 %bigButtonHover {
@@ -82,12 +80,12 @@ button { cursor:pointer; }
 }
 
 div.flexGrowSpacer {
-    flex-grow:1
+    flex-grow: 1
 }
 
 
 div.attribution {
-    padding-top:40px;
+    padding-top: 40px;
     font-style: italic;
     font-size: 0.6em;
     text-align: center;
@@ -97,35 +95,35 @@ div.attribution {
 /* ------------------------------------------------------ */
 
 div#startPage {
-    padding:10px;
+    padding: 10px;
     background-color: $colorGameBoard;
-    color:white;
-    display:flex;
+    color: white;
+    display: flex;
     flex-direction: column;
-    height:100%;
+    height: 100%;
     box-sizing: border-box;
     align-content: center;
     align-items: center;
 }
 
 div#startPage div.linkList {
-    padding-top:100px;
+    padding-top: 100px;
 }
 
 div#startPage div.linkList,
 div#startPage div.linkList a {
-    font-size:2.5rem;
-    color:white;
+    font-size: 2.5rem;
+    color: white;
 }
 
 div#startPage div.title {
     @extend %jeffpardyMainFont;
 
-    background-color:$colorGameBoard;
+    background-color: $colorGameBoard;
     font-size: 4rem;
     text-align: center;
-    margin:2px;
-    padding:20px 0 10px 0;
+    margin: 2px;
+    padding: 20px 0 10px 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -134,52 +132,52 @@ div#startPage div.title {
 /* Host Start Screen & Lobby */
 /* --------------------------------------------------*/
 div.hostStartPage {
-    padding:10px;
+    padding: 10px;
     background-color: $colorGameBoard;
-    color:white;
-    display:flex;
+    color: white;
+    display: flex;
     flex-direction: column;
-    height:100%;
+    height: 100%;
     box-sizing: border-box;
     align-content: center;
 }
 
 div.hostStartPage {
-    align-items:center;
+    align-items: center;
     text-align: center;
 }
 
 div.hostStartPage a {
     font-size: 1.5rem;
-    color:white;
+    color: white;
 }
 
 div.hostStartPage div.customize a,
 div.hostStartPage div.customize {
     font-size: 1rem;
-    color:white;
+    color: white;
 }
 
 div.hostStartPage div.customize div.buttons {
-    display:flex;
+    display: flex;
     align-items: center;
 
 }
 
 div.hostStartPage div.customize div.buttons button {
-    font-size:1.1rem;
-    margin:0px 2px;
+    font-size: 1.1rem;
+    margin: 0px 2px;
     padding: 2px 10px;
 }
 
 div.hostStartPage div.secondaryWindow {
     font-size: 1rem;
-    color:white;
+    color: white;
 }
 
 div.hostStartPage div.secondaryWindow a {
     font-size: 1.5rem;
-    color:white;
+    color: white;
 }
 
 
@@ -194,21 +192,21 @@ div.hostStartPage button:hover {
 div.hostStartPage div.title {
     @extend %jeffpardyMainFont;
 
-    background-color:$colorGameBoard;
+    background-color: $colorGameBoard;
     font-size: 4rem;
     text-align: center;
-    margin:2px;
-    padding:20px 0 10px 0;
+    margin: 2px;
+    padding: 20px 0 10px 0;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 div.hostStartPage div.gameDataLoaded {
-    display:flex;
+    display: flex;
     flex-direction: column;
     align-items: center;
-    flex-grow:1;
+    flex-grow: 1;
 }
 
 div.hostStartPage div.categoryListContainer {
@@ -218,23 +216,23 @@ div.hostStartPage div.categoryListContainer {
 }
 
 div.hostStartPage ul.categoryList {
-    columns:2;
+    columns: 2;
     column-gap: 50px;
     list-style: none;
-    font-weight:bold;
+    font-weight: bold;
 }
 
 div.hostStartPage ul.categoryList li {
     list-style: none;
-    padding-left:0px;
+    padding-left: 0px;
     text-align: left;
 }
 
 div.hostStartPage ul.categoryList li ul {
     list-style: none;
-    padding-left:0px;
+    padding-left: 0px;
     text-align: left;
-    font-weight:normal;
+    font-weight: normal;
 }
 
 div.hostStartPage ul.categoryList li a {
@@ -245,182 +243,176 @@ div.hostStartPage ul.categoryList li a {
 
 div.hostStartPage div.playerListBox {
     border: 3px solid white;
-    margin:20px;
-    padding:10px;
+    margin: 20px;
+    padding: 10px;
 }
 
 div.hostStartPage div.playerListBox div.boxTitle {
-    font-size:2rem;
+    font-size: 2rem;
 }
 
 div.hostStartPage ul.playerList {
-    display:flex;
+    display: flex;
     flex-direction: row;
     list-style: none;
-    font-weight:bold;
-    padding:0;
+    font-weight: bold;
+    padding: 0;
 }
 
 div.hostStartPage ul.playerList li {
     list-style: none;
-    padding-left:20px;
-    padding-right:20px;
+    padding-left: 20px;
+    padding-right: 20px;
     text-align: left;
-    display:inline;
+    display: inline;
 }
 
 div.hostStartPage ul.playerList li ul {
     list-style: none;
-    padding-left:0px;
-    padding-right:0px;
+    padding-left: 0px;
+    padding-right: 0px;
     text-align: left;
-    font-weight:normal;
+    font-weight: normal;
 }
 
 div.hostStartPage ul.playerList li ul li {
-    padding:0;
+    padding: 0;
 }
 
 div.hostStartPage div.gameCode {
     @extend %jeffpardyMainFont;
-    background-color:$colorGameBoard;
+    background-color: $colorGameBoard;
     font-size: 2rem;
     text-align: center;
-    margin:2px;
-    padding:10px;
+    margin: 2px;
+    padding: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 div#introVideo {
-    display:flex;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     background-color: black;
-    height:100%;
+    height: 100%;
 }
 
 div#introVideo video {
-    width:100%;
+    width: 100%;
 }
 
 div#jeffpardyBoardFrame {
-    width:100%;
-    display:flex;
-    flex-grow:1;
-    background-color:grey;
-    padding:20px;
+    width: 100%;
+    display: flex;
+    flex-grow: 1;
+    background-color: grey;
+    padding: 20px;
     box-sizing: border-box;
 }
 
 div#jeffpardyBoardInnerFrame {
-    width:100%;
+    width: 100%;
     flex-grow: 1;
-    background-color:darkgrey;
-    padding:5px;
+    background-color: darkgrey;
+    padding: 5px;
     box-sizing: inherit;
     min-width: 1100px;
 }
 
 div#jeffpardyBoard {
-    width:100%;
-    height:100%;
-    background-color:black;
+    width: 100%;
+    height: 100%;
+    background-color: black;
     display: flex;
     flex-direction: row;
     position: relative;
-    padding:10px;
+    padding: 10px;
     box-sizing: inherit;
 }
 
 div#jeffpardyBoard div.jeffpardyBoardClues {
-    display:grid;
+    display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     grid-template-rows: 1.5fr 1fr 1fr 1fr 1fr 1fr;
-    width:100%;
+    width: 100%;
 
 }
 
-div#jeffpardyBoard div.jeffpardyCategory
-{
+div#jeffpardyBoard div.jeffpardyCategory {
     @extend %jeffpardyMainFont;
     text-transform: none;
-    background-color:$colorGameBoard;
+    background-color: $colorGameBoard;
     font-size: 2rem;
     text-align: center;
-    margin:2px;
-    padding:10px;
+    margin: 2px;
+    padding: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-div#jeffpardyBoard div.jeffpardyClue
-{
+div#jeffpardyBoard div.jeffpardyClue {
     @extend %jeffpardyMainFont;
 
-    display:flex;
+    display: flex;
     flex-direction: column;
     box-sizing: inherit;
-    margin:2px;
+    margin: 2px;
     position: relative;
     font-size: 3.5rem;
     box-sizing: inherit;
-    background-color:#060CE9;
+    background-color: #060CE9;
     box-sizing: border-box;
 
 }
 
-div#jeffpardyBoard div.jeffpardyClue a
-{
-    display:flex;
-    flex-grow:1;
-    width:100%;
-    color:yellow;
+div#jeffpardyBoard div.jeffpardyClue a {
+    display: flex;
+    flex-grow: 1;
+    width: 100%;
+    color: yellow;
     text-decoration: none;
     align-items: center;
     justify-content: center;
 }
 
-div#jeffpardyBoard  div.jeffpardyClue a:hover
-{
-    background-color:darken($colorGameBoard, 20);
+div#jeffpardyBoard div.jeffpardyClue a:hover {
+    background-color: darken($colorGameBoard, 20);
 }
 
-div#jeffpardyBoard  div.jeffpardyClue a:hover a.asked:hover
-{
-    background-color:$colorGameBoard;
+div#jeffpardyBoard div.jeffpardyClue a:hover a.asked:hover {
+    background-color: $colorGameBoard;
 }
 
 div#jeffpardyBoard div.jeffpardyActiveClue {
-    display:flex;
-    flex-direction:column;
-    height:100%;
-    width:100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
 }
 
 div#jeffpardyBoard div.jeffpardyActiveClue .header {
     background-color: darkblue;
-    font-size:1.5em;
-    flex-grow:0;
+    font-size: 1.5em;
+    flex-grow: 0;
     text-align: center;
-    color:white;
-    padding:5px;
+    color: white;
+    padding: 5px;
 }
 
-div#jeffpardyBoard div.jeffpardyActiveClue .clue
-{
+div#jeffpardyBoard div.jeffpardyActiveClue .clue {
     flex-grow: 1;
-    background-color:#060CE9;
+    background-color: #060CE9;
     color: white;
-    font-size:4rem;
+    font-size: 4rem;
     display: flex;
     position: relative;
-    top:0;
-    left:0;
-    width:100%;
-    padding:10px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
     box-sizing: border-box;
     align-items: center;
     justify-content: center;
@@ -428,18 +420,17 @@ div#jeffpardyBoard div.jeffpardyActiveClue .clue
     white-space: pre-line;
 }
 
-div#jeffpardyBoard div.jeffpardyActiveClue .question
-{
+div#jeffpardyBoard div.jeffpardyActiveClue .question {
     flex-grow: 1;
-    background-color:$colorGameBoard;
+    background-color: $colorGameBoard;
     color: white;
-    font-size:3rem;
+    font-size: 3rem;
     display: flex;
     position: relative;
-    top:0;
-    left:0;
-    width:100%;
-    padding:10px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
     box-sizing: border-box;
     align-items: center;
     justify-content: center;
@@ -448,19 +439,19 @@ div#jeffpardyBoard div.jeffpardyActiveClue .question
 }
 
 div#jeffpardyBoard div.timer {
-    height:10px;
-    width:100%;
-    display:flex;
+    height: 10px;
+    width: 100%;
+    display: flex;
     flex-direction: row;
 }
 
 div#jeffpardyBoard div.timer div {
-    flex-grow:1;
+    flex-grow: 1;
     background-color: $colorGameBoard;
 }
 
 div#jeffpardyBoard div.timer div.lit {
-    background-color:white;
+    background-color: white;
 }
 
 div#jeffpardyBoard button {
@@ -471,18 +462,17 @@ div#jeffpardyBoard button:hover {
     @extend %bigButtonHover;
 }
 
-div#jeffpardyBoard div.jeffpardyActiveClue .dailyDouble
-{
+div#jeffpardyBoard div.jeffpardyActiveClue .dailyDouble {
     flex-grow: 1;
-    background-color:#060CE9;
+    background-color: #060CE9;
     color: white;
-    font-size:2rem;
+    font-size: 2rem;
     display: flex;
     flex-direction: column;
-    top:0;
-    left:0;
-    width:100%;
-    padding:10px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
     box-sizing: border-box;
     align-items: center;
     justify-content: center;
@@ -496,30 +486,30 @@ div#jeffpardyBoard div.jeffpardyActiveClue .dailyDouble div.title {
 
 
 div#jeffpardyBoard div.jeffpardyActiveClue .dailyDouble input[type="number"] {
-    font-size:1rem;
-    width:200px;
+    font-size: 1rem;
+    width: 200px;
     text-align: center;
 }
 
 div#jeffpardyBoard div.jeffpardyIntermission,
 div#jeffpardyBoard div.jeffpardyFinal {
-    background-color:$colorGameBoard;
-    color:white;
-    flex-direction:column;
+    background-color: $colorGameBoard;
+    color: white;
+    flex-direction: column;
     text-align: center;
     align-items: center;
-    display:flex;
-    height:100%;
-    width:100%;
-    font-size:2rem;
-    padding-top:40px;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    font-size: 2rem;
+    padding-top: 40px;
     box-sizing: border-box;
 }
 
 div#jeffpardyBoard div.jeffpardyFinal div.category {
     @extend %jeffpardyMainFont;
-    font-size:2.5rem;
-    padding:10px 0 0 0;
+    font-size: 2.5rem;
+    padding: 10px 0 0 0;
 }
 
 div#jeffpardyBoard div.jeffpardyFinalCategory,
@@ -527,19 +517,19 @@ div#jeffpardyBoard div.jeffpardyFinalClue,
 div#jeffpardyBoard div.jeffpardyFinalTally {
     width: 100%;
     flex-grow: 1;
-    display:flex;
+    display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 div#jeffpardyBoard div.jeffpardyFinalClue,
 div#jeffpardyBoard div.jeffpardyFinalTally {
-    padding-top:40px;
+    padding-top: 40px;
 }
 
 div#jeffpardyBoard div.jeffpardyFinalClue div.clue,
 div#jeffpardyBoard div.jeffpardyFinalTally div.clue {
-    font-size:3rem;
+    font-size: 3rem;
 }
 
 div#jeffpardyBoard div.jeffpardyIntermission,
@@ -564,20 +554,20 @@ ul.finalJeffpardyTally {
 }
 
 ul.finalJeffpardySubmissionList li,
-ul.finalJeffpardyTally li{
+ul.finalJeffpardyTally li {
     width: 250px;
-    font-size:1.5rem;
+    font-size: 1.5rem;
 }
 
 ul.finalJeffpardySubmissionList table,
 ul.finalJeffpardyTally table {
     color: white;
-    width:100%;
+    width: 100%;
     border-spacing: 5px 0;
 }
 
 ul.finalJeffpardyTally table th {
-    font-weight:bold;
+    font-weight: bold;
     text-align: left;
 }
 
@@ -593,14 +583,13 @@ div#jeffpardyBoard ul.finalJeffpardyTally button {
 }
 
 /*----------------------------------------------------------------------------*/
-div#hostSecondaryPage
-{
-    padding:10px;
+div#hostSecondaryPage {
+    padding: 10px;
     background-color: $colorGameBoard;
-    color:white;
-    display:flex;
+    color: white;
+    display: flex;
     flex-direction: column;
-    height:100%;
+    height: 100%;
     box-sizing: border-box;
     align-content: center;
 }
@@ -608,11 +597,11 @@ div#hostSecondaryPage
 div#hostSecondaryPage div.title {
     @extend %jeffpardyMainFont;
 
-    background-color:$colorGameBoard;
+    background-color: $colorGameBoard;
     font-size: 4rem;
     text-align: center;
-    margin:2px;
-    padding:20px 0 10px 0;
+    margin: 2px;
+    padding: 20px 0 10px 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -631,7 +620,7 @@ div#hostSecondaryPage div.question {
     padding-top: 60px;
     font-size: 2rem;
     font-weight: bold;
-    color:yellow;
+    color: yellow;
 }
 
 div#hostSecondaryPage div.roundName {
@@ -642,7 +631,7 @@ div#hostSecondaryPage div.roundName {
 
 div#hostSecondaryPage ul.categories {
     list-style: none;
-    padding-left:0px;
+    padding-left: 0px;
 }
 
 div#hostSecondaryPage ul.categories li {
@@ -660,14 +649,13 @@ div#hostSecondaryPage ul.categories li span.categoryTitle {
 
 
 /*----------------------------------------------------------------------------*/
-div#playerPage
-{
-    padding:10px;
+div#playerPage {
+    padding: 10px;
     background-color: $colorGameBoard;
-    color:white;
-    display:flex;
+    color: white;
+    display: flex;
     flex-direction: column;
-    height:100%;
+    height: 100%;
     box-sizing: border-box;
     align-content: center;
 }
@@ -675,11 +663,11 @@ div#playerPage
 div#playerPage div.title {
     @extend %jeffpardyMainFont;
 
-    background-color:$colorGameBoard;
+    background-color: $colorGameBoard;
     font-size: 4rem;
     text-align: center;
-    margin:2px;
-    padding:20px 0 10px 0;
+    margin: 2px;
+    padding: 20px 0 10px 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -696,10 +684,10 @@ div#playerPage button:hover {
 
 div#playerPage div.gameCode {
     @extend %jeffpardyMainFont;
-    background-color:$colorGameBoard;
+    background-color: $colorGameBoard;
     font-size: 2rem;
     text-align: center;
-    margin:2px;
+    margin: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -727,70 +715,65 @@ div#playerPage div.gameCodeEntry input {
 }
 
 
-div#playerPageMain
-{
-    padding:10px;
+div#playerPageMain {
+    padding: 10px;
     background-color: $colorGameBoard;
-    color:white;
-    display:grid;
+    color: white;
+    display: grid;
     grid-template-columns: 1fr 1fr;
     flex-direction: row;
-    height:100%;
+    height: 100%;
     box-sizing: border-box;
 }
 
-div#buzzerView div.buzzerViewTitle
-{
+div#buzzerView div.buzzerViewTitle {
     @extend %jeffpardyMainFont;
 
-    font-size:3rem;
+    font-size: 3rem;
     grid-column-start: span 2;
     text-align: center;
 }
 
-div#buzzerView div.buzzerViewTitleGameCode
-{
+div#buzzerView div.buzzerViewTitleGameCode {
     @extend %jeffpardyMainFont;
 
     grid-column-start: span 2;
     text-align: center;
 }
 
-div#playerPage div.buzzerCurrentUserView
-{
-    display:flex;
+div#playerPage div.buzzerCurrentUserView {
+    display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
 }
 
 div#playerPage div.buzzerCurrentUserView h1 {
-    margin-bottom:0px;
+    margin-bottom: 0px;
 }
 
 div#playerPage div.buzzerCurrentUserView h2 {
-    margin-top:0px;
+    margin-top: 0px;
 }
 
 div#playerPage input {
-    font-size:1.5rem;
+    font-size: 1.5rem;
 }
 
 div#playerPage div.buzzerRegistration,
-div#playerPage div.finalJeffpardy
-{
-    font-size:1.5rem;
+div#playerPage div.finalJeffpardy {
+    font-size: 1.5rem;
 }
 
 
 div#playerPage div.buzzerCurrentUserView div.playerName {
-    font-size:1.5rem;
+    font-size: 1.5rem;
     margin-bottom: 20px;
 }
 
 div#playerPage div.buzzerCurrentUserView div.buzzedInUser {
-    margin-top:20px;
-    padding:10px 30px 10px 30px;
+    margin-top: 20px;
+    padding: 10px 30px 10px 30px;
     background-color: orangered;
 }
 
@@ -798,16 +781,16 @@ div#playerPage div.buzzerCurrentUserView div.buzzedInUser.buzzedInWinner {
     background-color: green;
 }
 
-div#playerPage div.buzzerCurrentUserView div.buzzedInUser div.buzzedInUserName{
-    font-size:2rem;
+div#playerPage div.buzzerCurrentUserView div.buzzedInUser div.buzzedInUserName {
+    font-size: 2rem;
 }
 
 button#buzzer {
-    margin-top:20px;
+    margin-top: 20px;
     height: 200px;
     width: 200px;
-    font-size:2em;
-    color:white;
+    font-size: 2em;
+    color: white;
     border-radius: 50%;
     box-shadow: 0px 0px 20px rgba(50, 50, 50, 0.5);
 }
@@ -815,11 +798,11 @@ button#buzzer {
 
 
 button#buzzer div.reactionTime {
-    font-size:0.8em;
+    font-size: 0.8em;
 }
 
 button#buzzer:focus {
-    outline:0;
+    outline: 0;
 }
 
 button#buzzer.active {
@@ -829,12 +812,12 @@ button#buzzer.active {
 
 button#buzzer.active:hover {
     border: 1px solid darken(green, 10);
-    background-color:darken(green, 10);
+    background-color: darken(green, 10);
 }
 
 button#buzzer.active:active {
     border: 1px solid darken(green, 20);
-    background-color:darken(green, 20);
+    background-color: darken(green, 20);
 }
 
 button#buzzer.inactive {
@@ -842,45 +825,48 @@ button#buzzer.inactive {
     background-color: grey;
 }
 
-button#buzzer.buzzed, button#buzzer.buzzed:hover {
+button#buzzer.buzzed,
+button#buzzer.buzzed:hover {
     border: 1px solid blue;
     background-color: blue;
 }
 
-button#buzzer.lockedout, button#buzzer.lockedout:hover, button#buzzer.lockedout:active {
+button#buzzer.lockedout,
+button#buzzer.lockedout:hover,
+button#buzzer.lockedout:active {
     border: 1px solid orangered;
     background-color: orangered;
 }
 
 div#scoreboard {
-    height:130px;
+    height: 130px;
     box-sizing: border-box;
-    background-color:$colorBrown;
-    display:flex;
+    background-color: $colorBrown;
+    display: flex;
     flex-direction: row;
-    padding-top:10px;
+    padding-top: 10px;
     padding-bottom: 10px;
 }
 
 div#scoreboard div#hostControls {
-    width:250px;
-    padding-left:10px;
-    display:grid;
-    color:white;
+    width: 250px;
+    padding-left: 10px;
+    display: grid;
+    color: white;
     font-weight: bold;
     grid-template-columns: auto auto;
     grid-template-rows: auto auto 1fr;
-    row-gap:4px;
+    row-gap: 4px;
 }
 
 div#scoreboard div#hostControls button {
-    margin-right:4px;
-    background-color:green;
+    margin-right: 4px;
+    background-color: green;
     border-color: darkgreen;
 }
 
 div#scoreboard div#hostControls button:disabled {
-    background-color:grey;
+    background-color: grey;
     border-color: darkgrey;
 }
 
@@ -891,80 +877,80 @@ div#scoreboard .scoreEntries {
     flex-direction: row;
     align-items: left;
     text-align: center;
-    padding-left:30px;
+    padding-left: 30px;
 }
 
 div#scoreboard .scoreboardEntry {
     @extend %jeffpardyMainFont;
 
     width: 200px;
-    background-color:$colorGameBoard;
-    border:2px solid black;
+    background-color: $colorGameBoard;
+    border: 2px solid black;
     box-shadow: 0px 0px 20px rgb(50, 50, 50);
-    margin-right:10px;
+    margin-right: 10px;
 }
 
 
-div#scoreboard .scoreboardEntry.controllingTeam{
-    border:2px solid yellow;
+div#scoreboard .scoreboardEntry.controllingTeam {
+    border: 2px solid yellow;
     box-shadow: 0px 0px 20px yellow;
 }
 
-div#scoreboard .scoreboardEntry.winningTeam{
-    border:2px solid green;
+div#scoreboard .scoreboardEntry.winningTeam {
+    border: 2px solid green;
     box-shadow: 0px 0px 20px green;
 }
 
-div#scoreboard .scoreboardEntry .buzzerIndicator{
-    height:15px;
+div#scoreboard .scoreboardEntry .buzzerIndicator {
+    height: 15px;
     background-color: black;
 }
 
-div#scoreboard .scoreboardEntry .buzzerIndicator.buzzerActive{
+div#scoreboard .scoreboardEntry .buzzerIndicator.buzzerActive {
     background-color: white;
 }
 
 
-div#scoreboard .scoreboardEntry .buzzerIndicator.buzzedIn{
+div#scoreboard .scoreboardEntry .buzzerIndicator.buzzedIn {
     background-color: red;
 }
 
 
-div#scoreboard .scoreboardEntry .teamName{
-    font-size:2em;
+div#scoreboard .scoreboardEntry .teamName {
+    font-size: 2em;
     border-bottom: solid 5px black;
 }
 
 
-div#scoreboard .scoreboardEntry .score{
-    font-size:2.5em;
+div#scoreboard .scoreboardEntry .score {
+    font-size: 2.5em;
     padding-top: 5px;
     padding-bottom: 5px;
 }
 
 
 div.buzzerUserListView {
-    display:flex;
+    display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 div.buzzerUserListView ul.playerList {
     list-style: none;
-    padding-left:0px;
-    text-align:center;
+    padding-left: 0px;
+    text-align: center;
 }
 
 div.buzzerUserListView ul.playerList li {
-    font-weight:bold;
+    font-weight: bold;
 }
 
 div.buzzerUserListView ul.playerList ul {
-    padding-left:0;
+    padding-left: 0;
 }
 
 div.buzzerUserListView ul.playerList ul li {
-    font-weight:normal;
+    font-weight: normal;
 }
 
 div#hostAnswerKey {
@@ -972,25 +958,25 @@ div#hostAnswerKey {
 }
 
 div.answerKeyRound div.answerKeyClues {
-    display:grid;
+    display: grid;
     background-color: black;
     -webkit-print-color-adjust: exact;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     //grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
-    width:100%;
+    width: 100%;
     box-sizing: border-box;
     grid-column-gap: 2px;
     grid-row-gap: 2px;
-    padding:2px;
-    font-size:8pt;
+    padding: 2px;
+    font-size: 8pt;
 
 }
 
 div.answerKeyRound div.answerKeyCategory {
     text-align: center;
     background-color: white;
-    padding:2px;
-    margin-bottom:2px;
+    padding: 2px;
+    margin-bottom: 2px;
 }
 
 div.answerKeyRound div.answerKeyCategory div.title {
@@ -1001,7 +987,7 @@ div.answerKeyRound div.answerKeyCategory div.title {
 div.answerKeyRound div.answerKeyClue {
     text-align: center;
     background-color: white;
-    padding:2px;
+    padding: 2px;
 }
 
 div.answerKeyRound div.answerKeyClue div.value {
@@ -1009,7 +995,7 @@ div.answerKeyRound div.answerKeyClue div.value {
 }
 
 div.answerKeyRound div.answerKeyClue div.clue {
-    border-bottom:1px solid black;
+    border-bottom: 1px solid black;
     white-space: pre-line;
 }
 
@@ -1018,20 +1004,20 @@ div.answerKeyRound div.answerKeyClue div.clue {
 /* main layout
 ----------------------------------------------------------*/
 div.topPageNormal {
-    display:flex;
+    display: flex;
     flex-direction: column;
-    height:100%;
+    height: 100%;
 }
 
 /*   topSection container ===========================  */
 .topSection {
     @extend %jeffpardyMainFont;
 
-    padding-top:5px;
+    padding-top: 5px;
     height: 70px;
-    color:white;
-    background-color:$colorBrown;
-    display:flex;
+    color: white;
+    background-color: $colorBrown;
+    display: flex;
     flex-direction: column;
     align-content: center;
 }
@@ -1049,7 +1035,7 @@ div.topPageNormal {
 /*   middleSection container =========================  */
 .middleSection {
     flex-grow: 1;
-    display:flex;
+    display: flex;
 }
 
 .pageContent {
@@ -1062,25 +1048,79 @@ div.topPageNormal {
 
 /* From JeopardyLabs */
 div#fromJeopardyLabs {
-    padding:10px;
+    padding: 10px;
     background-color: $colorGameBoard;
-    color:white;
+    color: white;
     flex-direction: column;
 }
 
 div#fromJeopardyLabs a {
-    color:white;
+    color: white;
 }
 
 div#fromJeopardyLabs div.title {
     @extend %jeffpardyMainFont;
 
-    background-color:$colorGameBoard;
+    background-color: $colorGameBoard;
     font-size: 4rem;
     text-align: center;
-    margin:2px;
-    padding:20px 0 10px 0;
+    margin: 2px;
+    padding: 20px 0 10px 0;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/*----------------------------------------------------------------------------*/
+/* Category Details
+/*----------------------------------------------------------------------------*/
+div#categoryDetails {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    box-sizing: border-box;
+    align-content: center;
+}
+
+div#categoryDetails div#viewCategory {
+    display: flex;
+    flex-direction: column;
+    width: 33%;
+}
+
+div#categoryDetails div#viewCategory h1 {
+    text-align: left;
+}
+
+div#categoryDetails div#viewCategory ul {
+    padding-inline-start: 0px;
+}
+
+div#categoryDetails div#viewCategory li {
+    list-style: none;
+}
+
+div#categoryDetails div#viewCategory li div.value {
+    font-weight: bold;
+}
+
+div#categoryDetails div#viewCategory li div.clue {
+    border-bottom: 1px solid black;
+}
+
+div#categoryDetails div#viewCategory li div.question {
+    padding-bottom: 10px;
+}
+
+div#categoryDetails div#changeCategory {
+    display: flex;
+    flex-direction: column;
+    padding-left: 30px;
+    flex-grow: 1;
+}
+
+div#categoryDetails div#changeCategory ul.categorySearchResults {
+    height: 400px;
+    overflow-y: scroll;
 }

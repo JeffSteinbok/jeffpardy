@@ -31,3 +31,10 @@ export interface ICategory {
     isAsked: boolean;
     hasDailyDouble: boolean;
 }
+
+export interface ICategoryMetadata {
+    title: string;
+    airDate: string;
+    season: number;
+    fileName: string;
+}

@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import * as ReactDOM from "react-dom";
+import { createRoot } from 'react-dom/client';
 import { JeffpardyHostController } from "./JeffpardyHostController";
 import { JeffpardyBoard } from "./gameBoard/JeffpardyBoard";
 import { Scoreboard } from "./scoreboard/Scoreboard";
@@ -329,7 +329,5 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
 let root = document.createElement("div");
 root.id = 'main';
 document.body.appendChild(root);
-ReactDOM.render(
-    <HostPage />,
-    document.getElementById("main")
-);
+const reactRoot = createRoot(root)
+reactRoot.render(<HostPage />);
