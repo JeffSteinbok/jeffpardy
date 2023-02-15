@@ -69,6 +69,16 @@ namespace Jeffpardy
             return category;
         }
 
+        [Route("gpt/{topic}")]
+        public async Task<Category> GetCategoryFromGpt(string topic)
+        {
+            string openAIKey = Request.Query["openAIKey"];
+            var category = await GptCategoryGenerator.Instance.GetCategoryAsync(topic, openAIKey);
+            return category;
+
+
+        }
+
         private async Task<Category[]> GetCategoriesAsync(IReadOnlyList<ManifestCategory> categoryList)
         {
             int categoryCount = categoryList.Count;

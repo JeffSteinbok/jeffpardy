@@ -67,7 +67,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                                     this.state.category.clues.map((clue, index) => {
                                         return (
                                             <li key={ index }>
-                                                <div className="value">{ clue.value }{ clue.isDailyDouble ? " - DD" : "" }</div>
+                                                <div className="value">{ clue.value }</div>
                                                 <div className="clue">{ clue.clue }</div>
                                                 <div className="question">{ clue.question }</div>
                                             </li>
@@ -87,7 +87,10 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                                 <Stack direction="row" spacing={ 2 }>
                                     <Button
                                         variant="contained"
-                                        onClick={ this.searchForCategory }>Search</Button>
+                                        onClick={ this.searchForCategory }>Search Jeopardy Archive</Button>
+                                    <Button
+                                        variant="contained"
+                                        onClick={ this.generateCategoryFromGpt }>Generate from Gpt</Button>
                                     <Button variant="outlined"
                                         onClick={ this.loadRandomCategory }>Get Random Category</Button>
                                 </Stack>
@@ -205,6 +208,45 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
         else {
             // TODO
             alert("Can't Search Local Categories")
+        }
+    }
+
+    public generateCategoryFromGpt = () => {
+        Logger.debug("CategoryDetails:generateCategoryFromGpt");
+
+        if (!Debug.IsFlagSet(DebugFlags.LocalCategories)) {
+
+            // Do I have an OpenAI Key?
+            let openAIKey: string = localStorage.getItem("OpenAIKey");
+            if (openAIKey == null || openAIKey == "") {
+                openAIKey = prompt("Enter your OpenAI Key")
+                localStorage.setItem("OpenAIKey", openAIKey);
+            }
+
+            let context: IApiExecutionContext = {
+                showProgressIndicator: true,
+                apiName: "/api/Categories/gpt/" + this.categorySearchTerm + "?openAIKey=" + openAIKey,
+                formData: {},
+                json: true,
+                success: (results: ICategory) => {
+                    this.setCategory(results)
+                },
+                error: null
+            };
+
+            let wsam: WebServerApiManager = new WebServerApiManager();
+            wsam.executeApi(context);
+        }
+        else {
+            let category: ICategory;
+            if (this.props.roundDescriptor != RoundDescriptor.FinalJeffpardy) {
+                category = Debug.generateCategory();
+            }
+            else {
+                category = Debug.generateFinalCategory();
+            }
+            this.setState({ category: category })
+
         }
     }
 
