@@ -35,7 +35,7 @@ namespace Jeffpardy
 
             string promptJsonFormat = @"  {
                                             ""title"": ""<topic>""
-                                            ""clues"": 
+                                            ""clues"":
                                             [
                                               {
                                               ""clue"": ""<Question>"",
