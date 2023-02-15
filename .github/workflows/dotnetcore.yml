@@ -2,6 +2,8 @@ name: Deploy ASP.NET Core app to Azure Web App
 
 on:
   push:
+    paths-ignore:
+      - '*.md'
     branches:
       - master
 # CONFIGURATION
