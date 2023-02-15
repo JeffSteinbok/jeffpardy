@@ -28,7 +28,8 @@ export interface ICategoryDetailsProps {
 
 export interface ICategoryDetailsState {
     category: ICategory;
-    categorySearchResults: ICategoryMetadata[]
+    categorySearchResults: ICategoryMetadata[];
+    searchInProgress: boolean
 }
 
 
@@ -40,7 +41,8 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
 
         this.state = {
             category: this.props.category,
-            categorySearchResults: null
+            categorySearchResults: null,
+            searchInProgress: false
         }
     }
 
@@ -87,11 +89,14 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                                 <Stack direction="row" spacing={ 2 }>
                                     <Button
                                         variant="contained"
+                                        disabled={ this.state.searchInProgress }
                                         onClick={ this.searchForCategory }>Search Jeopardy Archive</Button>
                                     <Button
                                         variant="contained"
-                                        onClick={ this.generateCategoryFromGpt }>Generate from Gpt</Button>
+                                        disabled={ this.state.searchInProgress }
+                                        onClick={ this.generateCategoryFromGpt }>Generate from Gpt (ALPHA)</Button>
                                     <Button variant="outlined"
+                                        disabled={ this.state.searchInProgress }
                                         onClick={ this.loadRandomCategory }>Get Random Category</Button>
                                 </Stack>
 
@@ -127,7 +132,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                         Cancel
                     </Button>
                 </DialogActions>
-            </Dialog>
+            </Dialog >
         );
     }
 
@@ -136,15 +141,21 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
         Logger.debug("CategoryDetails:loadRandomCategory");
 
         if (!Debug.IsFlagSet(DebugFlags.LocalCategories)) {
+
+            this.setState({ searchInProgress: true });
+
             let context: IApiExecutionContext = {
                 showProgressIndicator: true,
                 apiName: "/api/Categories/RandomCategory/" + this.props.roundDescriptor,
                 formData: {},
                 json: true,
                 success: (results: ICategory) => {
-                    this.setCategory(results)
+                    this.setCategory(results);
+                    this.setState({ searchInProgress: false });
                 },
-                error: null
+                error: () => {
+                    this.setState({ searchInProgress: false });
+                }
             };
 
             let wsam: WebServerApiManager = new WebServerApiManager();
@@ -167,6 +178,8 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
         Logger.debug("CategoryDetails:loadCategory");
 
         if (!Debug.IsFlagSet(DebugFlags.LocalCategories)) {
+            this.setState({ searchInProgress: true });
+
             let context: IApiExecutionContext = {
                 showProgressIndicator: true,
                 apiName: "/api/Categories/" + categoryMetadata.season + "/" + categoryMetadata.fileName,
@@ -174,8 +187,11 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                 json: true,
                 success: (results: ICategory) => {
                     this.setCategory(results);
+                    this.setState({ searchInProgress: false });
                 },
-                error: null
+                error: () => {
+                    this.setState({ searchInProgress: false });
+                }
             };
 
             let wsam: WebServerApiManager = new WebServerApiManager();
@@ -191,15 +207,21 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
         Logger.debug("CategoryDetails:searchForCategory");
 
         if (!Debug.IsFlagSet(DebugFlags.LocalCategories)) {
+
+            this.setState({ searchInProgress: true });
+
             let context: IApiExecutionContext = {
                 showProgressIndicator: true,
                 apiName: "/api/CategoryMetadata/Search/" + this.props.roundDescriptor + "/" + this.categorySearchTerm,
                 formData: {},
                 json: true,
                 success: (results: ICategoryMetadata[]) => {
-                    this.setState({ categorySearchResults: results })
+                    this.setState({ categorySearchResults: results });
+                    this.setState({ searchInProgress: false });
                 },
-                error: null
+                error: () => {
+                    this.setState({ searchInProgress: false });
+                }
             };
 
             let wsam: WebServerApiManager = new WebServerApiManager();
@@ -223,15 +245,20 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                 localStorage.setItem("OpenAIKey", openAIKey);
             }
 
+            this.setState({ searchInProgress: true });
+
             let context: IApiExecutionContext = {
                 showProgressIndicator: true,
                 apiName: "/api/Categories/gpt/" + this.categorySearchTerm + "?openAIKey=" + openAIKey,
                 formData: {},
                 json: true,
                 success: (results: ICategory) => {
-                    this.setCategory(results)
+                    this.setCategory(results);
+                    this.setState({ searchInProgress: false });
                 },
-                error: null
+                error: () => {
+                    this.setState({ searchInProgress: false });
+                }
             };
 
             let wsam: WebServerApiManager = new WebServerApiManager();
