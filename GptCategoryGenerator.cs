@@ -30,9 +30,10 @@ namespace Jeffpardy
 
         public async Task<Category> GetCategoryAsync(string topic, string openAIKey)
         {
-            string promptPrefix = @"Generate 5 trivia questions about the following topic.
-                                          Repsond with JSON in the following format:
-                                          {
+            string promptFormat = "Generate 5 trivia questions about the topic: {0}." +
+                                  "Repsond with JSON in the following format:";
+
+            string promptJsonFormat = @"  {
                                             ""title"": ""<topic>""
                                             ""clues"": 
                                             [
@@ -41,8 +42,7 @@ namespace Jeffpardy
                                               ""question"": ""<Answer>""
                                               }
                                             ]
-                                          }  
-                                          Topic: ";
+                                          }";
 
             var openAIServiceInstance = new OpenAIService(new OpenAiOptions()
             {
@@ -51,7 +51,7 @@ namespace Jeffpardy
 
             var completionResult = await openAIServiceInstance.Completions.CreateCompletion(new CompletionCreateRequest()
             {
-                Prompt = promptPrefix + topic,
+                Prompt = string.Format(promptFormat, topic) + "\n" + promptJsonFormat,
                 Model = Models.TextDavinciV3,
                 MaxTokens = 1024,
                 N = 1
