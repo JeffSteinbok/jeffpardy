@@ -100,6 +100,8 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                                         onClick={ this.loadRandomCategory }>Get Random Category</Button>
                                 </Stack>
 
+                                <p>Note that GPT responses can take a long time to return and may not be correct; depending on where it sourced the information from.  If you want to edit the questions anfterwards, hit "Save" and then edit the JSON.</p>
+
                             </Stack>
 
 
