@@ -1084,13 +1084,18 @@ div#categoryDetails {
 }
 
 div#categoryDetails div#viewCategory {
+    background-color: $colorGameBoard;
+    color: white;
     display: flex;
     flex-direction: column;
+    border: 2px solid black;
     width: 33%;
+    padding: 10px;
 }
 
-div#categoryDetails div#viewCategory h1 {
+div#categoryDetails div#viewCategory h2 {
     text-align: left;
+    margin: 0px;
 }
 
 div#categoryDetails div#viewCategory ul {
@@ -1106,7 +1111,7 @@ div#categoryDetails div#viewCategory li div.value {
 }
 
 div#categoryDetails div#viewCategory li div.clue {
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid white;
 }
 
 div#categoryDetails div#viewCategory li div.question {

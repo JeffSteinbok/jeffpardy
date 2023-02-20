@@ -4,9 +4,7 @@ import axios, { AxiosAdapter, AxiosResponse, AxiosError } from "axios";
  * Interface for executing apis on the webserver
  */
 export interface IApiExecutionContext {
-    showProgressIndicator: boolean;
     apiName: string;
-    formData: {};
     json: boolean;
     success: (any: any) => void;
     error: (statusText: string, responseText: string) => void;
@@ -26,9 +24,6 @@ export class WebServerApiManager {
             (response: AxiosResponse<any>) => {
                 let result = response;
 
-                if (apiExecutionContext.showProgressIndicator) {
-                    //
-                }
                 if (apiExecutionContext.json == null || apiExecutionContext.json) {
                     apiExecutionContext.success(result.data);
                 } else {
@@ -36,10 +31,6 @@ export class WebServerApiManager {
                 }
             },
             (error: AxiosError) => {
-                if (apiExecutionContext.showProgressIndicator) {
-                    //
-                }
-
                 if (apiExecutionContext.error != null) {
                     apiExecutionContext.error(error.code, error.message);
                 } else {
@@ -47,7 +38,32 @@ export class WebServerApiManager {
                 }
             }
         );
+    }
 
+    /**
+     * Call an API on the webserver
+     * @param {IApiExecutionContext} apiExecutionContext Parameters for executing the api against the webserver.
+     */
+    public executePostApi(apiExecutionContext: IApiExecutionContext,
+        postBody: string) {
+        axios.post(apiExecutionContext.apiName, postBody).then(
+            (response: AxiosResponse<any>) => {
+                let result = response;
+
+                if (apiExecutionContext.json == null || apiExecutionContext.json) {
+                    apiExecutionContext.success(result.data);
+                } else {
+                    apiExecutionContext.success(result);
+                }
+            },
+            (error: AxiosError) => {
+                if (apiExecutionContext.error != null) {
+                    apiExecutionContext.error(error.code, error.message);
+                } else {
+                    this.defaultErrorHandler(error.code, error.message);
+                }
+            }
+        );
     }
 
     /**

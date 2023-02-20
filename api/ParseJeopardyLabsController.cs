@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Jeffpardy.api
@@ -14,8 +15,8 @@ namespace Jeffpardy.api
         [HttpGet]
         public Category[] Parse(string jeopardyLabsGame)
         {
-            WebClient client = new WebClient();
-            Stream stream = client.OpenRead("https://jeopardylabs.com/play/" + jeopardyLabsGame);
+            HttpClient client = new HttpClient();
+            Stream stream = client.GetAsync("https://jeopardylabs.com/play/" + jeopardyLabsGame).Result.Content.ReadAsStream();
             StreamReader reader = new StreamReader(stream);
             String content = reader.ReadToEnd();
 
@@ -36,19 +37,19 @@ namespace Jeffpardy.api
             {
                 line = this.CleanUpString(line);
 
-                return ExtractBetweenMarkers(line, "<div class=\"cell-inner cat-cell\">", "</div>");
+                return ExtractBetweenMarkers(line, "<div class=\"cell-inner cat-cell\" role=\"columnheader\">", "</div>");
             }).ToList();
 
             // Find all clues!
             var clues = content.Where(c => c.Contains("front answer")).Select(line =>
             {
-                return ExtractBetweenMarkers(line, "<div class=\"front answer\">", "</div>");
+                return ExtractBetweenMarkers(line, "<div class=\"front answer\" tabindex=\"0\">", "</div>");
             }).ToList();
 
             // Find all questions!
             var questions = content.Where(c => c.Contains("back question")).Select(line =>
             {
-                return ExtractBetweenMarkers(line, "<div class=\"back question\">", "</div>");
+                return ExtractBetweenMarkers(line, "<div class=\"back question\" tabindex=\"0\">", "</div>");
             }).ToList();
 
             // We don't know how many clues we have for these boards...
@@ -75,8 +76,8 @@ namespace Jeffpardy.api
                 {
                     category.Clues[clueIndex] = new CategoryClue
                     {
-                        Clue = this.CleanUpString(clues[clueIndex]),
-                        Question = this.CleanUpString(questions[clueIndex])
+                        Clue = this.CleanUpString(clues[overallClueIndex]),
+                        Question = this.CleanUpString(questions[overallClueIndex])
                     };
 
                     overallClueIndex += categories.Count;

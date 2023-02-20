@@ -52,9 +52,7 @@ export class JeffpardyHostController {
 
         if (!Debug.IsFlagSet(DebugFlags.LocalCategories)) {
             let context: IApiExecutionContext = {
-                showProgressIndicator: true,
                 apiName: "/api/Categories/GameData",
-                formData: {},
                 json: true,
                 success: (results: IGameData) => {
                     this.onGameDataLoaded(results);
@@ -96,9 +94,7 @@ export class JeffpardyHostController {
 
         if (!Debug.IsFlagSet(DebugFlags.LocalCategories)) {
             let context: IApiExecutionContext = {
-                showProgressIndicator: true,
                 apiName: "/api/Categories/RandomCategory/" + roundDescriptor,
-                formData: {},
                 json: true,
                 success: (results: ICategory) => {
                     if (existingRound != null) {
@@ -168,9 +164,7 @@ export class JeffpardyHostController {
 
         if (!Debug.IsFlagSet(DebugFlags.LocalCategories)) {
             let context: IApiExecutionContext = {
-                showProgressIndicator: true,
                 apiName: "/api/Categories/GameData",
-                formData: {},
                 json: true,
                 success: (results: IGameData) => {
                     this.gameData.rounds[updateRoundId] = results.rounds[updateRoundId];

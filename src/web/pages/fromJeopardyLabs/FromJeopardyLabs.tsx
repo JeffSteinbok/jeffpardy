@@ -28,14 +28,13 @@ export class FromJeopardyLabs extends React.Component<any, IFromJeopardyLabsStat
         let jLabsGameId: string = this.jLabsUrlTemp.substring(this.jLabsUrlTemp.lastIndexOf('/') + 1);
 
         let context: IApiExecutionContext = {
-            showProgressIndicator: true,
             apiName: "/api/parseJeopardyLabs?jeopardyLabsGame=" + jLabsGameId,
-            formData: {},
             json: true,
             success: (results: ICategory[]) => {
                 let validCategories: ICategory[] = [];
                 results.forEach((value, index) => {
-                    if (value.clues.length == 5) {
+                    if (value.clues.length >= 5) {
+                        value.clues = value.clues.slice(0, 5)
                         validCategories.push(value);
                     }
                 })
@@ -61,6 +60,7 @@ export class FromJeopardyLabs extends React.Component<any, IFromJeopardyLabsStat
         if (this.state.categories.length < 7) {
             alert("You need at least 7 categories for a game.");
         }
+
         if (this.state.categories.length >= 7) {
             gameData.rounds.push({
                 id: 0,
