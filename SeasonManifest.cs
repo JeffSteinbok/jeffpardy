@@ -27,6 +27,8 @@ namespace Jeffpardy
 
         public string FileName { get; set; }
 
+        public int Index { get; set; }
+
         [JsonIgnore]
         public int Season { get; set; }
     }

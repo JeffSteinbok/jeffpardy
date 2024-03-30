@@ -62,10 +62,10 @@ namespace Jeffpardy
             return category;
         }
 
-        [Route("{season}/{fileName}")]
-        public async Task<Category> GetCategoryFromFilename(int season, string fileName)
+        [Route("{season}/{fileName}/{index}")]
+        public async Task<Category> GetCategoryFromFilename(int season, string fileName, int index)
         {
-            var category = await AzureBlobCategoryLoader.Instance.LoadCategoryAsync(season, fileName);
+            var category = await AzureBlobCategoryLoader.Instance.LoadCategoryAsync(season, fileName, index);
 
             return category;
         }

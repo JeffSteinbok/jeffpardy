@@ -42,7 +42,7 @@ namespace Jeffpardy
 
         public void PopulateSeasonManifest(ISeasonManifestCache seasonManifestCache)
         {
-            var categoriesContainerClient = this.blobServiceClient.GetBlobContainerClient("categories");
+            var categoriesContainerClient = this.blobServiceClient.GetBlobContainerClient("categories-v2");
 
             foreach (var blobItem in categoriesContainerClient.GetBlobsByHierarchy(BlobTraits.None, BlobStates.None, "/"))
             {
@@ -64,21 +64,21 @@ namespace Jeffpardy
 
         public async Task<Category> LoadCategoryAsync(ManifestCategory manifestCategory)
         {
-            return await LoadCategoryAsync(manifestCategory.Season, manifestCategory.FileName);
+            return await LoadCategoryAsync(manifestCategory.Season, manifestCategory.FileName, manifestCategory.Index);
         }
 
-        public async Task<Category> LoadCategoryAsync(int season, string fileName)
+        public async Task<Category> LoadCategoryAsync(int season, string fileName, int index)
         {
             Category ret = null;
 
-            var categoriesContainerClient = this.blobServiceClient.GetBlobContainerClient("categories");
+            var categoriesContainerClient = this.blobServiceClient.GetBlobContainerClient("categories-v2");
 
             var categoryClient = categoriesContainerClient.GetBlobClient(season.ToString("000") + "/" + fileName);
             var categoryDownloadInfo = await categoryClient.DownloadAsync();
 
             using (StreamReader sr = new StreamReader(categoryDownloadInfo.Value.Content))
             {
-                ret = JsonConvert.DeserializeObject<Category>(sr.ReadToEnd());
+                ret = JsonConvert.DeserializeObject<CategoryCollection>(sr.ReadToEnd()).Categories[index];
             }
 
             return ret;
