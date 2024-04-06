@@ -205,7 +205,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
             this.setState({ searchInProgress: true });
 
             let context: IApiExecutionContext = {
-                apiName: "/api/Categories/" + categoryMetadata.season + "/" + categoryMetadata.fileName,
+                apiName: "/api/Categories/" + categoryMetadata.season + "/" + categoryMetadata.fileName + "?index=" + categoryMetadata.index,
                 json: true,
                 success: (results: ICategory) => {
                     this.setCategory(results);

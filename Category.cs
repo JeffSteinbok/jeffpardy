@@ -32,5 +32,7 @@ namespace Jeffpardy
         public int Season { get; set; }
 
         public string FileName { get; set; }
+
+        public int Index { get; set; }
     }
 }

@@ -35,7 +35,8 @@ namespace Jeffpardy
                                                                         AirDate = m.AirDate,
                                                                         Title = m.Title,
                                                                         Season = m.Season,
-                                                                        FileName = m.FileName
+                                                                        FileName = m.FileName,
+                                                                        Index = m.Index
                                                                     }).
                                                                     ToArray();
 
