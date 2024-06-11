@@ -9,7 +9,7 @@
     <UserSecretsId>b808f0f8-3565-4c36-bfe8-e713ac91c711</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Azure.Identity" Version="1.10.2" />
+    <PackageReference Include="Azure.Identity" Version="1.11.4" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.13.0" />
     <PackageReference Include="Betalgo.OpenAI.GPT3" Version="6.6.7" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
