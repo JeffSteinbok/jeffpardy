@@ -13,8 +13,8 @@
     <PackageReference Include="Azure.Storage.Blobs" Version="12.26.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
-  <Target Name="NPM / WebPack Build" AfterTargets="Build">
-    <Exec Condition="$(Configuration) == 'Debug'" Command="npm i &amp;&amp; npm run build &amp;&amp; npm run scss" />
-    <Exec Condition="$(Configuration) == 'Release'" Command="npm i &amp;&amp; npm run buildProd &amp;&amp; npm run scss" />
+  <Target Name="Frontend Build" AfterTargets="Build">
+    <Exec Condition="$(Configuration) == 'Debug'" Command="npm ci &amp;&amp; npm run build &amp;&amp; npm run scss" />
+    <Exec Condition="$(Configuration) == 'Release'" Command="npm ci &amp;&amp; npm run buildProd &amp;&amp; npm run scss" />
   </Target>
 </Project>
