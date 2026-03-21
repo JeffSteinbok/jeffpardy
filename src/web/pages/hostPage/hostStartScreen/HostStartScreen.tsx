@@ -278,7 +278,6 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                         <button onClick={ this.showAnswerKey }>Show Clues &amp; Answers</button>
                                     </div>
 
-                                    <a href="/fromJeopardyLabs">Pull from JeopardyLabs</a>&nbsp;|&nbsp;
                                     <a href="/JeffpardyGameDataTemplate.xlsx" target="#">Download Excel Template</a>
                                 </div>
                                 <p></p>
