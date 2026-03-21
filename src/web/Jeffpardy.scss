@@ -671,7 +671,7 @@ div#hostSecondaryPage ul.categories li span.categoryTitle {
 /*----------------------------------------------------------------------------*/
 div#playerPage {
     padding: 10px;
-    background: linear-gradient(180deg, $colorBoardFrame 0%, darken($colorBoardFrame, 5) 100%);
+    background-color: $colorGameBoard;
     color: white;
     display: flex;
     flex-direction: column;
@@ -745,8 +745,8 @@ div#playerPage div.gameCodeEntry input {
 div#playerPage input, div#playerPage select {
     font-size: 1.3rem;
     padding: 10px 14px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 6px;
     color: white;
     outline: none;
@@ -795,8 +795,8 @@ div#playerPage div.buzzerCurrentUserView {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
     padding: 24px;
 }
@@ -1047,7 +1047,7 @@ div#scoreboard .scoreboardEntry.winningTeam {
 
 div#scoreboard .scoreboardEntry .buzzerIndicator {
     height: 20px;
-    background-color: transparent;
+    background-color: rgba(255, 255, 255, 0.1);
     transition: background-color 0.2s ease;
     overflow: hidden;
     font-size: 0.7em;
@@ -1092,8 +1092,8 @@ div.buzzerUserListView {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
     padding: 24px;
 }
@@ -1131,9 +1131,9 @@ div.buzzerUserListView ul.playerList ul li {
 
 /* Dark-themed MUI Dialogs */
 .gameDialog.MuiPaper-root {
-    background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%);
+    background: linear-gradient(180deg, darken($colorGameBoard, 10) 0%, darken($colorGameBoard, 20) 100%);
     color: white;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
 }
 
@@ -1186,8 +1186,8 @@ div.buzzerUserListView ul.playerList ul li {
 .gameDialog .teamFixupScore {
     width: 80px;
     padding: 6px 10px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 6px;
     color: #FFD700;
     font-size: 1.1rem;
