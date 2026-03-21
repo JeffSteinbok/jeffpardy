@@ -1,5 +1,5 @@
-﻿import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as React from "react";
+import { createRoot } from "react-dom/client";
 import * as signalR from "@microsoft/signalr";
 import { Logger } from "../../utilities/Logger";
 import { IPlayer, TeamDictionary } from "../../Types"
@@ -156,7 +156,6 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
 let root = document.createElement("div");
 root.id = 'main';
 document.body.appendChild(root);
-ReactDOM.render(
-    <HostSecondaryPage />,
-    document.getElementById("main")
+createRoot(document.getElementById("main")!).render(
+    <HostSecondaryPage />
 );

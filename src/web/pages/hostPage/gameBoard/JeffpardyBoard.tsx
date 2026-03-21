@@ -236,7 +236,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
 
         Logger.debug("JeffpardyBoard:render", this.props.categories);
 
-        let boardGridElements: JSX.Element[] = [];
+        let boardGridElements: React.JSX.Element[] = [];
         let dailyDoubleMaxBet: number;
 
         if (this.state.jeopardyBoardView == JeopardyBoardView.Board &&

@@ -13,7 +13,7 @@ export class Timer extends React.Component<ITimerProps> {
     }
 
     public render() {
-        let timerElements: JSX.Element[] = [];
+        let timerElements: React.JSX.Element[] = [];
 
         for (var i = 0; i < 100; i++) {
             timerElements.push(<div key={ i } className={ i < ((1 - this.props.percentageRemaining) * 100) ? "lit" : "" }></div>);
