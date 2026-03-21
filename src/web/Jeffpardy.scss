@@ -946,7 +946,10 @@ div#scoreboard .scoreboardEntry.winningTeam {
 div#scoreboard .scoreboardEntry .buzzerIndicator {
     height: 4px;
     background-color: transparent;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, height 0.2s ease;
+    overflow: hidden;
+    font-size: 0.7em;
+    line-height: 20px;
 }
 
 div#scoreboard .scoreboardEntry .buzzerIndicator.buzzerActive {
@@ -956,6 +959,7 @@ div#scoreboard .scoreboardEntry .buzzerIndicator.buzzerActive {
 
 
 div#scoreboard .scoreboardEntry .buzzerIndicator.buzzedIn {
+    height: 20px;
     background-color: #f44336;
     box-shadow: 0 0 8px rgba(244, 67, 54, 0.6);
 }
