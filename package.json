@@ -29,7 +29,6 @@
     "dev": "vite build --mode development --watch",
     "build": "vite build",
     "buildProd": "vite build --mode production",
-    "scss": "sass src/web:wwwroot/css/dist",
     "test": "vitest run",
     "test:watch": "vitest"
   },

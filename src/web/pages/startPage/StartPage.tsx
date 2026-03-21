@@ -1,5 +1,6 @@
 ﻿import * as React from "react";
 import { createRoot } from "react-dom/client";
+import "../../Jeffpardy.scss";
 import { Attribution } from "../../components/attribution/Attribution";
 /**
  * Root page for the application, begins the rendering.
