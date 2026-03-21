@@ -20,7 +20,7 @@
     </AssemblyAttribute>
   </ItemGroup>
   <Target Name="Frontend Build" AfterTargets="Build" Condition="'$(SkipFrontendBuild)' != 'true'">
-    <Exec Condition="$(Configuration) == 'Debug'" Command="npm ci --legacy-peer-deps &amp;&amp; npm run build &amp;&amp; npm run scss" />
-    <Exec Condition="$(Configuration) == 'Release'" Command="npm ci --legacy-peer-deps &amp;&amp; npm run buildProd &amp;&amp; npm run scss" />
+    <Exec Condition="$(Configuration) == 'Debug'" Command="npm ci --legacy-peer-deps &amp;&amp; npm run build" />
+    <Exec Condition="$(Configuration) == 'Release'" Command="npm ci --legacy-peer-deps &amp;&amp; npm run buildProd" />
   </Target>
 </Project>
