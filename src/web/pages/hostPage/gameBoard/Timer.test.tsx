@@ -4,34 +4,35 @@ import * as React from 'react';
 import { Timer } from './Timer';
 
 describe('Timer', () => {
-    it('renders 100 child divs', () => {
+    it('renders a timer with a timerFill child', () => {
         const { container } = render(<Timer percentageRemaining={1} />);
         const timerDiv = container.querySelector('.timer');
         expect(timerDiv).toBeInTheDocument();
-        expect(timerDiv!.children).toHaveLength(100);
+        const fill = timerDiv!.querySelector('.timerFill');
+        expect(fill).toBeInTheDocument();
     });
 
-    it('has all divs lit when percentageRemaining is 0', () => {
+    it('has 100% width when percentageRemaining is 0 (fully elapsed)', () => {
         const { container } = render(<Timer percentageRemaining={0} />);
-        const litDivs = container.querySelectorAll('.timer > div.lit');
-        expect(litDivs).toHaveLength(100);
+        const fill = container.querySelector('.timerFill') as HTMLElement;
+        expect(fill.style.width).toBe('100%');
     });
 
-    it('has no divs lit when percentageRemaining is 1', () => {
+    it('has 0% width when percentageRemaining is 1 (not started)', () => {
         const { container } = render(<Timer percentageRemaining={1} />);
-        const litDivs = container.querySelectorAll('.timer > div.lit');
-        expect(litDivs).toHaveLength(0);
+        const fill = container.querySelector('.timerFill') as HTMLElement;
+        expect(fill.style.width).toBe('0%');
     });
 
-    it('has 50 divs lit when percentageRemaining is 0.5', () => {
+    it('has 50% width when percentageRemaining is 0.5', () => {
         const { container } = render(<Timer percentageRemaining={0.5} />);
-        const litDivs = container.querySelectorAll('.timer > div.lit');
-        expect(litDivs).toHaveLength(50);
+        const fill = container.querySelector('.timerFill') as HTMLElement;
+        expect(fill.style.width).toBe('50%');
     });
 
-    it('has 75 divs lit when percentageRemaining is 0.25', () => {
+    it('has 75% width when percentageRemaining is 0.25', () => {
         const { container } = render(<Timer percentageRemaining={0.25} />);
-        const litDivs = container.querySelectorAll('.timer > div.lit');
-        expect(litDivs).toHaveLength(75);
+        const fill = container.querySelector('.timerFill') as HTMLElement;
+        expect(fill.style.width).toBe('75%');
     });
 });
