@@ -692,11 +692,11 @@ div#playerPage div.title {
 }
 
 
-div#playerPage button {
+div#playerPage button:not(#buzzer) {
     @extend %bigButton;
 }
 
-div#playerPage button:hover {
+div#playerPage button:not(#buzzer):hover {
     @extend %bigButtonHover;
 }
 
