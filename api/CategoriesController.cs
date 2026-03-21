@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -68,34 +67,6 @@ namespace Jeffpardy
             int index = int.Parse(Request.Query["index"]);
             var category = await AzureBlobCategoryLoader.Instance.LoadCategoryAsync(season, fileName, index);
 
-            return category;
-        }
-
-        [HttpGet]
-        [Route("gpt/{topic}")]
-        public async Task<Category> GetCategoryFromGptByTopic(string topic)
-        {
-            string openAIKey = Request.Query["openAIKey"];
-            var category = await GptCategoryGenerator.Instance.GetCategoryFromTopicAsync(topic, openAIKey);
-            return category;
-        }
-
-        /// <summary>
-        /// Get a category generated from a block of text and ChatGPT.
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("gpt/fromtext")]
-        public async Task<Category> GetCategoryFromGptText()
-        {
-            // This is ugly; there must be a better way to read the post body.
-            string textBlock = "";
-            using (StreamReader sr = new StreamReader(Request.Body))
-            {
-                textBlock = sr.ReadToEndAsync().Result;
-            }
-            string openAIKey = Request.Query["openAIKey"];
-            var category = await GptCategoryGenerator.Instance.GetCategoryFromTextBlockAsync(textBlock, openAIKey);
             return category;
         }
 

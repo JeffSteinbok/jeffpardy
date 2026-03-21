@@ -16,7 +16,7 @@ on:
 env:
   AZURE_WEBAPP_NAME: jeffpardy    # set this to your application's name
   AZURE_WEBAPP_PACKAGE_PATH: '.'      # set this to the path to your web app project, defaults to the repository root
-  DOTNET_VERSION: '7.0'           # set this to the dot net version to use
+  DOTNET_VERSION: '10.0'           # set this to the dot net version to use
 
 jobs:
   build-and-deploy:
@@ -24,11 +24,11 @@ jobs:
     steps:
 
       # Checkout the repo
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v4
       
       # Setup .NET Core SDK
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }} 
       

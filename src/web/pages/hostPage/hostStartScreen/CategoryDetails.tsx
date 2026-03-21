@@ -37,7 +37,6 @@ export interface ICategoryDetailsState {
 
 export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICategoryDetailsState> {
     categorySearchTerm: string;
-    gptTextBlock: string;
 
     constructor(props: any) {
         super(props);
@@ -108,23 +107,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                                         variant="contained"
                                         disabled={ this.state.searchInProgress }
                                         onClick={ this.searchForCategory }>Search Jeopardy Archive</Button>
-                                    <Button
-                                        variant="contained"
-                                        disabled={ this.state.searchInProgress }
-                                        onClick={ this.generateCategoryFromGpt }>Generate from Gpt (ALPHA)</Button>
                                 </Stack>
-
-                                <h3>Get Questions from Text Block</h3>
-                                <p>Copy some text from somewhere like Wikipedia, or paste a link to any webpage.</p>
-                                <TextField
-                                    fullWidth
-                                    multiline
-                                    onChange={ (event) => this.gptTextBlock = event.target.value } />
-                                <Button variant="contained"
-                                    disabled={ this.state.searchInProgress }
-                                    onClick={ this.generateCategoryFromGptTextBlock }>Get From Text Block</Button>
-
-                                <p>Note that GPT responses can take a long time to return and may not be correct; depending on where it sourced the information from.  If you want to edit the questions anfterwards, hit "Save" and then edit the JSON.</p>
 
                             </Stack>
 
@@ -253,91 +236,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
         }
     }
 
-    public generateCategoryFromGpt = () => {
-        Logger.debug("CategoryDetails:generateCategoryFromGpt");
-
-        if (!Debug.IsFlagSet(DebugFlags.LocalCategories)) {
-
-            // Do I have an OpenAI Key?
-            let openAIKey: string = localStorage.getItem("OpenAIKey");
-            if (openAIKey == null || openAIKey == "") {
-                openAIKey = prompt("Enter your OpenAI Key")
-                localStorage.setItem("OpenAIKey", openAIKey);
-            }
-
-            this.setState({ searchInProgress: true });
-
-            let context: IApiExecutionContext = {
-                apiName: "/api/Categories/gpt/" + this.categorySearchTerm + "?openAIKey=" + openAIKey,
-                json: true,
-                success: (results: ICategory) => {
-                    this.setCategory(results);
-                    this.setState({ searchInProgress: false });
-                },
-                error: () => {
-                    this.setState({ searchInProgress: false });
-                }
-            };
-
-            let wsam: WebServerApiManager = new WebServerApiManager();
-            wsam.executeApi(context);
-        }
-        else {
-            let category: ICategory;
-            if (this.props.roundDescriptor != RoundDescriptor.FinalJeffpardy) {
-                category = Debug.generateCategory();
-            }
-            else {
-                category = Debug.generateFinalCategory();
-            }
-            this.setState({ category: category })
-
-        }
-    }
-
-    public generateCategoryFromGptTextBlock = () => {
-        Logger.debug("CategoryDetails:generateCategoryFromGptTextBlock");
-
-        if (!Debug.IsFlagSet(DebugFlags.LocalCategories)) {
-
-            // Do I have an OpenAI Key?
-            let openAIKey: string = localStorage.getItem("OpenAIKey");
-            if (openAIKey == null || openAIKey == "") {
-                openAIKey = prompt("Enter your OpenAI Key")
-                localStorage.setItem("OpenAIKey", openAIKey);
-            }
-
-            this.setState({ searchInProgress: true });
-
-            let context: IApiExecutionContext = {
-                apiName: "/api/Categories/gpt/fromText" + "?openAIKey=" + openAIKey,
-                json: true,
-                success: (results: ICategory) => {
-                    this.setCategory(results);
-                    this.setState({ searchInProgress: false });
-                },
-                error: () => {
-                    this.setState({ searchInProgress: false });
-                }
-            };
-
-            let wsam: WebServerApiManager = new WebServerApiManager();
-            wsam.executePostApi(context, this.gptTextBlock);
-        }
-        else {
-            let category: ICategory;
-            if (this.props.roundDescriptor != RoundDescriptor.FinalJeffpardy) {
-                category = Debug.generateCategory();
-            }
-            else {
-                category = Debug.generateFinalCategory();
-            }
-            this.setState({ category: category })
-
-        }
-    }
-
-    public setCategory = (category: ICategory) => {
+    public setCategory= (category: ICategory) => {
         // This sucks that I have to do this here too and in the controller
 
         if (this.props.roundDescriptor != RoundDescriptor.FinalJeffpardy) {
