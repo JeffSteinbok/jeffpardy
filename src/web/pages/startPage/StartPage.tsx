@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import * as ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { Attribution } from "../../components/attribution/Attribution";
 /**
  * Root page for the application, begins the rendering.
@@ -29,7 +29,6 @@ export class StartPage extends React.Component<any, any> {
 let root = document.createElement("div");
 root.id = 'main';
 document.body.appendChild(root);
-ReactDOM.render(
-    <StartPage />,
-    document.getElementById("main")
+createRoot(document.getElementById("main")!).render(
+    <StartPage />
 );

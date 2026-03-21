@@ -33,8 +33,8 @@ export class AnswerKey extends React.Component<IAnswerKeyProps, any> {
         }
     }
 
-    public getRoundGrid = (round: IGameRound): JSX.Element[] => {
-        let boardGridElements: JSX.Element[] = [];
+    public getRoundGrid = (round: IGameRound): React.JSX.Element[] => {
+        let boardGridElements: React.JSX.Element[] = [];
 
         if (round.categories) {
 
