@@ -6,23 +6,17 @@ export interface ITimerProps {
 
 export class Timer extends React.Component<ITimerProps> {
 
-    private contextMenuTarget: any;
-
     constructor(props: ITimerProps) {
         super(props);
     }
 
     public render() {
-        let timerElements: React.JSX.Element[] = [];
-
-        for (var i = 0; i < 100; i++) {
-            timerElements.push(<div key={ i } className={ i < ((1 - this.props.percentageRemaining) * 100) ? "lit" : "" }></div>);
-        }
+        const widthPercent = Math.max(0, Math.min(100, this.props.percentageRemaining * 100));
 
         return (
             <div className="timer">
-                { timerElements }
-            </div >
+                <div className="timerFill" style={ { width: `${widthPercent}%` } } />
+            </div>
         );
     }
 }

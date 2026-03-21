@@ -79,11 +79,18 @@ button {
 
 %bigButton {
     font-size: 1.5rem;
-    padding: 5px 20px 5px 20px;
+    padding: 8px 24px;
+    background: $colorHostControlBtn;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 %bigButtonHover {
-    background-color: darkgrey;
+    background: $colorHostControlBtnHover;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
 }
 
 div.flexGrowSpacer {
@@ -452,19 +459,19 @@ div#jeffpardyBoard div.jeffpardyActiveClue .question {
 }
 
 div#jeffpardyBoard div.timer {
-    height: 10px;
+    height: 8px;
     width: 100%;
-    display: flex;
-    flex-direction: row;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 0 0 4px 4px;
+    overflow: hidden;
 }
 
-div#jeffpardyBoard div.timer div {
-    flex-grow: 1;
-    background-color: $colorGameBoard;
-}
-
-div#jeffpardyBoard div.timer div.lit {
-    background-color: white;
+div#jeffpardyBoard div.timer div.timerFill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #f44336 0%, #FFD700 40%, #4CAF50 100%);
+    transition: width 0.25s linear;
+    border-radius: 0 0 4px 4px;
 }
 
 div#jeffpardyBoard button {
@@ -664,7 +671,7 @@ div#hostSecondaryPage ul.categories li span.categoryTitle {
 /*----------------------------------------------------------------------------*/
 div#playerPage {
     padding: 10px;
-    background-color: $colorGameBoard;
+    background: linear-gradient(180deg, $colorBoardFrame 0%, darken($colorBoardFrame, 5) 100%);
     color: white;
     display: flex;
     flex-direction: column;
@@ -675,12 +682,10 @@ div#playerPage {
 
 div#playerPage div.title {
     @extend %jeffpardyMainFont;
-
-    background-color: $colorGameBoard;
-    font-size: 4rem;
+    font-size: 3.5rem;
     text-align: center;
-    margin: 2px;
-    padding: 20px 0 10px 0;
+    margin: 0;
+    padding: 20px 0 8px 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -697,13 +702,15 @@ div#playerPage button:hover {
 
 div#playerPage div.gameCode {
     @extend %jeffpardyMainFont;
-    background-color: $colorGameBoard;
-    font-size: 2rem;
+    font-size: 1.4rem;
     text-align: center;
-    margin: 2px;
+    margin: 0 0 16px 0;
+    padding: 4px 16px;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #FFD700;
+    letter-spacing: 0.3em;
 }
 
 
@@ -715,27 +722,56 @@ div#playerPage div.gameCodeEntry {
     flex-grow: 1;
 }
 
+div#playerPage div.gameCodeEntry h1 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
 div#playerPage form {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 12px;
 }
 
 div#playerPage div.gameCodeEntry input {
     text-align: center;
-    font-size: 1.5em;
+    font-size: 1.8em;
     text-transform: uppercase;
+    letter-spacing: 0.3em;
+}
+
+div#playerPage input, div#playerPage select {
+    font-size: 1.3rem;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: white;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    width: 280px;
+    box-sizing: border-box;
+}
+
+div#playerPage input:focus, div#playerPage select:focus {
+    border-color: #FFD700;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+div#playerPage input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
 }
 
 
 div#playerPageMain {
-    padding: 10px;
-    background-color: $colorGameBoard;
+    padding: 20px;
     color: white;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    flex-direction: row;
-    height: 100%;
+    gap: 24px;
+    flex-grow: 1;
     box-sizing: border-box;
 }
 
@@ -759,25 +795,41 @@ div#playerPage div.buzzerCurrentUserView {
     flex-direction: column;
     align-items: center;
     text-align: center;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 24px;
 }
 
 div#playerPage div.buzzerCurrentUserView h1 {
-    margin-bottom: 0px;
+    margin: 0 0 4px 0;
+    font-size: 1.8rem;
 }
 
 div#playerPage div.buzzerCurrentUserView h2 {
-    margin-top: 0px;
-}
-
-div#playerPage input {
-    font-size: 1.5rem;
+    margin: 0 0 12px 0;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: normal;
 }
 
 div#playerPage div.buzzerRegistration,
 div#playerPage div.finalJeffpardy {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
 }
 
+div#playerPage div.buzzerRegistration h1 {
+    font-size: 1.6rem;
+    margin-bottom: 16px;
+}
+
+div#playerPage div.buzzerRegistration form > div {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 4px;
+}
 
 div#playerPage div.buzzerCurrentUserView div.playerName {
     font-size: 1.5rem;
@@ -786,32 +838,50 @@ div#playerPage div.buzzerCurrentUserView div.playerName {
 
 div#playerPage div.buzzerCurrentUserView div.buzzedInUser {
     margin-top: 20px;
-    padding: 10px 30px 10px 30px;
-    background-color: orangered;
+    padding: 12px 24px;
+    background: rgba(255, 69, 0, 0.85);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 div#playerPage div.buzzerCurrentUserView div.buzzedInUser.buzzedInWinner {
-    background-color: green;
+    background: rgba(0, 128, 0, 0.85);
+}
+
+div#playerPage div.buzzerCurrentUserView div.buzzedInUser div.buzzedInUserTitle {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 4px;
 }
 
 div#playerPage div.buzzerCurrentUserView div.buzzedInUser div.buzzedInUserName {
-    font-size: 2rem;
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+div#playerPage div.buzzerCurrentUserView div.buzzedInUser div.buzzedInUserTeam {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 button#buzzer {
     margin-top: 20px;
-    height: 200px;
-    width: 200px;
-    font-size: 2em;
+    height: 180px;
+    width: 180px;
+    font-size: 1.8em;
+    font-weight: bold;
     color: white;
     border-radius: 50%;
-    box-shadow: 0px 0px 20px rgba(50, 50, 50, 0.5);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
 }
 
-
-
 button#buzzer div.reactionTime {
-    font-size: 0.8em;
+    font-size: 0.7em;
+    font-weight: normal;
+    opacity: 0.8;
 }
 
 button#buzzer:focus {
@@ -819,36 +889,68 @@ button#buzzer:focus {
 }
 
 button#buzzer.active {
-    border: 1px solid green;
-    background-color: green;
+    border-color: #4CAF50;
+    background: radial-gradient(circle, #4CAF50 0%, #2E7D32 100%);
+    box-shadow: 0 0 30px rgba(76, 175, 80, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.1);
+    animation: buzzerPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes buzzerPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(76, 175, 80, 0.4); }
+    50% { box-shadow: 0 0 40px rgba(76, 175, 80, 0.8); }
 }
 
 button#buzzer.active:hover {
-    border: 1px solid darken(green, 10);
-    background-color: darken(green, 10);
+    background: radial-gradient(circle, #43A047 0%, #1B5E20 100%);
+    transform: scale(1.03);
 }
 
 button#buzzer.active:active {
-    border: 1px solid darken(green, 20);
-    background-color: darken(green, 20);
+    background: radial-gradient(circle, #388E3C 0%, #1B5E20 100%);
+    transform: scale(0.97);
 }
 
 button#buzzer.inactive {
-    border: 1px solid grey;
-    background-color: grey;
+    border-color: rgba(255, 255, 255, 0.1);
+    background: radial-gradient(circle, #555 0%, #333 100%);
+    box-shadow: none;
+    animation: none;
 }
 
 button#buzzer.buzzed,
 button#buzzer.buzzed:hover {
-    border: 1px solid blue;
-    background-color: blue;
+    border-color: #1565C0;
+    background: radial-gradient(circle, #1976D2 0%, #0D47A1 100%);
+    box-shadow: 0 0 25px rgba(25, 118, 210, 0.5);
+    animation: none;
 }
 
 button#buzzer.lockedout,
 button#buzzer.lockedout:hover,
 button#buzzer.lockedout:active {
-    border: 1px solid orangered;
-    background-color: orangered;
+    border-color: #D32F2F;
+    background: radial-gradient(circle, #F44336 0%, #B71C1C 100%);
+    box-shadow: 0 0 25px rgba(244, 67, 54, 0.5);
+    animation: none;
+}
+
+div#playerPage div.buzzerCurrentUserView div.handicapSection {
+    margin-top: 16px;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+div#playerPage div.buzzerCurrentUserView div.handicapSection select {
+    margin-left: 8px;
+    width: auto;
+}
+
+div#playerPage div.buzzerCurrentUserView div.buzzerHint {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-style: italic;
+    margin-top: 8px;
+    margin-bottom: 8px;
 }
 
 div#scoreboard {
@@ -944,9 +1046,9 @@ div#scoreboard .scoreboardEntry.winningTeam {
 }
 
 div#scoreboard .scoreboardEntry .buzzerIndicator {
-    height: 4px;
+    height: 20px;
     background-color: transparent;
-    transition: background-color 0.2s ease, height 0.2s ease;
+    transition: background-color 0.2s ease;
     overflow: hidden;
     font-size: 0.7em;
     line-height: 20px;
@@ -957,11 +1059,14 @@ div#scoreboard .scoreboardEntry .buzzerIndicator.buzzerActive {
     box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
 }
 
-
 div#scoreboard .scoreboardEntry .buzzerIndicator.buzzedIn {
-    height: 20px;
     background-color: #f44336;
     box-shadow: 0 0 8px rgba(244, 67, 54, 0.6);
+}
+
+div#scoreboard .scoreboardEntry .buzzerIndicator.wrongAnswer {
+    background-color: #b71c1c;
+    box-shadow: 0 0 6px rgba(183, 28, 28, 0.4);
 }
 
 
@@ -987,16 +1092,29 @@ div.buzzerUserListView {
     display: flex;
     flex-direction: column;
     align-items: center;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+div.buzzerUserListView h1 {
+    font-size: 1.4rem;
+    margin: 0 0 16px 0;
 }
 
 div.buzzerUserListView ul.playerList {
     list-style: none;
     padding-left: 0px;
     text-align: center;
+    width: 100%;
 }
 
 div.buzzerUserListView ul.playerList li {
     font-weight: bold;
+    padding: 8px 0 4px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: #FFD700;
 }
 
 div.buzzerUserListView ul.playerList ul {
@@ -1005,6 +1123,87 @@ div.buzzerUserListView ul.playerList ul {
 
 div.buzzerUserListView ul.playerList ul li {
     font-weight: normal;
+    border-bottom: none;
+    padding: 2px 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9em;
+}
+
+/* Dark-themed MUI Dialogs */
+.gameDialog.MuiPaper-root {
+    background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+}
+
+.gameDialog .MuiDialogTitle-root {
+    color: #FFD700;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.gameDialog .MuiDialogContent-root {
+    color: rgba(255, 255, 255, 0.9);
+    padding-top: 16px;
+}
+
+.gameDialog .MuiDialogActions-root {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 24px;
+}
+
+.gameDialog .MuiButton-root {
+    color: white;
+    text-transform: none;
+    font-weight: 600;
+}
+
+.gameDialog .MuiButton-colorPrimary {
+    background: $colorHostControlBtn;
+    border-radius: 6px;
+    padding: 6px 20px;
+}
+
+.gameDialog .MuiButton-colorPrimary:hover {
+    background: $colorHostControlBtnHover;
+}
+
+.gameDialog .teamFixupRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.gameDialog .teamFixupName {
+    flex: 1;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.gameDialog .teamFixupScore {
+    width: 80px;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: #FFD700;
+    font-size: 1.1rem;
+    text-align: center;
+    outline: none;
+}
+
+.gameDialog .teamFixupScore:focus {
+    border-color: #FFD700;
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
+}
+
+.gameDialog input[type="radio"] {
+    accent-color: #FFD700;
+    width: 18px;
+    height: 18px;
 }
 
 div#hostAnswerKey {

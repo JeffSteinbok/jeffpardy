@@ -4,7 +4,8 @@ export enum ScoreboardEntryBuzzerState {
     Off,
     Active,
     BuzzedIn,
-    OffNoControl
+    OffNoControl,
+    WrongAnswer
 }
 
 export interface IScoreboardEntryProps {
@@ -31,6 +32,8 @@ export class ScoreboardEntry extends React.Component<IScoreboardEntryProps, any>
             buzzerIndicatorClass += ' buzzerActive'
         } else if (this.props.buzzerState == ScoreboardEntryBuzzerState.BuzzedIn) {
             buzzerIndicatorClass += ' buzzedIn'
+        } else if (this.props.buzzerState == ScoreboardEntryBuzzerState.WrongAnswer) {
+            buzzerIndicatorClass += ' wrongAnswer'
         }
 
         let scoreboardEntryClass = 'scoreboardEntry';

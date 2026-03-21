@@ -38,6 +38,8 @@ export interface IScoreboardState {
     numResponses: number;
     controllingUser: IPlayer;
     isTeamFixupDialogShown: boolean;
+    isEndRoundDialogShown: boolean;
+    wrongTeams: string[];
 }
 
 export interface IScoreboard {
@@ -72,7 +74,9 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
             dailyDoubleWager: 0,
             numResponses: 0,
             controllingUser: null,
-            isTeamFixupDialogShown: false
+            isTeamFixupDialogShown: false,
+            isEndRoundDialogShown: false,
+            wrongTeams: []
         };
     }
 
@@ -98,7 +102,8 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
     onClueShown = (clue: IClue) => {
         this.setState({
             gameBoardState: clue.isDailyDouble ? GameBoardState.ClueAnswered : GameBoardState.ClueGiven,
-            activeClue: clue
+            activeClue: clue,
+            wrongTeams: []
         });
     };
 
@@ -167,10 +172,13 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
     endRound = () => {
         if (this.state.gameBoardState == GameBoardState.Normal) {
-            if (window.confirm("Are you sure you want to end the round?")) {
-                this.props.jeffpardyHostController.endRound();
-            }
+            this.setState({ isEndRoundDialogShown: true });
         }
+    }
+
+    confirmEndRound = () => {
+        this.setState({ isEndRoundDialogShown: false });
+        this.props.jeffpardyHostController.endRound();
     }
 
     correctResponse = () => {
@@ -233,11 +241,14 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
             } else {
                 adjustment *= -1;
 
+                const wrongTeam = this.state.buzzedInUser ? this.state.buzzedInUser.team : null;
+
                 if ((this.state.numResponses == this.teamCount) || this.state.activeClue.isDailyDouble) {
                     this.showQuestion();
                 } else {
                     this.setState({
-                        gameBoardState: GameBoardState.ClueGiven
+                        gameBoardState: GameBoardState.ClueGiven,
+                        wrongTeams: wrongTeam ? [...this.state.wrongTeams, wrongTeam] : this.state.wrongTeams
                     });
                 }
 
@@ -345,6 +356,10 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                             userName = this.state.buzzedInUser.name;
                         }
 
+                        if (this.state.wrongTeams.includes(teamName)) {
+                            buzzerState = ScoreboardEntryBuzzerState.WrongAnswer;
+                        }
+
                         if (this.state.controllingUser != null) {
                             if (this.state.controllingUser.team == teamName) {
                                 isControllingTeam = true;
@@ -378,13 +393,13 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                         open={ this.state.isTeamFixupDialogShown }
                         keepMounted
                         fullWidth
+                        slotProps={ { paper: { className: "gameDialog" } } }
                     >
-                        <DialogTitle id="alert-dialog-slide-title">{ "Adjust Control & Scores" }</DialogTitle>
+                        <DialogTitle>Adjust Control &amp; Scores</DialogTitle>
                         <DialogContent>
                             { Object.keys(this.props.teams).sort().map((teamName, index) => {
-                                let isControllingTeam: boolean = false;
                                 return (
-                                    <div>
+                                    <div key={ index } className="teamFixupRow">
                                         <input
                                             type="radio"
                                             name="controllingTeamName"
@@ -393,9 +408,10 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                                                 this.setState({ controllingUser: null });
                                                 this.props.jeffpardyHostController.controllingTeamChange(this.props.teams[teamName]);
                                             } } />
-                                        Team: { teamName }
+                                        <span className="teamFixupName">{ teamName }</span>
                                         <input
                                             type="text"
+                                            className="teamFixupScore"
                                             defaultValue={ this.props.teams[teamName].score }
                                             onChange={ e => this.props.teams[teamName].score = Number.parseInt(e.target.value, 10) } />
                                     </div>
@@ -406,6 +422,27 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                         <DialogActions>
                             <Button onClick={ () => { this.setState({ isTeamFixupDialogShown: false }) } } color="primary">
                                 OK
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+                }
+
+                {
+                    this.state.isEndRoundDialogShown &&
+                    <Dialog
+                        open={ this.state.isEndRoundDialogShown }
+                        slotProps={ { paper: { className: "gameDialog" } } }
+                    >
+                        <DialogTitle>End Round</DialogTitle>
+                        <DialogContent>
+                            Are you sure you want to end the current round?
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={ () => { this.setState({ isEndRoundDialogShown: false }) } }>
+                                Cancel
+                            </Button>
+                            <Button onClick={ this.confirmEndRound } color="primary">
+                                End Round
                             </Button>
                         </DialogActions>
                     </Dialog>

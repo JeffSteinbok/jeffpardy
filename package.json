@@ -33,6 +33,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@microsoft/applicationinsights-web": "^2.8.9"
+    "@microsoft/applicationinsights-web": "^2.8.9",
+    "jeffpardy": "file:"
   }
 }

@@ -429,18 +429,18 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                             { this.state.playerPageState == PlayerPageState.Buzzer &&
                                 <div>
                                     <h1>{ this.state.name }</h1>
-                                    <h2>Team: { this.state.team }</h2>
+                                    <h2>{ this.state.team }</h2>
 
-                                    <div><i>Wait for the button to turn green before buzzing in.<br />
-                                        Click, touch or press SPACE to activate.</i></div>
+                                    <div className="buzzerHint">Wait for the button to turn green before buzzing in.<br />
+                                        Click, touch or press SPACE to activate.</div>
 
                                     <button id="buzzer" className={ buzzerClassName } onMouseDown={ this.buzzIn }>
                                         <div>{ buzzerButtonText }</div>
                                         { showBuzzerReactionTime && <div className="reactionTime">{ this.state.reactionTime } ms</div> }
                                     </button>
 
-                                    <div style={ { paddingTop: 10 } } >
-                                        Buzzer handicap:
+                                    <div className="handicapSection">
+                                        Handicap:
                                         <select id="handicap" onChange={ (e) => this.handicap = Number.parseInt(e.target.value, 10) }>
                                             <option value="0">0 ms</option>
                                             <option value="50">50 ms</option>
@@ -451,14 +451,13 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                             <option value="300">300 ms</option>
                                         </select>
                                     </div>
-                                    <div><i>This will slow you buzzer down if you're kicking too much ass.</i></div>
 
                                     { this.state.buzzedInUser != null &&
                                         <div className={ "buzzedInUser " + (this.state.buzzedInUser.name == this.state.name ? " buzzedInWinner" : "") }>
-                                            <div className="buzzedInUserTitle">Buzzed-in User</div>
+                                            <div className="buzzedInUserTitle">Buzzed In</div>
                                             <div className="buzzedInUserName">{ this.state.buzzedInUser.name }</div>
-                                            <div className="buzzedInUserTeam">Team: { this.state.buzzedInUser.team }</div>
-                                            <div className="buzzedInUserTeam">Reaction Time: { this.state.buzzedInUserReactionTime } ms</div>
+                                            <div className="buzzedInUserTeam">{ this.state.buzzedInUser.team }</div>
+                                            <div className="buzzedInUserTeam">{ this.state.buzzedInUserReactionTime } ms</div>
                                         </div>
                                     }
                                 </div>
