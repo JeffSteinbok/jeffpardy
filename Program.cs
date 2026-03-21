@@ -1,33 +1,41 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Jeffpardy;
+using Jeffpardy.Hubs;
 
-namespace Jeffpardy
+var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Environment.IsDevelopment())
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                })
-            .ConfigureAppConfiguration((hostContext, builder) =>
-            {
-                if (hostContext.HostingEnvironment.IsDevelopment())
-                {
-                    builder.AddUserSecrets<Program>();
-                }
-            });
-    }
+    builder.Configuration.AddUserSecrets<Program>();
 }
+
+builder.Services.AddRazorPages();
+builder.Services.AddControllers();
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<GameCache>();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    AzureBlobCategoryLoader.DevMode = true;
+    AzureBlobCategoryLoader.DevConnectionString = app.Configuration["BlobConnectionString"];
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseAuthorization();
+
+app.MapRazorPages();
+app.MapControllers();
+app.MapHub<GameHub>("/hub/game");
+
+AzureBlobCategoryLoader.Instance.PopulateSeasonManifest(SeasonManifestCache.Instance);
+
+app.Run();
