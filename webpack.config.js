@@ -10,7 +10,6 @@ const config = {
         host: './src/web/pages/hostPage/HostPage.tsx',
         hostSecondary: './src/web/pages/hostSecondaryPage/HostSecondaryPage.tsx',
         player: './src/web/pages/playerPage/PlayerPage.tsx',
-        fromJeopardyLabs: './src/web/pages/fromJeopardyLabs/FromJeopardyLabs.tsx',
     },
     output: {
         path: path.resolve(__dirname, "./wwwroot/js/dist"),
