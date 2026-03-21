@@ -7,14 +7,20 @@
     <RootNamespace>Jeffpardy</RootNamespace>
     <Configurations>Debug;Release;DebugServerOnly</Configurations>
     <UserSecretsId>b808f0f8-3565-4c36-bfe8-e713ac91c711</UserSecretsId>
+    <DefaultItemExcludes>$(DefaultItemExcludes);Jeffpardy.Tests\**</DefaultItemExcludes>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.19.0" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.26.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
-  <Target Name="Frontend Build" AfterTargets="Build">
-    <Exec Condition="$(Configuration) == 'Debug'" Command="npm ci &amp;&amp; npm run build &amp;&amp; npm run scss" />
-    <Exec Condition="$(Configuration) == 'Release'" Command="npm ci &amp;&amp; npm run buildProd &amp;&amp; npm run scss" />
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Jeffpardy.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+  <Target Name="Frontend Build" AfterTargets="Build" Condition="'$(SkipFrontendBuild)' != 'true'">
+    <Exec Condition="$(Configuration) == 'Debug'" Command="npm ci --legacy-peer-deps &amp;&amp; npm run build &amp;&amp; npm run scss" />
+    <Exec Condition="$(Configuration) == 'Release'" Command="npm ci --legacy-peer-deps &amp;&amp; npm run buildProd &amp;&amp; npm run scss" />
   </Target>
 </Project>

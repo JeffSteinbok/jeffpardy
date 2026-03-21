@@ -2,13 +2,14 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    paths-ignore:
+      - '*.md'
   pull_request:
     branches: [master]
 
 jobs:
-  build:
-    name: Build
+  backend:
+    name: Backend Build & Test
     runs-on: ubuntu-latest
 
     steps:
@@ -19,20 +20,33 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore -p:SkipFrontendBuild=true
+
+      - name: Test
+        run: dotnet test Jeffpardy.Tests --no-build --verbosity normal
+
+  frontend:
+    name: Frontend Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version: '22'
           cache: 'npm'
 
-      - name: Install npm dependencies
-        run: npm ci
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
 
-      - name: Build frontend
-        run: npm run buildProd && npm run scss
+      - name: Build
+        run: npm run buildProd
 
-      - name: Restore .NET dependencies
-        run: dotnet restore
-
-      - name: Build backend
-        run: dotnet build --configuration Release --no-restore
+      - name: Test
+        run: npm test
