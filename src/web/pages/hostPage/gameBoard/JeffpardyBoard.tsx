@@ -10,7 +10,6 @@ import { Debug, DebugFlags } from "../../../utilities/Debug";
 import { FinalJeffpardySubmissionList } from "./FinalJeffpardySubmissionList";
 import { FinalJeffpardyTally } from "./FinalJeffpardyTally";
 import { HostPageViewMode } from "../HostPage";
-import { playTimesUpSound } from "../../../utilities/SoundEffects";
 
 export enum JeopardyBoardView {
     Board,
@@ -216,7 +215,6 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             this.timerHandle = setTimeout(this.onTimerFire, 250);
         } else {
             // Time's up!
-            playTimesUpSound();
             if (this.state.jeopardyBoardView == JeopardyBoardView.FinalClue) {
                 this.props.jeffpardyHostController.endFinalJeffpardy();
                 this.setState({

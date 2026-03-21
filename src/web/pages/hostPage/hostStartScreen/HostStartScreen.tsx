@@ -16,6 +16,7 @@ import { CategoryDetails } from "./CategoryDetails";
 import { Attribution } from "../../../components/attribution/Attribution";
 import { TeamDictionary } from "../../../Types";
 import { JeffpardyHostController } from "../JeffpardyHostController";
+import { JsonEditor } from "../../../components/JsonEditor";
 
 import * as QRCode from "qrcode.react";
 
@@ -307,13 +308,13 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                         open={ this.state.isCustomCategoryDialogOpen }
                                         keepMounted
                                         fullWidth
-                                        maxWidth={ false }
+                                        maxWidth="lg"
+                                        onClose={ () => this.setState({ isCustomCategoryDialogOpen: false }) }
+                                        PaperProps={ { className: "gameDialog", style: { height: "85vh" } } }
                                     >
-                                        <DialogTitle>{ "Modify this JSON" }</DialogTitle>
-                                        <DialogContent>
-                                            <TextField
-                                                fullWidth
-                                                multiline
+                                        <DialogTitle>Modify Game Data JSON</DialogTitle>
+                                        <DialogContent style={ { display: "flex", flexDirection: "column", overflow: "hidden", paddingBottom: 0, flex: 1 } }>
+                                            <JsonEditor
                                                 defaultValue={
                                                     JSON.stringify(this.props.gameData, (key, value) => {
                                                         if (key == "isAsked") return undefined;
@@ -323,7 +324,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                                         else return value;
                                                     }, 4)
                                                 }
-                                                onChange={ (event) => this.customCategoryJSON = event.target.value } />
+                                                onChange={ (value) => this.customCategoryJSON = value } />
                                         </DialogContent>
                                         <DialogActions>
                                             <Button onClick={ () => { this.setState({ isCustomCategoryDialogOpen: false }) } }>
@@ -340,17 +341,19 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                     open={ this.state.isCustomCategoryTsvDialogOpen }
                                     keepMounted
                                     fullWidth
-                                    maxWidth={ false }
+                                    maxWidth="lg"
+                                    onClose={ () => this.setState({ isCustomCategoryTsvDialogOpen: false }) }
+                                    PaperProps={ { className: "gameDialog", style: { height: "85vh" } } }
                                 >
-                                    <DialogTitle>{ "Paste from Excel Template" }</DialogTitle>
-                                    <DialogContent>
+                                    <DialogTitle>Paste from Excel Template</DialogTitle>
+                                    <DialogContent style={ { display: "flex", flexDirection: "column", overflow: "hidden", flex: 1 } }>
                                         <Link href="/JeffpardyGameDataTemplate.xlsx"
                                             target="#">Download Excel Template</Link>
                                         <TextField
                                             label="Paste Excel content here."
                                             fullWidth
                                             multiline
-                                            rows={ 40 }
+                                            sx={ { flex: 1, mt: 1 } }
                                             onChange={ (event) => this.customCategoryTsv = event.target.value } />
                                     </DialogContent>
                                     <DialogActions>

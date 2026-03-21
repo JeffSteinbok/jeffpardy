@@ -56,10 +56,12 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
             <Dialog
                 open={ true }
                 keepMounted
-                fullScreen={ true }
+                fullWidth
+                maxWidth="lg"
                 onClose={ () => this.props.onCancel() }
+                PaperProps={ { className: "gameDialog", style: { height: "80vh" } } }
             >
-                <DialogTitle>{ "Category Details" }</DialogTitle>
+                <DialogTitle>Category Details</DialogTitle>
                 <DialogContent>
 
                     <div id="categoryDetails">

@@ -39,6 +39,7 @@ export interface IScoreboardState {
     controllingUser: IPlayer;
     isTeamFixupDialogShown: boolean;
     isEndRoundDialogShown: boolean;
+    isControlsCollapsed: boolean;
     wrongTeams: string[];
 }
 
@@ -76,6 +77,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
             controllingUser: null,
             isTeamFixupDialogShown: false,
             isEndRoundDialogShown: false,
+            isControlsCollapsed: false,
             wrongTeams: []
         };
     }
@@ -307,7 +309,11 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
         return (
             <div id="scoreboard">
-                <div id="hostControls">
+                <div id="hostControlsDrawer" className={ this.state.isControlsCollapsed ? "collapsed" : "" }>
+                    <button className="drawerToggle" onClick={ () => this.setState({ isControlsCollapsed: !this.state.isControlsCollapsed }) }>
+                        { this.state.isControlsCollapsed ? "▶" : "◀" }
+                    </button>
+                    <div id="hostControls">
                     <div>Board:</div>
                     <div>
                         <button disabled={ this.state.gameBoardState != GameBoardState.Question } onClick={ this.showBoard }>Cont (sp)</button>
@@ -330,6 +336,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                         <button onClick={ () => {
                             window.open(this.props.hostSecondaryWindowUri, 'Jeffpardy Host Secondary Window', 'width=600,height=600');
                         } }>Host Window</button>
+                    </div>
                     </div>
                 </div>
 
@@ -393,7 +400,8 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                         open={ this.state.isTeamFixupDialogShown }
                         keepMounted
                         fullWidth
-                        slotProps={ { paper: { className: "gameDialog" } } }
+                        onClose={ () => this.setState({ isTeamFixupDialogShown: false }) }
+                        PaperProps={ { className: "gameDialog" } }
                     >
                         <DialogTitle>Adjust Control &amp; Scores</DialogTitle>
                         <DialogContent>
@@ -431,7 +439,8 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                     this.state.isEndRoundDialogShown &&
                     <Dialog
                         open={ this.state.isEndRoundDialogShown }
-                        slotProps={ { paper: { className: "gameDialog" } } }
+                        onClose={ () => this.setState({ isEndRoundDialogShown: false }) }
+                        PaperProps={ { className: "gameDialog" } }
                     >
                         <DialogTitle>End Round</DialogTitle>
                         <DialogContent>

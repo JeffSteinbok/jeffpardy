@@ -11,11 +11,11 @@ export class Timer extends React.Component<ITimerProps> {
     }
 
     public render() {
-        const widthPercent = Math.max(0, Math.min(100, this.props.percentageRemaining * 100));
+        const elapsedPercent = Math.max(0, Math.min(100, (1 - this.props.percentageRemaining) * 100));
 
         return (
             <div className="timer">
-                <div className="timerFill" style={ { width: `${widthPercent}%` } } />
+                <div className="timerFill" style={ { width: `${elapsedPercent}%` } } />
             </div>
         );
     }
