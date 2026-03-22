@@ -38,7 +38,10 @@ export class JsonEditor extends React.Component<IJsonEditorProps> {
                         "&": { height: "100%", fontSize: "13px" },
                         ".cm-scroller": { overflow: "auto" },
                         ".cm-content": { fontFamily: "'Cascadia Code', 'Fira Code', 'Consolas', 'Monaco', monospace" },
-                        ".cm-gutters": { fontFamily: "'Cascadia Code', 'Fira Code', 'Consolas', 'Monaco', monospace", backgroundColor: "#060833" },
+                        ".cm-gutters": {
+                            fontFamily: "'Cascadia Code', 'Fira Code', 'Consolas', 'Monaco', monospace",
+                            backgroundColor: "#060833",
+                        },
                         "&.cm-editor": { backgroundColor: "#060a40" },
                         ".cm-activeLine": { backgroundColor: "rgba(255,255,255,0.04)" },
                         ".cm-activeLineGutter": { backgroundColor: "rgba(255,255,255,0.04)" },
@@ -58,6 +61,17 @@ export class JsonEditor extends React.Component<IJsonEditorProps> {
     }
 
     render() {
-        return <div ref={this.editorRef} style={{ flex: 1, minHeight: 0, border: "1px solid rgba(255,255,255,0.15)", borderRadius: "6px", overflow: "hidden" }} />;
+        return (
+            <div
+                ref={this.editorRef}
+                style={{
+                    flex: 1,
+                    minHeight: 0,
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    borderRadius: "6px",
+                    overflow: "hidden",
+                }}
+            />
+        );
     }
 }

@@ -5,7 +5,7 @@ export enum ScoreboardEntryBuzzerState {
     Active,
     BuzzedIn,
     OffNoControl,
-    WrongAnswer
+    WrongAnswer,
 }
 
 export interface IScoreboardEntryProps {
@@ -20,36 +20,35 @@ export interface IScoreboardEntryProps {
 /**
  * Top bar containing toolbar buttons and drop downs
  */
-export class ScoreboardEntry extends React.Component<IScoreboardEntryProps, any> {
-
-    constructor(props: any) {
+export class ScoreboardEntry extends React.Component<IScoreboardEntryProps> {
+    constructor(props: IScoreboardEntryProps) {
         super(props);
     }
 
     public render() {
-        let buzzerIndicatorClass = 'buzzerIndicator'
+        let buzzerIndicatorClass = "buzzerIndicator";
         if (this.props.buzzerState == ScoreboardEntryBuzzerState.Active) {
-            buzzerIndicatorClass += ' buzzerActive'
+            buzzerIndicatorClass += " buzzerActive";
         } else if (this.props.buzzerState == ScoreboardEntryBuzzerState.BuzzedIn) {
-            buzzerIndicatorClass += ' buzzedIn'
+            buzzerIndicatorClass += " buzzedIn";
         } else if (this.props.buzzerState == ScoreboardEntryBuzzerState.WrongAnswer) {
-            buzzerIndicatorClass += ' wrongAnswer'
+            buzzerIndicatorClass += " wrongAnswer";
         }
 
-        let scoreboardEntryClass = 'scoreboardEntry';
+        let scoreboardEntryClass = "scoreboardEntry";
         if (this.props.buzzerState == ScoreboardEntryBuzzerState.Off && this.props.isControllingTeam) {
-            scoreboardEntryClass += ' controllingTeam'
+            scoreboardEntryClass += " controllingTeam";
         }
 
         if (this.props.buzzerState == ScoreboardEntryBuzzerState.Off && this.props.isWinningTeam) {
-            scoreboardEntryClass += ' winningTeam'
+            scoreboardEntryClass += " winningTeam";
         }
 
         return (
-            <div className={ scoreboardEntryClass }>
-                <div className={ buzzerIndicatorClass }>{ this.props.userName }</div>
-                <div className="teamName">{ this.props.teamName } </div>
-                <div className="score">{ this.props.score }</div>
+            <div className={scoreboardEntryClass}>
+                <div className={buzzerIndicatorClass}>{this.props.userName}</div>
+                <div className="teamName">{this.props.teamName} </div>
+                <div className="score">{this.props.score}</div>
             </div>
         );
     }

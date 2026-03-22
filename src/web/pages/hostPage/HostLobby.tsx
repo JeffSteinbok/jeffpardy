@@ -1,8 +1,5 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import { JeffpardyHostController } from "./JeffpardyHostController";
-import { JeffpardyBoard } from "./gameBoard/JeffpardyBoard";
-import { Scoreboard } from "./scoreboard/Scoreboard";
 import { Logger } from "../../utilities/Logger";
 import { PlayerList } from "../../components/playerList/PlayerList";
 import { TeamDictionary } from "../../Types";
@@ -15,20 +12,13 @@ export interface IHostLobbyProps {
     onStartGame: () => void;
 }
 
-export interface IHostLobbyState {
-}
-
-export class HostLobby extends React.Component<IHostLobbyProps, IHostLobbyState> {
-
+export class HostLobby extends React.Component<IHostLobbyProps> {
     jeffpardyHostController: JeffpardyHostController;
     gameCode: string;
     customCategoryJSON: string;
 
-    constructor(props: any) {
+    constructor(props: IHostLobbyProps) {
         super(props);
-
-        this.state = {
-        }
     }
 
     componentDidMount() {
@@ -37,9 +27,9 @@ export class HostLobby extends React.Component<IHostLobbyProps, IHostLobbyState>
             "/sounds/boardFill.mp3",
             "/sounds/dailyDouble.mp3",
             "/sounds/finalJeffpardyReveal.mp3",
-            "/sounds/finalJeopardy.mp3"
+            "/sounds/finalJeopardy.mp3",
         ];
-        sounds.forEach(src => {
+        sounds.forEach((src) => {
             const audio = new Audio(src);
             audio.load();
         });
@@ -47,7 +37,8 @@ export class HostLobby extends React.Component<IHostLobbyProps, IHostLobbyState>
 
     public render() {
         Logger.debug("Lobby:render", this.props.teams);
-        let playerUri: string = "https://" +
+        const playerUri: string =
+            "https://" +
             window.location.hostname +
             (window.location.port != "" ? ":" + window.location.port : "") +
             "/player#" +
@@ -56,22 +47,22 @@ export class HostLobby extends React.Component<IHostLobbyProps, IHostLobbyState>
         return (
             <div className="hostStartPage">
                 <img src="/images/JeffpardyTitle.png" className="title" />
-                <div className="gameCode">Game Code: { this.props.gameCode }</div>
-                Give the above game code to the players or give them this direct link:<br />
-                <a target="#" href={ playerUri }>{ playerUri }</a>
+                <div className="gameCode">Game Code: {this.props.gameCode}</div>
+                Give the above game code to the players or give them this direct link:
+                <br />
+                <a target="#" href={playerUri}>
+                    {playerUri}
+                </a>
                 <p />
-                <div style={ { background: 'white', padding: '8px', display: 'inline-block', borderRadius: '4px' } }>
-                    <QRCode.QRCodeCanvas
-                        value={ playerUri }
-                        size={ 180 }
-                        includeMargin={ false } />
+                <div style={{ background: "white", padding: "8px", display: "inline-block", borderRadius: "4px" }}>
+                    <QRCode.QRCodeCanvas value={playerUri} size={180} includeMargin={false} />
                 </div>
                 <div className="playerListBox">
                     <div className="boxTitle">Teams &amp; Players</div>
-                    <i>When all players have joined, click the "Start Game" button below.</i>
-                    <PlayerList teams={ this.props.teams } />
+                    <i>When all players have joined, click the &ldquo;Start Game&rdquo; button below.</i>
+                    <PlayerList teams={this.props.teams} />
                 </div>
-                <button onClick={ this.props.onStartGame }>Start Game</button>
+                <button onClick={this.props.onStartGame}>Start Game</button>
                 <div className="flexGrowSpacer"></div>
                 <Attribution />
             </div>

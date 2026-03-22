@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Logger } from "../../../utilities/Logger";
 import { IJeffpardyBoard } from "./JeffpardyBoard";
 import { ICategory, IClue } from "../../../Types";
 
@@ -15,15 +14,14 @@ export interface IJeffpardyClueProps {
 }
 
 export class JeffpardyClue extends React.Component<IJeffpardyClueProps, IJeffpardyClueState> {
-
-    private contextMenuTarget: any;
+    private contextMenuTarget: HTMLElement;
 
     constructor(props: IJeffpardyClueProps) {
         super(props);
 
         this.state = {
-            isAsked: false
-        }
+            isAsked: false,
+        };
     }
 
     private clickClue(event) {
@@ -35,7 +33,7 @@ export class JeffpardyClue extends React.Component<IJeffpardyClueProps, IJeffpar
             if (!clue.isAsked) {
                 isCategoryAsked = false;
             }
-        })
+        });
         this.props.category.isAsked = isCategoryAsked;
 
         event.preventDefault();
@@ -43,11 +41,18 @@ export class JeffpardyClue extends React.Component<IJeffpardyClueProps, IJeffpar
 
     public render() {
         return (
-            <div className="jeffpardyClue" style={ this.props.style }>
-                { !this.props.clue.isAsked &&
-                    <a href="#" onClick={ (e) => { this.clickClue(e); } }>{ this.props.clue.value }</a>
-                }
-            </div >
+            <div className="jeffpardyClue" style={this.props.style}>
+                {!this.props.clue.isAsked && (
+                    <a
+                        href="#"
+                        onClick={(e) => {
+                            this.clickClue(e);
+                        }}
+                    >
+                        {this.props.clue.value}
+                    </a>
+                )}
+            </div>
         );
     }
 }

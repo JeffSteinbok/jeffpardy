@@ -1,4 +1,4 @@
-import axios, { AxiosAdapter, AxiosResponse, AxiosError } from "axios";
+import axios, { AxiosResponse, AxiosError } from "axios";
 
 /*
  * Interface for executing apis on the webserver
@@ -6,7 +6,7 @@ import axios, { AxiosAdapter, AxiosResponse, AxiosError } from "axios";
 export interface IApiExecutionContext {
     apiName: string;
     json: boolean;
-    success: (any: any) => void;
+    success: (data: unknown) => void;
     error: (statusText: string, responseText: string) => void;
 }
 
@@ -14,15 +14,14 @@ export interface IApiExecutionContext {
  * Class for calling APIs on the webserver
  */
 export class WebServerApiManager {
-
     /**
      * Call an API on the webserver
      * @param {IApiExecutionContext} apiExecutionContext Parameters for executing the api against the webserver.
      */
     public executeApi(apiExecutionContext: IApiExecutionContext) {
         axios.get(apiExecutionContext.apiName).then(
-            (response: AxiosResponse<any>) => {
-                let result = response;
+            (response: AxiosResponse) => {
+                const result = response;
 
                 if (apiExecutionContext.json == null || apiExecutionContext.json) {
                     apiExecutionContext.success(result.data);
@@ -44,11 +43,10 @@ export class WebServerApiManager {
      * Call an API on the webserver
      * @param {IApiExecutionContext} apiExecutionContext Parameters for executing the api against the webserver.
      */
-    public executePostApi(apiExecutionContext: IApiExecutionContext,
-        postBody: string) {
+    public executePostApi(apiExecutionContext: IApiExecutionContext, postBody: string) {
         axios.post(apiExecutionContext.apiName, postBody).then(
-            (response: AxiosResponse<any>) => {
-                let result = response;
+            (response: AxiosResponse) => {
+                const result = response;
 
                 if (apiExecutionContext.json == null || apiExecutionContext.json) {
                     apiExecutionContext.success(result.data);

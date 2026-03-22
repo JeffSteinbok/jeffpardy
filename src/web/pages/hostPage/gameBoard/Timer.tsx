@@ -5,7 +5,6 @@ export interface ITimerProps {
 }
 
 export class Timer extends React.Component<ITimerProps> {
-
     constructor(props: ITimerProps) {
         super(props);
     }
@@ -15,7 +14,7 @@ export class Timer extends React.Component<ITimerProps> {
 
         return (
             <div className="timer">
-                <div className="timerFill" style={ { width: `${elapsedPercent}%` } } />
+                <div className="timerFill" style={{ width: `${elapsedPercent}%` }} />
             </div>
         );
     }
