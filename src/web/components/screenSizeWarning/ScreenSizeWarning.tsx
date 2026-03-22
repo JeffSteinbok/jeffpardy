@@ -38,7 +38,11 @@ export class ScreenSizeWarning extends React.Component<IScreenSizeWarningProps, 
             window.innerWidth < this.props.minWidth ||
             (this.props.minHeight != null && window.innerHeight < this.props.minHeight);
 
-        this.setState({ isVisible: isTooSmall });
+        if (!isTooSmall && this.state.isDismissed) {
+            this.setState({ isVisible: false, isDismissed: false });
+        } else {
+            this.setState({ isVisible: isTooSmall });
+        }
     };
 
     dismiss = () => {
@@ -50,7 +54,14 @@ export class ScreenSizeWarning extends React.Component<IScreenSizeWarningProps, 
             return null;
         }
 
-        const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+        const isMac =
+            (
+                (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData?.platform ||
+                navigator.platform ||
+                ""
+            )
+                .toUpperCase()
+                .indexOf("MAC") >= 0;
         const zoomOutShortcut = isMac ? "⌘−" : "Ctrl+−";
 
         return (
