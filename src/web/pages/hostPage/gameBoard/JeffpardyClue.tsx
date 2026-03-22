@@ -41,7 +41,7 @@ export class JeffpardyClue extends React.Component<IJeffpardyClueProps, IJeffpar
 
     public render() {
         return (
-            <div className="jeffpardyClue" style={this.props.style}>
+            <div className="jeffpardyClue jeffpardy-label" style={this.props.style}>
                 {!this.props.clue.isAsked && (
                     <a
                         href="#"
