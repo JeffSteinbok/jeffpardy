@@ -1,19 +1,110 @@
 # Jeffpardy
 
-You'll need to contact Jeff for some keys for this to work.  Right now, the app won't load without a connection to the blob store.
+A Jeopardy-style trivia game built with ASP.NET Core, React/TypeScript, and SignalR for real-time multiplayer gameplay. Game data is stored in Azure Blob Storage.
 
-To work on the service:
+## Prerequisites
 
-1. Make sure you have a key for the Azure blob store for the questions.
-1. Store the secret in the local cache:
-    ```
-    dotnet user-secrets set "BlobConnectionString" "[string from Azure Portal]"
-    ```
+- [.NET 10 SDK](https://dotnet.microsoft.com/download)
+- [Node.js 22+](https://nodejs.org/) (includes npm)
 
-To work on the web UX:
+## Getting Started
 
-1. open the project in VS and start in debug mode.
-1. npm run build
+```bash
+git clone https://github.com/JeffSteinbok/jeffpardy.git
+cd jeffpardy
+npm install
+```
+
+### Azure Blob Storage (optional)
+
+Game categories are loaded from Azure Blob Storage. To connect, store the connection string as a user secret:
+
+```bash
+dotnet user-secrets --project src/backend set "BlobConnectionString" "[string from Azure Portal]"
+```
+
+**Don't have Azure access?** Add `?debugMode=2` to the URL to use locally generated placeholder categories — no Azure connection needed.
+
+### Running the App
+
+```bash
+npm run build        # Build the frontend
+dotnet run --project src/backend   # Start the server
+```
+
+For development with auto-rebuild:
+
+```bash
+npm run dev                          # Watch & rebuild frontend
+dotnet watch run --project src/backend   # Watch & rebuild backend (in a second terminal)
+```
+
+The app will be available at the URL shown in the terminal output (typically `https://localhost:5001`).
+
+## Build Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run build` | Development frontend build |
+| `npm run buildProd` | Production frontend build |
+| `dotnet build` | Build the backend |
+| `dotnet run --project src/backend` | Run the server |
+| `dotnet watch run --project src/backend` | Run with auto-rebuild |
+
+## Testing
+
+```bash
+npm test                                                       # Frontend tests (vitest)
+dotnet test src/backend/Jeffpardy.Tests -p:SkipFrontendBuild=true   # Backend tests (xUnit)
+```
+
+## Linting & Formatting
+
+```bash
+npm run lint           # ESLint check
+npm run lint:fix       # ESLint auto-fix
+npm run format:check   # Prettier check
+npx prettier --write <files>   # Prettier auto-fix
+```
+
+## Pre-Push Checklist
+
+Run all checks before pushing:
+
+```bash
+npm run lint
+npm run format:check
+npm test
+dotnet test src/backend/Jeffpardy.Tests -p:SkipFrontendBuild=true
+```
+
+## CI Pipeline
+
+GitHub Actions runs on every push to `master` and on PRs targeting `master`. It runs three parallel jobs:
+
+1. **Backend Build & Test** — restores, builds, and tests the .NET project
+2. **Frontend Build & Test** — installs deps, builds with Vite, and runs vitest
+3. **Lint & Format Check** — runs ESLint and Prettier checks
+
+## Project Structure
+
+```
+src/
+  web/                  # TypeScript/React frontend
+    components/         # Reusable React components
+    pages/              # Page-specific entry points
+    utilities/          # Shared utilities and helpers
+  backend/              # ASP.NET Core backend
+    api/                # Web API controllers
+    Hubs/               # SignalR hubs
+    Pages/              # Razor Pages (views)
+    Jeffpardy.Tests/    # xUnit backend tests
+wwwroot/                # Static web assets (Vite output goes to wwwroot/js/dist/)
+```
+
+## PR Workflow
+
+Always create a pull request to merge changes into `master`. PRs trigger the CI pipeline automatically.
 
 ## Debug Mode
 

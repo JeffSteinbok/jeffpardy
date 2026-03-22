@@ -17,7 +17,7 @@ export class JeffpardyCategory extends React.Component<IJeffpardyCategoryProps> 
 
     public render() {
         return (
-            <div className="jeffpardyCategory" style={this.props.style}>
+            <div className="jeffpardyCategory jeffpardy-label" style={this.props.style}>
                 {!this.props.category.isAsked && this.props.category.title}
             </div>
         );

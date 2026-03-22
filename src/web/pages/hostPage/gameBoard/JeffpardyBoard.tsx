@@ -417,6 +417,7 @@ export class JeffpardyBoard
                                 roundLogoSrc={this.getRoundLogoSrc()}
                             />
                         )}
+
                         {(this.state.jeopardyBoardView == JeopardyBoardView.Clue ||
                             this.state.jeopardyBoardView == JeopardyBoardView.Question) && (
                             <ClueDisplay
@@ -466,7 +467,7 @@ export class JeffpardyBoard
                                         <br />
                                     </>
                                 )}
-                                <div className="category">{this.props.categories[0].title}</div>
+                                <div className="category jeffpardy-label">{this.props.categories[0].title}</div>
                                 {!this.state.finalCategoryRevealing && (
                                     <div className="categoryDate">
                                         {new Date(this.props.categories[0].airDate).toLocaleDateString()}
@@ -487,7 +488,9 @@ export class JeffpardyBoard
                                                 receivedText="🔒"
                                             />
 
-                                            <div className="categoryRevealHint">Hit Space to Show Clue</div>
+                                            <div className="categoryRevealHint jeffpardy-label">
+                                                Hit Space to Show Clue
+                                            </div>
                                         </div>
                                     )}
                                 {this.state.jeopardyBoardView == JeopardyBoardView.FinalClue && (
@@ -499,7 +502,9 @@ export class JeffpardyBoard
                                         )}
                                         <div className="clue">{this.props.categories[0].clues[0].clue}</div>
                                         {!this.state.finalJeffpardyTimerActive && (
-                                            <div className="categoryRevealHint">Hit Space to Start Timer</div>
+                                            <div className="categoryRevealHint jeffpardy-label">
+                                                Hit Space to Start Timer
+                                            </div>
                                         )}
                                         <div className="flexGrowSpacer"></div>
                                         <Timer percentageRemaining={this.state.timerPercentageRemaining}></Timer>
