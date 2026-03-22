@@ -4,7 +4,7 @@ import * as React from "react";
 import { TeamDictionary } from "../../Types";
 
 vi.mock("qrcode.react", () => ({
-    QRCodeCanvas: (props: any) => <div data-testid="qrcode" data-value={props.value} />,
+    QRCodeCanvas: (props: { value: string }) => <div data-testid="qrcode" data-value={props.value} />,
 }));
 
 const mockLoad = vi.fn();

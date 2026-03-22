@@ -52,7 +52,7 @@ describe("HostSignalRClient", () => {
     });
 
     it("invokes connectHost with gameCode and hostCode on connection start", async () => {
-        const client = new HostSignalRClient(mockController, "GAME1", "HOST1");
+        new HostSignalRClient(mockController, "GAME1", "HOST1");
 
         await vi.waitFor(() => {
             expect(mockInvoke).toHaveBeenCalledWith("connectHost", "GAME1", "HOST1");
@@ -60,9 +60,9 @@ describe("HostSignalRClient", () => {
     });
 
     it("registers 4 event handlers", () => {
-        const client = new HostSignalRClient(mockController, "GAME1", "HOST1");
+        new HostSignalRClient(mockController, "GAME1", "HOST1");
 
-        const registeredEvents = mockOn.mock.calls.map((call: any[]) => call[0]);
+        const registeredEvents = mockOn.mock.calls.map((call: unknown[]) => call[0]);
         expect(registeredEvents).toContain("updateUsers");
         expect(registeredEvents).toContain("submitWager");
         expect(registeredEvents).toContain("submitAnswer");
