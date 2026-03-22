@@ -37,5 +37,6 @@ export interface ICategoryMetadata {
     airDate: string;
     season: number;
     fileName: string;
-    int; index;
+    int;
+    index;
 }

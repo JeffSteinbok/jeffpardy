@@ -2,11 +2,11 @@ import * as React from "react";
 import { ICategory } from "../../../Types";
 import { IGameData, IGameRound, RoundDescriptor } from "../Types";
 import { Logger } from "../../../utilities/Logger";
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import { TextField, Link } from "@mui/material";
 import { AnswerKey } from "./AnswerKey";
 import { CategoryDetails } from "./CategoryDetails";
@@ -19,7 +19,7 @@ import * as QRCode from "qrcode.react";
 
 export enum HostStartScreenViewMode {
     Normal,
-    AnswerKey
+    AnswerKey,
 }
 
 export interface IHostStartScreenProps {
@@ -45,13 +45,12 @@ export interface IHostStartScreenState {
  * Root page for the host view, begins the rendering.
  */
 export class HostStartScreen extends React.Component<IHostStartScreenProps, IHostStartScreenState> {
-
     customCategoryJSON: string;
     customCategoryTsv: string;
     isCustomCategoryDialogOpen: boolean = false;
     isCategoryDetailsDialogOpen: boolean = false;
 
-    constructor(props: any) {
+    constructor(props: IHostStartScreenProps) {
         super(props);
 
         this.state = {
@@ -61,18 +60,17 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
             isCustomCategoryDialogOpen: false,
             isCustomCategoryTsvDialogOpen: false,
             isCategoryDetailsDialogOpen: false,
-        }
+        };
     }
 
     public loadCustomCategories = () => {
-
-        this.setState({ isCustomCategoryDialogOpen: false })
+        this.setState({ isCustomCategoryDialogOpen: false });
         this.props.onModifyGameData(JSON.parse(this.customCategoryJSON));
-        alert("Please check the answer key to see if this loaded correctly.")
-    }
+        alert("Please check the answer key to see if this loaded correctly.");
+    };
 
     public loadCustomCategoriesFromExcelPaste = () => {
-        this.setState({ isCustomCategoryTsvDialogOpen: false })
+        this.setState({ isCustomCategoryTsvDialogOpen: false });
 
         // TODO: fix name
         const tsv: string = this.customCategoryTsv;
@@ -81,8 +79,8 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
 
         const gameData: IGameData = {
             rounds: [],
-            finalJeffpardyCategory: null
-        }
+            finalJeffpardyCategory: null,
+        };
 
         // Totally hardcoding this.  Any failure will fail all
         let finalJeffpardyLineStart: number = 13;
@@ -90,21 +88,21 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
         gameData.rounds.push({
             id: 0,
             name: "Jeffpardy",
-            categories: this.parseRoundFromTsv(lines, 0)
+            categories: this.parseRoundFromTsv(lines, 0),
         });
 
         if (lines[13].startsWith("Round 2")) {
             gameData.rounds.push({
                 id: 1,
                 name: "Super Jeffpardy",
-                categories: this.parseRoundFromTsv(lines, 13)
+                categories: this.parseRoundFromTsv(lines, 13),
             });
             finalJeffpardyLineStart = 26;
         }
 
         gameData.finalJeffpardyCategory = {
             title: lines[finalJeffpardyLineStart + 1],
-            comment: '',
+            comment: "",
             airDate: "1900-01-21T00:11:00",
             hasDailyDouble: false,
             isAsked: false,
@@ -114,34 +112,33 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                     question: lines[finalJeffpardyLineStart + 3],
                     isDailyDouble: false,
                     isAsked: false,
-                    value: 0
-                }
-            ]
-        }
+                    value: 0,
+                },
+            ],
+        };
 
         this.props.onModifyGameData(gameData);
-        alert("Please check the answer key to see if this loaded correctly.")
-    }
+        alert("Please check the answer key to see if this loaded correctly.");
+    };
 
     parseRoundFromTsv = (lines: string[], startLineIndex: number): ICategory[] => {
         const categories: ICategory[] = [];
 
-        lines[startLineIndex + 1].split("\t").forEach((value, index) => {
+        lines[startLineIndex + 1].split("\t").forEach((value, _index) => {
             const category: ICategory = {
                 title: value,
                 clues: [],
-                comment: '',
+                comment: "",
                 airDate: "1900-01-21T00:11:00",
                 hasDailyDouble: false,
-                isAsked: false
-            }
+                isAsked: false,
+            };
             categories.push(category);
         });
 
         for (let i: number = 0; i < 5; i++) {
-
-            const clues: string[] = lines[startLineIndex + 2 + (i * 2)].split("\t");
-            const questions: string[] = lines[startLineIndex + 2 + (i * 2) + 1].split("\t");
+            const clues: string[] = lines[startLineIndex + 2 + i * 2].split("\t");
+            const questions: string[] = lines[startLineIndex + 2 + i * 2 + 1].split("\t");
 
             for (let j: number = 0; j < 6; j++) {
                 categories[j].clues.push({
@@ -149,21 +146,21 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                     question: questions[j],
                     isAsked: false,
                     isDailyDouble: false,
-                    value: 0
+                    value: 0,
                 });
             }
         }
 
         return categories;
-    }
+    };
 
     public updateSingleCategory = (category: ICategory) => {
         this.props.jeffpardyHostController.updateSingleCategory(category);
-    }
+    };
 
     public updateRound = (round: IGameRound) => {
         this.props.jeffpardyHostController.updateRound(round);
-    }
+    };
 
     public showCategoryDetails = (round: IGameRound, category: ICategory) => {
         let roundDescriptor: RoundDescriptor = RoundDescriptor.Jeffpardy;
@@ -173,30 +170,28 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
             roundDescriptor = RoundDescriptor.SuperJeffpardy;
         }
 
-
         this.setState({
             selectedCategory: category,
             selectedCategoryRoundDescriptor: roundDescriptor,
-            isCategoryDetailsDialogOpen: true
-        })
-    }
+            isCategoryDetailsDialogOpen: true,
+        });
+    };
 
     public showAnswerKey = () => {
         this.setState({
-            viewMode: HostStartScreenViewMode.AnswerKey
+            viewMode: HostStartScreenViewMode.AnswerKey,
         });
-    }
+    };
 
     public hideAnswerKey = () => {
         this.setState({
-            viewMode: HostStartScreenViewMode.Normal
+            viewMode: HostStartScreenViewMode.Normal,
         });
-    }
-
+    };
 
     public startGame = () => {
         this.props.onEnterLobby();
-    }
+    };
 
     public render() {
         Logger.debug("HostStartScreen:render", this.props.gameData);
@@ -204,7 +199,8 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
         let finalCategory: ICategory;
         let finalAirDate: Date;
 
-        const hostSecondaryWindowUri: string = "https://" +
+        const hostSecondaryWindowUri: string =
+            "https://" +
             window.location.hostname +
             (window.location.port != "" ? ":" + window.location.port : "") +
             "/hostSecondary#" +
@@ -218,176 +214,271 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
 
         return (
             <div>
-                {
-                    this.state.viewMode == HostStartScreenViewMode.Normal &&
-
+                {this.state.viewMode == HostStartScreenViewMode.Normal && (
                     <div className="hostStartPage">
                         <img src="/images/JeffpardyTitle.png" className="title" />
 
-                        { this.props.gameData == null &&
-                            <div>Finding some really great clues...</div>
-                        }
-                        { this.props.gameData != null &&
+                        {this.props.gameData == null && <div>Finding some really great clues...</div>}
+                        {this.props.gameData != null && (
                             <div className="gameDataLoaded">
                                 <div className="categoryListContainer">
                                     <ul className="categoryList">
-                                        {
-                                            this.props.gameData.rounds.map((round, index) => {
-                                                return (
-                                                    <li key={ index }><a href="#" onClick={ (e) => { this.updateRound(round); } }>🔄</a>
-                                                        { round.name }
-                                                        <ul>
-                                                            {
-                                                                round.categories.map((category, index) => {
-                                                                    const airDate: Date = new Date(category.airDate);
-                                                                    return (
-                                                                        <li key={ index }>
-                                                                            <a href="#" onClick={ (e) => { this.updateSingleCategory(category); } }>🔄</a>
-                                                                            <a href="#" onClick={ (e) => { this.showCategoryDetails(round, category); } }>🔎</a>
-                                                                            { category.title } - { airDate.getMonth() + 1 + "/" + airDate.getDay() + "/" + airDate.getFullYear() }
-                                                                        </li>
-                                                                    )
-                                                                })
-                                                            }
-                                                        </ul>
-                                                    </li>
-                                                )
-                                            })
-                                        }
+                                        {this.props.gameData.rounds.map((round, index) => {
+                                            return (
+                                                <li key={index}>
+                                                    <a
+                                                        href="#"
+                                                        onClick={(_e) => {
+                                                            this.updateRound(round);
+                                                        }}
+                                                    >
+                                                        🔄
+                                                    </a>
+                                                    {round.name}
+                                                    <ul>
+                                                        {round.categories.map((category, index) => {
+                                                            const airDate: Date = new Date(category.airDate);
+                                                            return (
+                                                                <li key={index}>
+                                                                    <a
+                                                                        href="#"
+                                                                        onClick={(_e) => {
+                                                                            this.updateSingleCategory(category);
+                                                                        }}
+                                                                    >
+                                                                        🔄
+                                                                    </a>
+                                                                    <a
+                                                                        href="#"
+                                                                        onClick={(_e) => {
+                                                                            this.showCategoryDetails(round, category);
+                                                                        }}
+                                                                    >
+                                                                        🔎
+                                                                    </a>
+                                                                    {category.title} -{" "}
+                                                                    {airDate.getMonth() +
+                                                                        1 +
+                                                                        "/" +
+                                                                        airDate.getDay() +
+                                                                        "/" +
+                                                                        airDate.getFullYear()}
+                                                                </li>
+                                                            );
+                                                        })}
+                                                    </ul>
+                                                </li>
+                                            );
+                                        })}
                                     </ul>
-                                    <ul className="categoryList" style={ { columns: 1 } }>
-                                        <li>Final Jeffpardy
+                                    <ul className="categoryList" style={{ columns: 1 }}>
+                                        <li>
+                                            Final Jeffpardy
                                             <ul>
                                                 <li>
-                                                    <a href="#" onClick={ (e) => { this.updateSingleCategory(finalCategory); } }>🔄</a>
-                                                    <a href="#" onClick={ (e) => { this.showCategoryDetails(null, finalCategory); } }>🔎</a>
-                                                    { finalCategory.title } - { finalAirDate.getMonth() + 1 + "/" + finalAirDate.getDay() + "/" + finalAirDate.getFullYear() }</li>
+                                                    <a
+                                                        href="#"
+                                                        onClick={(_e) => {
+                                                            this.updateSingleCategory(finalCategory);
+                                                        }}
+                                                    >
+                                                        🔄
+                                                    </a>
+                                                    <a
+                                                        href="#"
+                                                        onClick={(_e) => {
+                                                            this.showCategoryDetails(null, finalCategory);
+                                                        }}
+                                                    >
+                                                        🔎
+                                                    </a>
+                                                    {finalCategory.title} -{" "}
+                                                    {finalAirDate.getMonth() +
+                                                        1 +
+                                                        "/" +
+                                                        finalAirDate.getDay() +
+                                                        "/" +
+                                                        finalAirDate.getFullYear()}
+                                                </li>
                                             </ul>
                                         </li>
-
                                     </ul>
                                 </div>
 
                                 <div className="customize">
-
                                     <div className="buttons">
-                                        <button onClick={ () => { this.setState({ isCustomCategoryDialogOpen: true }) } }>Edit Game Data JSON</button>
-                                        <button onClick={ () => { this.setState({ isCustomCategoryTsvDialogOpen: true }) } }>Use Excel Template</button>
-                                        <button onClick={ this.showAnswerKey }>Printable Answer Key</button>
+                                        <button
+                                            onClick={() => {
+                                                this.setState({ isCustomCategoryDialogOpen: true });
+                                            }}
+                                        >
+                                            Edit Game Data JSON
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                this.setState({ isCustomCategoryTsvDialogOpen: true });
+                                            }}
+                                        >
+                                            Use Excel Template
+                                        </button>
+                                        <button onClick={this.showAnswerKey}>Printable Answer Key</button>
                                     </div>
                                 </div>
                                 <p></p>
 
                                 <div className="lobbyButtons">
                                     <div className="lobbyButtonGroup">
-                                        <button onClick={ () => {
-                                            window.open(hostSecondaryWindowUri, 'Jeffpardy Host Secondary Window', 'width=600,height=600');
-                                        } }>Launch Host Window</button>
+                                        <button
+                                            onClick={() => {
+                                                window.open(
+                                                    hostSecondaryWindowUri,
+                                                    "Jeffpardy Host Secondary Window",
+                                                    "width=600,height=600"
+                                                );
+                                            }}
+                                        >
+                                            Launch Host Window
+                                        </button>
                                         <span className="lobbyButtonSubtext">Shows answers to the host only</span>
                                         <span className="lobbyButtonSubtext">Do not share this window</span>
-                                        <div style={ { background: 'white', padding: '8px', display: 'inline-block', borderRadius: '4px', marginTop: '8px' } }>
+                                        <div
+                                            style={{
+                                                background: "white",
+                                                padding: "8px",
+                                                display: "inline-block",
+                                                borderRadius: "4px",
+                                                marginTop: "8px",
+                                            }}
+                                        >
                                             <QRCode.QRCodeCanvas
-                                                value={ hostSecondaryWindowUri }
-                                                size={ 128 }
-                                                includeMargin={ false } />
+                                                value={hostSecondaryWindowUri}
+                                                size={128}
+                                                includeMargin={false}
+                                            />
                                         </div>
                                     </div>
                                     <div className="lobbyButtonGroup">
-                                        <button onClick={ this.props.onEnterLobby }>Enter Game Lobby</button>
+                                        <button onClick={this.props.onEnterLobby}>Enter Game Lobby</button>
                                     </div>
                                 </div>
 
                                 <div className="flexGrowSpacer"></div>
                                 <Attribution />
-                                { this.state.isCustomCategoryDialogOpen &&
+                                {this.state.isCustomCategoryDialogOpen && (
                                     <Dialog
-                                        open={ this.state.isCustomCategoryDialogOpen }
+                                        open={this.state.isCustomCategoryDialogOpen}
                                         keepMounted
                                         fullWidth
                                         maxWidth="lg"
-                                        onClose={ () => this.setState({ isCustomCategoryDialogOpen: false }) }
-                                        PaperProps={ { className: "gameDialog", style: { height: "85vh" } } }
+                                        onClose={() => this.setState({ isCustomCategoryDialogOpen: false })}
+                                        PaperProps={{ className: "gameDialog", style: { height: "85vh" } }}
                                     >
                                         <DialogTitle>Modify Game Data JSON</DialogTitle>
-                                        <DialogContent style={ { display: "flex", flexDirection: "column", overflow: "hidden", paddingBottom: 0, flex: 1 } }>
+                                        <DialogContent
+                                            style={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                overflow: "hidden",
+                                                paddingBottom: 0,
+                                                flex: 1,
+                                            }}
+                                        >
                                             <JsonEditor
-                                                defaultValue={
-                                                    JSON.stringify(this.props.gameData, (key, value) => {
+                                                defaultValue={JSON.stringify(
+                                                    this.props.gameData,
+                                                    (key, value) => {
                                                         if (key == "isAsked") return undefined;
                                                         else if (key == "isDailyDouble") return undefined;
                                                         else if (key == "hasDailyDouble") return undefined;
                                                         else if (key == "value") return undefined;
                                                         else return value;
-                                                    }, 4)
-                                                }
-                                                onChange={ (value) => this.customCategoryJSON = value } />
+                                                    },
+                                                    4
+                                                )}
+                                                onChange={(value) => (this.customCategoryJSON = value)}
+                                            />
                                         </DialogContent>
                                         <DialogActions>
-                                            <Button onClick={ () => { this.setState({ isCustomCategoryDialogOpen: false }) } }>
+                                            <Button
+                                                onClick={() => {
+                                                    this.setState({ isCustomCategoryDialogOpen: false });
+                                                }}
+                                            >
                                                 Cancel
                                             </Button>
-                                            <Button onClick={ this.loadCustomCategories } color="primary">
+                                            <Button onClick={this.loadCustomCategories} color="primary">
                                                 Load JSON
                                             </Button>
                                         </DialogActions>
                                     </Dialog>
-                                }
+                                )}
 
                                 <Dialog
-                                    open={ this.state.isCustomCategoryTsvDialogOpen }
+                                    open={this.state.isCustomCategoryTsvDialogOpen}
                                     keepMounted
                                     fullWidth
                                     maxWidth="lg"
-                                    onClose={ () => this.setState({ isCustomCategoryTsvDialogOpen: false }) }
-                                    PaperProps={ { className: "gameDialog", style: { height: "85vh" } } }
+                                    onClose={() => this.setState({ isCustomCategoryTsvDialogOpen: false })}
+                                    PaperProps={{ className: "gameDialog", style: { height: "85vh" } }}
                                 >
                                     <DialogTitle>Use Excel Template</DialogTitle>
-                                    <DialogContent style={ { display: "flex", flexDirection: "column", overflow: "hidden", flex: 1 } }>
-                                        <Link href="/JeffpardyGameDataTemplate.xlsx"
-                                            target="#">Download Excel Template</Link>
+                                    <DialogContent
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            overflow: "hidden",
+                                            flex: 1,
+                                        }}
+                                    >
+                                        <Link href="/JeffpardyGameDataTemplate.xlsx" target="#">
+                                            Download Excel Template
+                                        </Link>
                                         <TextField
                                             label="Paste Excel content here."
                                             fullWidth
                                             multiline
-                                            sx={ { flex: 1, mt: 1 } }
-                                            onChange={ (event) => this.customCategoryTsv = event.target.value } />
+                                            sx={{ flex: 1, mt: 1 }}
+                                            onChange={(event) => (this.customCategoryTsv = event.target.value)}
+                                        />
                                     </DialogContent>
                                     <DialogActions>
-                                        <Button onClick={ () => { this.setState({ isCustomCategoryTsvDialogOpen: false }) } }>
+                                        <Button
+                                            onClick={() => {
+                                                this.setState({ isCustomCategoryTsvDialogOpen: false });
+                                            }}
+                                        >
                                             Cancel
                                         </Button>
-                                        <Button onClick={ this.loadCustomCategoriesFromExcelPaste } color="primary">
+                                        <Button onClick={this.loadCustomCategoriesFromExcelPaste} color="primary">
                                             Load
                                         </Button>
                                     </DialogActions>
                                 </Dialog>
 
-                                { this.state.isCategoryDetailsDialogOpen &&
+                                {this.state.isCategoryDetailsDialogOpen && (
                                     <CategoryDetails
-                                        roundDescriptor={ this.state.selectedCategoryRoundDescriptor }
-                                        category={ this.state.selectedCategory }
-                                        onSave={ (category: ICategory) => {
-                                            this.props.jeffpardyHostController.replaceSingleCategory(this.state.selectedCategory, category)
+                                        roundDescriptor={this.state.selectedCategoryRoundDescriptor}
+                                        category={this.state.selectedCategory}
+                                        onSave={(category: ICategory) => {
+                                            this.props.jeffpardyHostController.replaceSingleCategory(
+                                                this.state.selectedCategory,
+                                                category
+                                            );
                                             this.setState({ isCategoryDetailsDialogOpen: false });
-                                        } }
-                                        onCancel={ () => {
-                                            this.setState({ isCategoryDetailsDialogOpen: false })
-                                        } }
-
+                                        }}
+                                        onCancel={() => {
+                                            this.setState({ isCategoryDetailsDialogOpen: false });
+                                        }}
                                     />
-                                }
-
+                                )}
                             </div>
-                        }
+                        )}
                     </div>
-                }
-                {
-                    this.state.viewMode == HostStartScreenViewMode.AnswerKey &&
-                    <AnswerKey
-                        gameData={ this.props.gameData }
-                        onHide={ this.hideAnswerKey } />
-                }
-            </div >
+                )}
+                {this.state.viewMode == HostStartScreenViewMode.AnswerKey && (
+                    <AnswerKey gameData={this.props.gameData} onHide={this.hideAnswerKey} />
+                )}
+            </div>
         );
     }
 }

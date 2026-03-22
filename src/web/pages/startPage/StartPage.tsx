@@ -5,9 +5,8 @@ import { Attribution } from "../../components/attribution/Attribution";
 /**
  * Root page for the application, begins the rendering.
  */
-export class StartPage extends React.Component<any, any> {
-
-    constructor(props: any) {
+export class StartPage extends React.Component {
+    constructor(props: Record<string, never>) {
         super(props);
     }
 
@@ -32,11 +31,8 @@ export class StartPage extends React.Component<any, any> {
     }
 }
 
-
 // Start the application
 const root = document.createElement("div");
-root.id = 'main';
+root.id = "main";
 document.body.appendChild(root);
-createRoot(document.getElementById("main")!).render(
-    <StartPage />
-);
+createRoot(document.getElementById("main")!).render(<StartPage />);

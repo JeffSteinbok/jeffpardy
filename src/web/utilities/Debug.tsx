@@ -28,7 +28,7 @@ export class Debug {
     static flags = DebugFlags.None;
 
     public static SetFlags(debugFlags: DebugFlags): void {
-        Logger.debug("Set Debug Flags: ", debugFlags)
+        Logger.debug("Set Debug Flags: ", debugFlags);
         Debug.flags = debugFlags;
     }
 
@@ -42,8 +42,8 @@ export class Debug {
             question: LoremIpsum.generate(Math.floor(Math.random() * 1) + 2),
             value: 0,
             isAsked: false,
-            isDailyDouble: false
-        }
+            isDailyDouble: false,
+        };
     }
 
     public static generateCategory(): ICategory {
@@ -57,9 +57,10 @@ export class Debug {
                 Debug.generateClue(),
                 Debug.generateClue(),
                 Debug.generateClue(),
-                Debug.generateClue()],
-            hasDailyDouble: false
-        }
+                Debug.generateClue(),
+            ],
+            hasDailyDouble: false,
+        };
     }
 
     public static generateFinalCategory(): ICategory {
@@ -68,12 +69,10 @@ export class Debug {
             airDate: "1994-01-21T00:11:00",
             comment: LoremIpsum.generate(Math.floor(Math.random() * 10) + 6),
             isAsked: false,
-            clues: [
-                Debug.generateClue()],
-            hasDailyDouble: false
-        }
+            clues: [Debug.generateClue()],
+            hasDailyDouble: false,
+        };
     }
-
 
     public static generateGameData(): IGameData {
         return {
@@ -87,7 +86,7 @@ export class Debug {
                         Debug.generateCategory(),
                         Debug.generateCategory(),
                         Debug.generateCategory(),
-                        Debug.generateCategory()
+                        Debug.generateCategory(),
                     ],
                 },
                 {
@@ -99,11 +98,11 @@ export class Debug {
                         Debug.generateCategory(),
                         Debug.generateCategory(),
                         Debug.generateCategory(),
-                        Debug.generateCategory()
+                        Debug.generateCategory(),
                     ],
-                }
+                },
             ],
-            finalJeffpardyCategory: Debug.generateFinalCategory()
-        }
+            finalJeffpardyCategory: Debug.generateFinalCategory(),
+        };
     }
 }

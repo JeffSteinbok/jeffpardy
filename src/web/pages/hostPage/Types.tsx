@@ -3,7 +3,7 @@ import { ICategory } from "../../Types";
 export enum RoundDescriptor {
     Jeffpardy,
     SuperJeffpardy,
-    FinalJeffpardy
+    FinalJeffpardy,
 }
 
 export interface IGameRound {
@@ -22,6 +22,6 @@ export interface IFinalJeffpardyAnswer {
     responseTime: number;
 }
 
-export type FinalJeffpardySubmissionDictionary = { [key: string]: any };
+export type FinalJeffpardySubmissionDictionary = { [key: string]: number | IFinalJeffpardyAnswer };
 export type FinalJeffpardyWagerDictionary = { [key: string]: number };
 export type FinalJeffpardyAnswerDictionary = { [key: string]: IFinalJeffpardyAnswer };

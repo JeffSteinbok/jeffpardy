@@ -6,28 +6,32 @@ import { IHostPage, HostPageViewMode } from "./HostPage";
 import { IHostSignalRClient, HostSignalRClient } from "./HostSignalRClient";
 import { IPlayer, TeamDictionary, ITeam } from "../../Types";
 import { Debug, DebugFlags } from "../../utilities/Debug";
-import { RoundDescriptor, IGameData, IGameRound, FinalJeffpardyWagerDictionary, FinalJeffpardyAnswerDictionary } from "./Types";
+import {
+    RoundDescriptor,
+    IGameData,
+    IGameRound,
+    FinalJeffpardyWagerDictionary,
+    FinalJeffpardyAnswerDictionary,
+} from "./Types";
 import { ICategory, IClue } from "../../Types";
-import { ApplicationInsights, IEventTelemetry } from '@microsoft/applicationinsights-web'
+import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 //import createTypography from "@material-ui/core/styles/createTypography";
 
 const appInsights = new ApplicationInsights({
     config: {
-        instrumentationKey: 'bd4b6a26-6089-4825-b9d4-0f7db9f5631a'
+        instrumentationKey: "bd4b6a26-6089-4825-b9d4-0f7db9f5631a",
         /* ...Other Configuration Options... */
-    }
+    },
 });
 
 appInsights.loadAppInsights();
 appInsights.trackPageView(); // Manually call trackPageView to establish the current user/session/pageview
-
 
 /**
  * This class is to be passed down to pages and components so they can interact with
  * global state in a type-safe manner.
  */
 export class JeffpardyHostController {
-
     hostPage: IHostPage;
     jeffpardyBoard: IJeffpardyBoard;
     scoreboard: IScoreboard;
@@ -44,7 +48,7 @@ export class JeffpardyHostController {
     finalJeffpardyAnswers: FinalJeffpardyAnswerDictionary = {};
 
     constructor(gameCode: string, hostCode: string) {
-        this.hostSignalRClient = new HostSignalRClient(this, gameCode, hostCode)
+        this.hostSignalRClient = new HostSignalRClient(this, gameCode, hostCode);
     }
 
     public loadGameData() {
@@ -57,26 +61,24 @@ export class JeffpardyHostController {
                 success: (results: IGameData) => {
                     this.onGameDataLoaded(results);
                 },
-                error: null
+                error: null,
             };
 
             const wsam: WebServerApiManager = new WebServerApiManager();
             wsam.executeApi(context);
-        }
-        else {
+        } else {
             this.onGameDataLoaded(Debug.generateGameData());
         }
     }
 
     public updateSingleCategory(category: ICategory) {
-
-        appInsights.trackEvent({ name: "UpdateSingleCategory" }, { "OldCategory": category.title });
+        appInsights.trackEvent({ name: "UpdateSingleCategory" }, { OldCategory: category.title });
 
         // Find the category in GameData
         let existingRound: IGameRound = null;
         let categoryIndex: number = -1;
 
-        this.gameData.rounds.forEach((gameRound: IGameRound, index: number) => {
+        this.gameData.rounds.forEach((gameRound: IGameRound, _index: number) => {
             if (categoryIndex == -1) {
                 categoryIndex = gameRound.categories.indexOf(category);
                 if (categoryIndex >= 0) {
@@ -99,23 +101,20 @@ export class JeffpardyHostController {
                 success: (results: ICategory) => {
                     if (existingRound != null) {
                         existingRound.categories[categoryIndex] = results;
-                    }
-                    else {
+                    } else {
                         this.gameData.finalJeffpardyCategory = results;
                     }
                     this.onGameDataLoaded(this.gameData);
                 },
-                error: null
+                error: null,
             };
 
             const wsam: WebServerApiManager = new WebServerApiManager();
             wsam.executeApi(context);
-        }
-        else {
+        } else {
             if (existingRound != null) {
                 existingRound.categories[categoryIndex] = Debug.generateCategory();
-            }
-            else {
+            } else {
                 this.gameData.finalJeffpardyCategory = Debug.generateFinalCategory();
             }
             this.onGameDataLoaded(this.gameData);
@@ -123,16 +122,19 @@ export class JeffpardyHostController {
     }
 
     public replaceSingleCategory(oldCategory: ICategory, newCategory: ICategory) {
-        appInsights.trackEvent({ name: "ReplaceSingleCategory" }, {
-            "OldCategory": oldCategory.title,
-            "NewCategory": newCategory.title
-        });
+        appInsights.trackEvent(
+            { name: "ReplaceSingleCategory" },
+            {
+                OldCategory: oldCategory.title,
+                NewCategory: newCategory.title,
+            }
+        );
 
         // Find the category in GameData
         let existingRound: IGameRound = null;
         let categoryIndex: number = -1;
 
-        this.gameData.rounds.forEach((gameRound: IGameRound, index: number) => {
+        this.gameData.rounds.forEach((gameRound: IGameRound, _index: number) => {
             if (categoryIndex == -1) {
                 categoryIndex = gameRound.categories.indexOf(oldCategory);
                 if (categoryIndex >= 0) {
@@ -141,17 +143,9 @@ export class JeffpardyHostController {
             }
         });
 
-        let roundDescriptor: RoundDescriptor = RoundDescriptor.Jeffpardy;
-        if (existingRound == null) {
-            roundDescriptor = RoundDescriptor.FinalJeffpardy;
-        } else if (existingRound.id == 1) {
-            roundDescriptor = RoundDescriptor.SuperJeffpardy;
-        }
-
         if (existingRound != null) {
             existingRound.categories[categoryIndex] = newCategory;
-        }
-        else {
+        } else {
             this.gameData.finalJeffpardyCategory = newCategory;
         }
         this.onGameDataLoaded(this.gameData);
@@ -170,13 +164,12 @@ export class JeffpardyHostController {
                     this.gameData.rounds[updateRoundId] = results.rounds[updateRoundId];
                     this.onGameDataLoaded(this.gameData);
                 },
-                error: null
+                error: null,
             };
 
             const wsam: WebServerApiManager = new WebServerApiManager();
             wsam.executeApi(context);
-        }
-        else {
+        } else {
             this.gameData.rounds[updateRoundId] = Debug.generateGameData().rounds[updateRoundId];
             this.onGameDataLoaded(this.gameData);
         }
@@ -224,8 +217,12 @@ export class JeffpardyHostController {
                     let ddClue: number;
                     do {
                         ddClue = Math.floor(Math.random() * 11);
-                        if (ddClue >= 8) { ddClue -= 6 }
-                        if (ddClue >= 5) { ddClue -= 3 }
+                        if (ddClue >= 8) {
+                            ddClue -= 6;
+                        }
+                        if (ddClue >= 5) {
+                            ddClue -= 3;
+                        }
                     } while (round.categories[ddCat].clues[ddClue].isDailyDouble);
                     round.categories[ddCat].clues[ddClue].isDailyDouble = true;
                 }
@@ -248,11 +245,10 @@ export class JeffpardyHostController {
             });
         }
 
-
         this.gameData = gameData;
 
         this.hostPage.onGameDataLoaded(this.gameData);
-    }
+    };
 
     public setCustomGameData(gameData: IGameData) {
         this.onGameDataLoaded(gameData);
@@ -263,13 +259,11 @@ export class JeffpardyHostController {
         let teamCount: number = 0;
 
         for (const key in teams) {
-            if (teams.hasOwnProperty(key)) {
-
+            if (Object.prototype.hasOwnProperty.call(teams, key)) {
                 // Copy the score over to the new teams object
-                if (this.teams.hasOwnProperty(key)) {
+                if (Object.prototype.hasOwnProperty.call(this.teams, key)) {
                     teams[key].score = this.teams[key].score;
-                }
-                else {
+                } else {
                     teams[key].score = 0;
                 }
                 teamCount++;
@@ -293,10 +287,9 @@ export class JeffpardyHostController {
         // TODO:  Something to stop an answer from being entered twice, or after the tally has started.
         // Or, take this all out of the controller
         Logger.debug("JeffpardyHostController:submitAnswer", user, answer);
-        this.finalJeffpardyAnswers[user.connectionId] = { answer: answer, responseTime: responseTime }
+        this.finalJeffpardyAnswers[user.connectionId] = { answer: answer, responseTime: responseTime };
         this.hostPage.onUpdateFinalJeffpardy(this.finalJeffpardyWagers, this.finalJeffpardyAnswers);
     }
-
 
     public resetBuzzer() {
         this.buzzerActive = false;
@@ -358,29 +351,29 @@ export class JeffpardyHostController {
 
     public showBoard = () => {
         this.jeffpardyBoard.showBoard();
-    }
+    };
 
     public advanceCategoryReveal = () => {
         this.jeffpardyBoard.advanceCategoryReveal();
-    }
+    };
 
     public onCategoryRevealComplete = () => {
         this.scoreboard.onStartNormalRound();
-    }
+    };
 
     public startNewRound = () => {
         this.hostPage.startNewRound();
         this.scoreboard.onStartCategoryReveal();
-    }
+    };
 
     public startIntermission = () => {
         this.scoreboard.onStartIntermission();
-    }
+    };
 
     public buzzerTimeout = () => {
         this.buzzerActive = false;
         this.scoreboard.onBuzzerTimeout();
-    }
+    };
 
     public startFinalJeffpardy = () => {
         // This line should move most likely.
@@ -391,20 +384,20 @@ export class JeffpardyHostController {
         const scores: { [key: string]: number } = {};
 
         // Get all the scores
-        Object.keys(this.teams).map((teamName, index) => {
+        Object.keys(this.teams).map((teamName, _index) => {
             scores[teamName] = this.teams[teamName].score;
         });
 
         this.hostSignalRClient.startFinalJeffpardy(scores);
-    }
+    };
 
     public showFinalJeffpardyClue = (clue: IClue) => {
         this.hostSignalRClient.showClue(clue);
         this.hostSignalRClient.showFinalJeffpardyClue();
-    }
+    };
 
     public endFinalJeffpardy = () => {
         appInsights.trackEvent({ name: "EndGame" });
         this.hostSignalRClient.endFinalJeffpardy();
-    }
+    };
 }

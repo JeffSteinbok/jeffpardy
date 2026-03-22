@@ -2,19 +2,14 @@ import * as React from "react";
 import { IJeffpardyBoard } from "./JeffpardyBoard";
 import { ICategory } from "../../../Types";
 
-export interface IJeffpardyCategoryState {
-}
-
 export interface IJeffpardyCategoryProps {
     style: React.CSSProperties;
     jeffpardyBoard: IJeffpardyBoard;
-    category: ICategory
+    category: ICategory;
 }
 
-
-export class JeffpardyCategory extends React.Component<IJeffpardyCategoryProps, IJeffpardyCategoryState> {
-
-    private contextMenuTarget: any;
+export class JeffpardyCategory extends React.Component<IJeffpardyCategoryProps> {
+    private contextMenuTarget: HTMLElement;
 
     constructor(props: IJeffpardyCategoryProps) {
         super(props);
@@ -22,9 +17,8 @@ export class JeffpardyCategory extends React.Component<IJeffpardyCategoryProps, 
 
     public render() {
         return (
-            <div className="jeffpardyCategory" style={ this.props.style }>
-                { !this.props.category.isAsked &&
-                    this.props.category.title }
+            <div className="jeffpardyCategory" style={this.props.style}>
+                {!this.props.category.isAsked && this.props.category.title}
             </div>
         );
     }

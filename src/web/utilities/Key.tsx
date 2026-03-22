@@ -62,8 +62,8 @@ export enum Key {
     BACK_SLASH = 220,
     CLOSE_BRACKET = 221,
     QUOTE = 222,
-    META = 224
-};
+    META = 224,
+}
 
 export enum SpecialKey {
     CANCEL = 3,
@@ -116,5 +116,5 @@ export enum SpecialKey {
     F23 = 134,
     F24 = 135,
     NUM_LOCK = 144,
-    SCROLL_LOCK = 145
-};
+    SCROLL_LOCK = 145,
+}

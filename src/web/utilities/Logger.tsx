@@ -1,8 +1,7 @@
 import { Debug, DebugFlags } from "./Debug";
 
 export class Logger {
-
-    public static log(message?: any, ...optionalParams: any[]): void {
+    public static log(message?: string, ...optionalParams: unknown[]): void {
         if (optionalParams.length > 0) {
             console.log(message, optionalParams);
         } else {
@@ -10,7 +9,7 @@ export class Logger {
         }
     }
 
-    public static debug(message?: any, ...optionalParams: any[]): void {
+    public static debug(message?: string, ...optionalParams: unknown[]): void {
         if (Debug.IsFlagSet(DebugFlags.VerboseLogging)) {
             if (optionalParams.length > 0) {
                 console.log(message, optionalParams);
@@ -20,7 +19,7 @@ export class Logger {
         }
     }
 
-    public static error(message?: any, ...optionalParams: any[]): void {
+    public static error(message?: string, ...optionalParams: unknown[]): void {
         if (optionalParams.length > 0) {
             console.error(message, optionalParams);
         } else {

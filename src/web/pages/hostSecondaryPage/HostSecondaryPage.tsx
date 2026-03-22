@@ -11,11 +11,10 @@ import { IGameRound } from "../hostPage/Types";
 enum HostSecondardyPageState {
     None,
     StartRound,
-    ShowClue
+    ShowClue,
 }
 
-export interface IHostSecondaryPageProps {
-}
+export type IHostSecondaryPageProps = Record<string, never>;
 
 export interface IHostSecondaryPageState {
     hostSecondardyPageState: HostSecondardyPageState;
@@ -30,17 +29,17 @@ export interface IHostSecondaryPageState {
  * Secondary Host Page
  */
 export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, IHostSecondaryPageState> {
-    constructor(props: any) {
+    constructor(props: IHostSecondaryPageProps) {
         super(props);
 
         const urlParams = new URLSearchParams(window.location.search);
-        const debugParam: string = urlParams.get('debugMode');
+        const debugParam: string = urlParams.get("debugMode");
         Debug.SetFlags(Number.parseInt(debugParam, 16));
 
         this.state = {
             hostSecondardyPageState: HostSecondardyPageState.None,
-            gameCode: '',
-            hostCode: '',
+            gameCode: "",
+            hostCode: "",
             clue: null,
             round: null,
             hubConnection: null,
@@ -49,7 +48,7 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
 
     componentDidMount = () => {
         const hubConnection: signalR.HubConnection = new signalR.HubConnectionBuilder()
-            .withUrl('/hub/game')
+            .withUrl("/hub/game")
             .withAutomaticReconnect()
             .build();
 
@@ -57,29 +56,28 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
             this.state.hubConnection
                 .start()
                 .then(() => {
-                    console.log('Connection started!');
+                    console.log("Connection started!");
 
                     if (window.location.hash.length == 13) {
                         const gameCode: string = window.location.hash.substr(1, 6);
                         const hostCode: string = window.location.hash.substr(7);
 
-
                         this.setState({
                             gameCode: gameCode,
-                            hostCode: hostCode
+                            hostCode: hostCode,
                         });
 
                         this.state.hubConnection
-                            .invoke('connectHost', gameCode, hostCode)
+                            .invoke("connectHost", gameCode, hostCode)
                             .then(() => {
                                 // Do something to say Connected!
                             })
-                            .catch(err => console.error(err));
+                            .catch((err) => console.error(err));
                     }
                 })
-                .catch(err => console.log('Error while establishing connection :('));
+                .catch((_err) => console.log("Error while establishing connection :("));
 
-            this.state.hubConnection.on('startRound', (round: IGameRound) => {
+            this.state.hubConnection.on("startRound", (round: IGameRound) => {
                 Logger.debug("on startRound");
 
                 // Rounds don't have names on the server for some reason.
@@ -87,20 +85,20 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
 
                 this.setState({
                     hostSecondardyPageState: HostSecondardyPageState.StartRound,
-                    round: round
-                })
-            })
+                    round: round,
+                });
+            });
 
-            this.state.hubConnection.on('showClue', (clue: IClue) => {
+            this.state.hubConnection.on("showClue", (clue: IClue) => {
                 Logger.debug("on showClue");
 
                 this.setState({
                     hostSecondardyPageState: HostSecondardyPageState.ShowClue,
                     clue: clue,
-                })
-            })
+                });
+            });
         });
-    }
+    };
 
     componentWillUnmount() {
         this.state.hubConnection.stop();
@@ -111,49 +109,54 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
             <div id="hostSecondaryPage">
                 <img src="/images/JeffpardyTitle.png" className="title" />
 
-                { this.state.hostSecondardyPageState == HostSecondardyPageState.None &&
+                {this.state.hostSecondardyPageState == HostSecondardyPageState.None && (
                     <div>
-                        The categories will show here when a new round start.<br />
+                        The categories will show here when a new round start.
+                        <br />
                         Clues and correct responses will be shown here when one is selected in the game board.
                     </div>
-                }
-                { this.state.hostSecondardyPageState == HostSecondardyPageState.StartRound &&
+                )}
+                {this.state.hostSecondardyPageState == HostSecondardyPageState.StartRound && (
                     <div>
-                        <div className="roundName">{ this.state.round.name } Round</div>
+                        <div className="roundName">{this.state.round.name} Round</div>
                         <ul className="categories">
-                            {
-                                this.state.round.categories.map((category, index) => {
-                                    const airDate: Date = new Date(category.airDate);
-                                    return (
-                                        <li key={ index }>
-                                            <div>
-                                                <span className="categoryTitle">{ category.title }</span>
-                                                <span> - { airDate.getMonth() + 1 + "/" + airDate.getDay() + "/" + airDate.getFullYear() }</span>
-                                            </div>
-                                            <div>{ category.comment }</div>
-                                        </li>
-                                    )
-                                })
-                            }
+                            {this.state.round.categories.map((category, index) => {
+                                const airDate: Date = new Date(category.airDate);
+                                return (
+                                    <li key={index}>
+                                        <div>
+                                            <span className="categoryTitle">{category.title}</span>
+                                            <span>
+                                                {" "}
+                                                -{" "}
+                                                {airDate.getMonth() +
+                                                    1 +
+                                                    "/" +
+                                                    airDate.getDay() +
+                                                    "/" +
+                                                    airDate.getFullYear()}
+                                            </span>
+                                        </div>
+                                        <div>{category.comment}</div>
+                                    </li>
+                                );
+                            })}
                         </ul>
                     </div>
-                }
-                { this.state.hostSecondardyPageState == HostSecondardyPageState.ShowClue &&
+                )}
+                {this.state.hostSecondardyPageState == HostSecondardyPageState.ShowClue && (
                     <div>
-                        <div className="clue">{ this.state.clue.clue }</div>
-                        <div className="question">{ this.state.clue.question }</div>
+                        <div className="clue">{this.state.clue.clue}</div>
+                        <div className="question">{this.state.clue.question}</div>
                     </div>
-                }
-            </div >
+                )}
+            </div>
         );
     }
 }
 
-
 // Start the application
 const root = document.createElement("div");
-root.id = 'main';
+root.id = "main";
 document.body.appendChild(root);
-createRoot(document.getElementById("main")!).render(
-    <HostSecondaryPage />
-);
+createRoot(document.getElementById("main")!).render(<HostSecondaryPage />);
