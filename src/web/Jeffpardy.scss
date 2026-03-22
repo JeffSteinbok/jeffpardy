@@ -2290,3 +2290,52 @@ div#categoryDetails div#changeCategory .MuiListItemButton-root {
 div#categoryDetails div#changeCategory .MuiListItemButton-root:hover {
     background: rgba(6, 12, 233, 0.08);
 }
+
+// Screen Size Warning
+.screenSizeWarning {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(200, 50, 50, 0.95);
+    color: white;
+    padding: 10px 40px 10px 16px;
+    font-size: 0.95rem;
+    z-index: 10000;
+    animation: screenSizeWarningFadeIn 0.3s ease-out;
+
+    .screenSizeWarningMessage {
+        text-align: center;
+    }
+
+    .screenSizeWarningDismiss {
+        position: absolute;
+        right: 12px;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.1rem;
+        cursor: pointer;
+        padding: 4px 8px;
+        opacity: 0.8;
+        line-height: 1;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+@keyframes screenSizeWarningFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
