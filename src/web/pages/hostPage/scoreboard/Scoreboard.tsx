@@ -17,6 +17,7 @@ enum GameBoardState {
     Question,
     Intermission,
     FinalJeffpardy,
+    FinalJeffpardyClue,
     Completed
 }
 
@@ -53,6 +54,7 @@ export interface IScoreboard {
     onStartNormalRound: () => void;
     onStartCategoryReveal: () => void;
     onStartFinalJeffpardy: () => void;
+    onShowFinalJeffpardyClue: () => void;
     clearControl: () => void;
 }
 /**
@@ -154,6 +156,12 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
             gameBoardState: GameBoardState.FinalJeffpardy
         });
     }
+
+    onShowFinalJeffpardyClue = () => {
+        this.setState({
+            gameBoardState: GameBoardState.FinalJeffpardyClue
+        });
+    }
     public clearControl = () => {
         this.setState({
             controllingUser: null
@@ -183,6 +191,18 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
     startNewRound = () => {
         if (this.state.gameBoardState == GameBoardState.Intermission) {
             this.props.jeffpardyHostController.jeffpardyBoard.startNewRound();
+        }
+    };
+
+    showFinalJeffpardyClue = () => {
+        if (this.state.gameBoardState == GameBoardState.FinalJeffpardy) {
+            this.props.jeffpardyHostController.jeffpardyBoard.showFinalJeffpardyClue();
+        }
+    };
+
+    startFinalJeffpardyTimer = () => {
+        if (this.state.gameBoardState == GameBoardState.FinalJeffpardyClue) {
+            this.props.jeffpardyHostController.jeffpardyBoard.startFinalJeffpardyTimer();
         }
     };
 
@@ -295,6 +315,10 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                     this.advanceCategoryReveal();
                 else if (this.state.gameBoardState == GameBoardState.Intermission)
                     this.startNewRound();
+                else if (this.state.gameBoardState == GameBoardState.FinalJeffpardy)
+                    this.showFinalJeffpardyClue();
+                else if (this.state.gameBoardState == GameBoardState.FinalJeffpardyClue)
+                    this.startFinalJeffpardyTimer();
                 break;
             case Key.A:
                 this.activateBuzzer();
@@ -339,9 +363,14 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                     <div>
                         <button disabled={ this.state.gameBoardState != GameBoardState.Question &&
                             this.state.gameBoardState != GameBoardState.CategoryReveal &&
-                            this.state.gameBoardState != GameBoardState.Intermission }
+                            this.state.gameBoardState != GameBoardState.Intermission &&
+                            this.state.gameBoardState != GameBoardState.FinalJeffpardy &&
+                            this.state.gameBoardState != GameBoardState.FinalJeffpardyClue }
                             onClick={ this.state.gameBoardState == GameBoardState.CategoryReveal ? this.advanceCategoryReveal :
-                                      this.state.gameBoardState == GameBoardState.Intermission ? this.startNewRound : this.showBoard }>Cont (sp)</button>
+                                      this.state.gameBoardState == GameBoardState.Intermission ? this.startNewRound :
+                                      this.state.gameBoardState == GameBoardState.FinalJeffpardy ? this.showFinalJeffpardyClue :
+                                      this.state.gameBoardState == GameBoardState.FinalJeffpardyClue ? this.startFinalJeffpardyTimer :
+                                      this.showBoard }>Cont (sp)</button>
                         <button disabled={ this.state.gameBoardState != GameBoardState.Normal } onClick={ this.endRound }>End Round</button>
                     </div>
                     <div>Buzzer:</div>
@@ -427,12 +456,17 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                     <Dialog
                         open={ this.state.isTeamFixupDialogShown }
                         keepMounted
-                        fullWidth
+                        maxWidth="xs"
                         onClose={ () => this.setState({ isTeamFixupDialogShown: false }) }
                         PaperProps={ { className: "gameDialog" } }
                     >
                         <DialogTitle>Adjust Control &amp; Scores</DialogTitle>
                         <DialogContent>
+                            <div className="teamFixupHeader">
+                                <span className="teamFixupHeaderControl">Control</span>
+                                <span className="teamFixupHeaderName">Team</span>
+                                <span className="teamFixupHeaderScore">Score</span>
+                            </div>
                             { Object.keys(this.props.teams).sort().map((teamName, index) => {
                                 return (
                                     <div key={ index } className="teamFixupRow">

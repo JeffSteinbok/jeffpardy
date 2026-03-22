@@ -220,12 +220,12 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
                                     { this.state.currentTeamIndex == index &&
                                         this.state.revealStep >= tallyTeam.players.length * 2 &&
                                         <div>
-                                            <button onClick={ this.correctResponse }>Right</button>
-                                            <button onClick={ this.incorrectResponse }>Wrong</button>
+                                            <button onClick={ this.correctResponse }>✓</button>
+                                            <button onClick={ this.incorrectResponse }>✗</button>
                                         </div>
                                     }
                                     { this.state.currentTeamIndex > index &&
-                                        <div>{ tallyTeam.isCorrect ? "Right" : "Wrong" }</div>
+                                        <div>{ tallyTeam.isCorrect ? "✓" : "✗" }</div>
                                     }
                                 </li>
                             )
@@ -234,10 +234,10 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
                 </ul>
                 <div className="postTally">
                     { !this.state.isTallyCompleted &&
-                        <i>Hit SPACE to reveal responses</i>
+                        <div className="categoryRevealHint">Hit Space to Reveal Responses</div>
                     }
                     { this.state.isTallyCompleted &&
-                        <div>Thank you for playing.  Refresh your browser to start a new game.</div>
+                        <div className="categoryRevealHint">Thank you for playing.  Refresh your browser to start a new game.</div>
                     }
                 </div>
             </div>

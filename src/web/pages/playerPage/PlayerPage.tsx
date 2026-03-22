@@ -43,6 +43,8 @@ export interface IPlayerPageState {
     finalJeffpardyAnswer: string;
     finalJeffpardyWagerEnabled: boolean;
     finalJeffpardyAnswerEnabled: boolean;
+    finalJeffpardyScores: { [key: string]: number };
+    lockedInPlayerIds: string[];
     gameCodeInputLength: number;
 }
 
@@ -90,6 +92,8 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             finalJeffpardyAnswer: null,
             finalJeffpardyWagerEnabled: true,
             finalJeffpardyAnswerEnabled: true,
+            finalJeffpardyScores: null,
+            lockedInPlayerIds: [],
             gameCodeInputLength: 0,
         };
     }
@@ -178,7 +182,8 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
                 this.setState({
                     playerPageState: PlayerPageState.FinalJeffpardy,
-                    finalJeffpardyMaxWager: maxWager
+                    finalJeffpardyMaxWager: maxWager,
+                    finalJeffpardyScores: scores
                 })
 
                 // If max wager is 0, just set it.
@@ -215,6 +220,13 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                     playerPageState: PlayerPageState.FinalJeffpardy,
                     finalJeffpardyWagerEnabled: false,
                     finalJeffpardyAnswerEnabled: false
+                })
+            })
+
+            this.state.hubConnection.on('wagerLockedIn', (connectionId: string) => {
+                Logger.debug("on wagerLockedIn", connectionId);
+                this.setState({
+                    lockedInPlayerIds: [...this.state.lockedInPlayerIds, connectionId]
                 })
             })
         });
@@ -368,7 +380,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
 
             <div id="playerPage">
-                <div className="title">Jeffpardy!</div>
+                <img src="/images/JeffpardyTitle.png" className="title" />
                 <div className="gameCode">{ this.state.gameCode }</div>
 
                 { this.state.playerPageState == PlayerPageState.FrontPage &&
@@ -523,7 +535,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                         <div className="buzzerUserListView">
                             <h1>Current Players</h1>
                             <div>
-                                <PlayerList teams={ this.state.teams } />
+                                <PlayerList teams={ this.state.teams } scores={ this.state.finalJeffpardyScores } lockedInPlayerIds={ this.state.lockedInPlayerIds } />
                             </div>
                         </div>
                     </div>

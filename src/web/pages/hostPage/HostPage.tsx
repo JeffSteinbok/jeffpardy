@@ -294,8 +294,8 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                     (this.state.viewMode == HostPageViewMode.Game || this.state.viewMode == HostPageViewMode.End) &&
                     <div className="topPageNormal" >
                         <div className="topSection">
-                            <div className="title">Jeffpardy!</div>
-                            <div className="gameCode">Use game code: { this.gameCode }</div>
+                            <img src="/images/JeffpardyTitle.png" className="title" />
+                            <div className="gameCode">Game Code: { this.gameCode }</div>
                         </div>
                         <div className="middleSection">
                             <div id="pageContent" className="pageContent">
@@ -329,7 +329,6 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                                         value={ "https://" + window.location.hostname + (window.location.port != "" ? ":" + window.location.port : "") + "/player#" + this.gameCode }
                                         size={ 120 }
                                         includeMargin={ true } />
-                                    <div className="qrGameCode">{ this.gameCode }</div>
                                 </div>
                             </div>
                         </div>

@@ -25,27 +25,23 @@ export class FinalJeffpardySubmissionList extends React.Component<IFinalJeffpard
             <ul className="finalJeffpardySubmissionList">
                 {
                     Object.keys(this.props.teams).sort().map((teamName, index) => {
+                        const allSubmitted = this.props.teams[teamName].players.every(
+                            player => player.connectionId in this.props.submissions
+                        );
                         return (
-                            <li key={ index }>Team: { teamName }
-                                <table>
-                                    <tbody>
-                                        {
-                                            this.props.teams[teamName].players.map((player, index) => {
-
-                                                // Do we have a value for this user?
-                                                let haveValue: boolean = false;
-                                                if (player.connectionId in this.props.submissions) { haveValue = true; }
-
-                                                return (
-                                                    <tr key={ index }>
-                                                        <td>{ player.name }</td>
-                                                        <td>{ haveValue ? this.props.receivedText : this.props.waitingText }</td>
-                                                    </tr>
-                                                )
-                                            })
-                                        }
-                                    </tbody>
-                                </table>
+                            <li key={ index } className={ allSubmitted ? "submitted" : "" }>
+                                <div className="fjTeamName">{ teamName }</div>
+                                {
+                                    this.props.teams[teamName].players.map((player, pIndex) => {
+                                        const hasValue = player.connectionId in this.props.submissions;
+                                        return (
+                                            <div key={ pIndex } className={ "fjPlayer" + (hasValue ? " received" : "") }>
+                                                <span className="fjPlayerName">{ player.name }</span>
+                                                <span className="fjPlayerStatus">{ hasValue ? this.props.receivedText : this.props.waitingText }</span>
+                                            </div>
+                                        )
+                                    })
+                                }
                             </li>
                         )
                     })

@@ -14,9 +14,16 @@ export class StartPage extends React.Component<any, any> {
     public render() {
         return (
             <div id="startPage">
-                <div className="title">Jeffpardy!</div>
-                <div className="linkList">
-                    <a href="/host">Host a Game</a>&nbsp;|&nbsp;<a href="/player">Join a Game</a>
+                <div className="startPageContent">
+                    <img src="/images/JeffpardyTitle.png" className="startPageLogo" />
+                    <div className="startPageButtons">
+                        <a href="/host" className="startPageButton">
+                            <span className="buttonLabel">Host a Game</span>
+                        </a>
+                        <a href="/player" className="startPageButton">
+                            <span className="buttonLabel">Join a Game</span>
+                        </a>
+                    </div>
                 </div>
                 <div className="flexGrowSpacer" />
                 <Attribution />
