@@ -1515,6 +1515,32 @@ div.buzzerUserListView ul.playerList ul li {
     font-size: 0.9em;
 }
 
+/* Phone responsive layout for player/buzzer page */
+@media (max-width: 600px) {
+    div#playerPageMain {
+        grid-template-columns: 1fr;
+        padding: 12px;
+        gap: 16px;
+    }
+
+    div#buzzerView div.buzzerViewTitle {
+        grid-column-start: span 1;
+        font-size: 2rem;
+    }
+
+    div#buzzerView div.buzzerViewTitleGameCode {
+        grid-column-start: span 1;
+    }
+
+    div#playerPage div.buzzerCurrentUserView {
+        order: 1;
+    }
+
+    div.buzzerUserListView {
+        order: 2;
+    }
+}
+
 /* Themed MUI Dialogs */
 .gameDialog.MuiPaper-root {
     background: white;
