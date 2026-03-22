@@ -460,7 +460,7 @@ export class JeffpardyBoard
                                             return (
                                                 <div
                                                     key={`${i}-${j}`}
-                                                    className="jeffpardyClue categoryPlaceholderClue"
+                                                    className="jeffpardyClue categoryPlaceholderClue jeffpardy-label"
                                                     style={{ gridRow: j + 2, gridColumn: i + 1 }}
                                                 >
                                                     {isRevealed && (
@@ -470,7 +470,7 @@ export class JeffpardyBoard
                                             );
                                         })
                                     )}
-                                    <div className="categoryRevealHint">press SPACE to continue</div>
+                                    <div className="categoryRevealHint jeffpardy-label">press SPACE to continue</div>
                                 </div>
                             )}
                         {this.state.jeopardyBoardView == JeopardyBoardView.CategoryReveal &&
@@ -495,7 +495,10 @@ export class JeffpardyBoard
                                             return (
                                                 <div
                                                     key={i}
-                                                    className={"categoryRevealSlide" + (showName ? " revealed" : "")}
+                                                    className={
+                                                        "categoryRevealSlide jeffpardy-label" +
+                                                        (showName ? " revealed" : "")
+                                                    }
                                                 >
                                                     <div className="categoryRevealDarkOverlay"></div>
                                                     <div className="categoryRevealTitleContainer">
@@ -520,7 +523,10 @@ export class JeffpardyBoard
                                                         </div>
                                                     </div>
                                                     <div
-                                                        className={"categoryRevealDate" + (showName ? " visible" : "")}
+                                                        className={
+                                                            "categoryRevealDate jeffpardy-label" +
+                                                            (showName ? " visible" : "")
+                                                        }
                                                     >
                                                         {dateStr}
                                                     </div>
@@ -528,7 +534,7 @@ export class JeffpardyBoard
                                             );
                                         })}
                                     </div>
-                                    <div className="categoryRevealHint">press SPACE to continue</div>
+                                    <div className="categoryRevealHint jeffpardy-label">press SPACE to continue</div>
                                 </div>
                             )}
                         {(this.state.jeopardyBoardView == JeopardyBoardView.Clue ||
@@ -576,7 +582,7 @@ export class JeffpardyBoard
                                     </div>
                                     <div className="dailyDouble">
                                         <div>The answer is a....</div>
-                                        <div className="title">Daily Double!</div>
+                                        <div className="title jeffpardy-label">Daily Double!</div>
                                         <div className="wager">
                                             Wager amount:
                                             <br />
@@ -612,7 +618,7 @@ export class JeffpardyBoard
                                 {this.props.round < this.props.jeffpardyHostController.gameData.rounds.length - 1 && (
                                     <>
                                         Get ready for... <br />
-                                        <div className="title">Super</div>
+                                        <div className="title jeffpardy-label">Super</div>
                                         <img src="/images/JeffpardyTitle.png" className="intermissionTitle" />
                                         <p />
                                         <button onClick={this.startNewRound}>Start</button>
@@ -621,7 +627,9 @@ export class JeffpardyBoard
                                 {this.props.round >= this.props.jeffpardyHostController.gameData.rounds.length - 1 && (
                                     <>
                                         <img src="/images/FinalJeffpardy.png" className="intermissionLogo" />
-                                        <div className="categoryRevealHint">press SPACE to continue</div>
+                                        <div className="categoryRevealHint jeffpardy-label">
+                                            press SPACE to continue
+                                        </div>
                                     </>
                                 )}
                             </div>
@@ -644,7 +652,7 @@ export class JeffpardyBoard
                                         <br />
                                     </>
                                 )}
-                                <div className="category">{this.props.categories[0].title}</div>
+                                <div className="category jeffpardy-label">{this.props.categories[0].title}</div>
                                 {!this.state.finalCategoryRevealing && (
                                     <div className="categoryDate">
                                         {new Date(this.props.categories[0].airDate).toLocaleDateString()}
@@ -665,7 +673,9 @@ export class JeffpardyBoard
                                                 receivedText="🔒"
                                             />
 
-                                            <div className="categoryRevealHint">Hit Space to Show Clue</div>
+                                            <div className="categoryRevealHint jeffpardy-label">
+                                                Hit Space to Show Clue
+                                            </div>
                                         </div>
                                     )}
                                 {this.state.jeopardyBoardView == JeopardyBoardView.FinalClue && (
@@ -677,7 +687,9 @@ export class JeffpardyBoard
                                         )}
                                         <div className="clue">{this.props.categories[0].clues[0].clue}</div>
                                         {!this.state.finalJeffpardyTimerActive && (
-                                            <div className="categoryRevealHint">Hit Space to Start Timer</div>
+                                            <div className="categoryRevealHint jeffpardy-label">
+                                                Hit Space to Start Timer
+                                            </div>
                                         )}
                                         <div className="flexGrowSpacer"></div>
                                         <Timer percentageRemaining={this.state.timerPercentageRemaining}></Timer>
