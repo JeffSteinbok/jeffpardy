@@ -13,6 +13,7 @@ import { HostPageViewMode } from "../HostPage";
 
 export enum JeopardyBoardView {
     Board,
+    CategoryReveal,
     DailyDouble,
     Clue,
     Question,
@@ -39,6 +40,7 @@ export interface IJeffpardyBoardState {
     jeopardyBoardView: JeopardyBoardView;
     timerPercentageRemaining: number;
     finalJeffpardyTimerActive: boolean;
+    revealCategoryIndex: number;
 }
 
 export interface IJeffpardyBoard {
@@ -70,7 +72,10 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
         }
 
         // HACK HACK
-        let boardView: JeopardyBoardView = JeopardyBoardView.Board;
+        let boardView: JeopardyBoardView = JeopardyBoardView.CategoryReveal;
+        if (Debug.IsFlagSet(DebugFlags.SkipIntro)) {
+            boardView = JeopardyBoardView.Board;
+        }
         if (Debug.IsFlagSet(DebugFlags.FinalJeffpardy)) {
             boardView = JeopardyBoardView.Intermission;
         }
@@ -80,10 +85,38 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             activeClue: null,
             activeCategory: null,
             timerPercentageRemaining: 1,
-            finalJeffpardyTimerActive: false
+            finalJeffpardyTimerActive: false,
+            revealCategoryIndex: 0
         }
 
         this.props.jeffpardyHostController.setJeffpardyBoard(this);
+    }
+
+    componentDidMount() {
+        window.addEventListener("keydown", this.handleRevealKeyDown);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("keydown", this.handleRevealKeyDown);
+    }
+
+    private handleRevealKeyDown = (e: KeyboardEvent) => {
+        if (this.state.jeopardyBoardView !== JeopardyBoardView.CategoryReveal) return;
+        if (e.code !== "Space") return;
+        e.preventDefault();
+        this.advanceCategoryReveal();
+    }
+
+    private advanceCategoryReveal = () => {
+        const nextIndex = this.state.revealCategoryIndex + 1;
+        if (this.props.categories && nextIndex >= this.props.categories.length) {
+            this.setState({
+                jeopardyBoardView: JeopardyBoardView.Board,
+                revealCategoryIndex: 0
+            });
+        } else {
+            this.setState({ revealCategoryIndex: nextIndex });
+        }
     }
 
     public showClue = (category: ICategory, clue: IClue) => {
@@ -141,7 +174,8 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
         if (this.props.round < (numRounds - 1)) {
             this.props.jeffpardyHostController.startNewRound();
             this.setState({
-                jeopardyBoardView: JeopardyBoardView.Board
+                jeopardyBoardView: JeopardyBoardView.CategoryReveal,
+                revealCategoryIndex: 0
             })
         } else {
             this.props.jeffpardyHostController.startFinalJeffpardy();
@@ -286,6 +320,14 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                         { this.state.jeopardyBoardView == JeopardyBoardView.Board &&
                             <div className="jeffpardyBoardClues">
                                 { boardGridElements }
+                            </div>
+                        }
+                        { this.state.jeopardyBoardView == JeopardyBoardView.CategoryReveal && this.props.categories &&
+                            <div className="categoryReveal" key={ this.state.revealCategoryIndex }>
+                                <div className="categoryRevealTitle">
+                                    { this.props.categories[this.state.revealCategoryIndex].title }
+                                </div>
+                                <div className="categoryRevealHint">press SPACE to continue</div>
                             </div>
                         }
                         { (this.state.jeopardyBoardView == JeopardyBoardView.Clue || this.state.jeopardyBoardView == JeopardyBoardView.Question) &&
