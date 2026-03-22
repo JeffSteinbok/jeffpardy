@@ -10,7 +10,16 @@ namespace Jeffpardy
     [Route("api/Categories")]
     public class CategoriesController : Controller
     {
+        private readonly ISeasonManifestCache _cache;
+        private readonly ICategoryLoader _loader;
+
         Random rand = new Random();
+
+        public CategoriesController(ISeasonManifestCache cache, ICategoryLoader loader)
+        {
+            _cache = cache;
+            _loader = loader;
+        }
 
         [Route("GameData")]
         [HttpGet]
@@ -23,15 +32,15 @@ namespace Jeffpardy
                     new GameRound
                     {
                         Id = 0,
-                        Categories = await this.GetCategoriesAsync(SeasonManifestCache.Instance.JeopardyCategoryList)
+                        Categories = await this.GetCategoriesAsync(_cache.JeopardyCategoryList)
                     },
                     new GameRound
                     {
                         Id = 1,
-                        Categories = await this.GetCategoriesAsync(SeasonManifestCache.Instance.DoubleJeopardyCategoryList)
+                        Categories = await this.GetCategoriesAsync(_cache.DoubleJeopardyCategoryList)
                     }
                 },
-                FinalJeffpardyCategory = await this.FinalCategoryAndClueAsync(SeasonManifestCache.Instance.FinalJeopardyCategoryList)
+                FinalJeffpardyCategory = await this.FinalCategoryAndClueAsync(_cache.FinalJeopardyCategoryList)
 
             };
             return gd;
@@ -44,19 +53,19 @@ namespace Jeffpardy
             switch (roundDescriptor)
             {
                 case RoundDescriptor.Jeffpardy:
-                    categoryList = SeasonManifestCache.Instance.JeopardyCategoryList;
+                    categoryList = _cache.JeopardyCategoryList;
                     break;
                 case RoundDescriptor.SuperJeffpardy:
-                    categoryList = SeasonManifestCache.Instance.DoubleJeopardyCategoryList;
+                    categoryList = _cache.DoubleJeopardyCategoryList;
                     break;
                 case RoundDescriptor.FinalJeffpardy:
-                    categoryList = SeasonManifestCache.Instance.FinalJeopardyCategoryList;
+                    categoryList = _cache.FinalJeopardyCategoryList;
                     break;
             }
 
             int categoryIndex = rand.Next(0, categoryList.Count);
 
-            var category = await AzureBlobCategoryLoader.Instance.LoadCategoryAsync(categoryList[categoryIndex]);
+            var category = await _loader.LoadCategoryAsync(categoryList[categoryIndex]);
 
             return category;
         }
@@ -65,7 +74,7 @@ namespace Jeffpardy
         public async Task<Category> GetCategoryFromFilename(int season, string fileName)
         {
             int index = int.Parse(Request.Query["index"]);
-            var category = await AzureBlobCategoryLoader.Instance.LoadCategoryAsync(season, fileName, index);
+            var category = await _loader.LoadCategoryAsync(season, fileName, index);
 
             return category;
         }
@@ -90,7 +99,7 @@ namespace Jeffpardy
 
         private async Task<Category[]> LoadCategoriesAsync(List<ManifestCategory> manifestCategories)
         {
-            var categoryLoadTasks = manifestCategories.Select((mc) => AzureBlobCategoryLoader.Instance.LoadCategoryAsync(mc));
+            var categoryLoadTasks = manifestCategories.Select((mc) => _loader.LoadCategoryAsync(mc));
 
             await Task.WhenAll(categoryLoadTasks);
 
@@ -103,7 +112,7 @@ namespace Jeffpardy
 
             ManifestCategory finalManifestCategory = categoryList[categoryIndex];
 
-            var finalCategory = await AzureBlobCategoryLoader.Instance.LoadCategoryAsync(finalManifestCategory);
+            var finalCategory = await _loader.LoadCategoryAsync(finalManifestCategory);
 
             return finalCategory;
         }

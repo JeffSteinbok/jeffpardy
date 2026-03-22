@@ -24,6 +24,8 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
+builder.Services.AddSingleton<ISeasonManifestCache>(SeasonManifestCache.Instance);
+builder.Services.AddSingleton<ICategoryLoader>(AzureBlobCategoryLoader.Instance);
 builder.Services.AddSingleton<GameCache>();
 
 var app = builder.Build();
