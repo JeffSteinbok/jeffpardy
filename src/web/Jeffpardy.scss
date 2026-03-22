@@ -1341,6 +1341,65 @@ div.topPageNormal {
     display: flex;
     flex-direction: column;
     height: 100%;
+    position: relative;
+}
+
+/* QR Code Drawer */
+.qrDrawer {
+    position: absolute;
+    bottom: 0;
+    right: 20px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease;
+    transform: translateY(calc(100% - 30px));
+}
+
+.qrDrawer.open {
+    transform: translateY(0);
+}
+
+.qrDrawerToggle {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    padding: 4px 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    transition: background-color 0.15s ease;
+}
+
+.qrDrawerToggle:hover {
+    background: rgba(0, 0, 0, 0.85);
+    color: white;
+}
+
+.qrDrawerContent {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px 0 0 0;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.qrDrawerContent canvas {
+    border-radius: 4px;
+}
+
+.qrDrawerContent .qrGameCode {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    margin-top: 4px;
 }
 
 /*   topSection container ===========================  */

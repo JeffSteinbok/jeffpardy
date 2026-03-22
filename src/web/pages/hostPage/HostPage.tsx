@@ -9,6 +9,7 @@ import { Debug, DebugFlags } from "../../utilities/Debug";
 import { HostStartScreen } from "./hostStartScreen/HostStartScreen";
 import { PlayerList } from "../../components/playerList/PlayerList";
 import { HostLobby } from "./HostLobby";
+import * as QRCode from "qrcode.react";
 import { IGameData, FinalJeffpardyAnswerDictionary, FinalJeffpardyWagerDictionary } from "./Types";
 import { ICategory, ITeam, TeamDictionary } from "../../Types";
 
@@ -32,6 +33,7 @@ export interface IHostPageState {
     gameData: IGameData;
     finalJeffpardyWagers: FinalJeffpardyWagerDictionary;
     finalJeffpardyAnswers: FinalJeffpardyAnswerDictionary;
+    isQrDrawerOpen: boolean;
 }
 
 export interface IHostPage {
@@ -83,7 +85,8 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
             teams: {},
             gameData: null,
             finalJeffpardyWagers: {},
-            finalJeffpardyAnswers: {}
+            finalJeffpardyAnswers: {},
+            isQrDrawerOpen: false
         }
     }
 
@@ -316,6 +319,18 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                                         "/hostSecondary#" +
                                         this.gameCode +
                                         this.hostCode } />
+                            </div>
+                        </div>
+                        <div className={ "qrDrawer" + (this.state.isQrDrawerOpen ? " open" : "") }>
+                            <button className="qrDrawerToggle" onClick={ () => this.setState({ isQrDrawerOpen: !this.state.isQrDrawerOpen }) }>
+                                { this.state.isQrDrawerOpen ? "▼" : "▲ Join" }
+                            </button>
+                            <div className="qrDrawerContent">
+                                <QRCode.QRCodeCanvas
+                                    value={ "https://" + window.location.hostname + (window.location.port != "" ? ":" + window.location.port : "") + "/player#" + this.gameCode }
+                                    size={ 120 }
+                                    includeMargin={ true } />
+                                <div className="qrGameCode">{ this.gameCode }</div>
                             </div>
                         </div>
                     </div>
