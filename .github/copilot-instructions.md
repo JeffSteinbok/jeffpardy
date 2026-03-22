@@ -3,8 +3,8 @@
 ## Architecture Overview
 
 This is a trivia game application (Jeffpardy) built with:
-- **Backend**: ASP.NET Core (.NET 9.0) with SignalR for real-time communication
-- **Frontend**: TypeScript with React components, built via webpack
+- **Backend**: ASP.NET Core (.NET 10.0) with SignalR for real-time communication
+- **Frontend**: TypeScript with React components, built via Vite
 - **Storage**: Azure Blob Storage for game data and configuration
 - **Structure**: Traditional ASP.NET Core MVC with Pages, API controllers, and SignalR hubs
 
@@ -54,13 +54,22 @@ export interface IPlayer {
 npm install
 
 # Development build
-npm run build && npm run scss
+npm run build
 
 # Production build  
-npm run buildProd && npm run scss
+npm run buildProd
 
 # Run application with watch
 dotnet watch run
+```
+
+### Pre-Push Checklist
+Always run these checks locally before pushing:
+```bash
+npm run lint          # ESLint
+npm run format:check  # Prettier (fix with: npx prettier --write <files>)
+npm test              # Frontend tests (vitest)
+dotnet test src/backend/Jeffpardy.Tests -p:SkipFrontendBuild=true  # Backend tests (xUnit)
 ```
 
 ### Build Tasks Available
@@ -108,11 +117,18 @@ dotnet watch run
 
 ## Testing Guidelines
 
-When creating tests:
-- Use standard .NET testing patterns with xUnit or similar
-- Test business logic in models and services
-- Test API endpoints for correct responses
-- Consider integration tests for SignalR hubs
+### Frontend Tests (Vitest)
+- Use `vitest` with `@testing-library/react` and `jsdom`
+- Import from `"vitest"`: `describe`, `it`, `expect`, `vi`, `afterEach`
+- Use `vi.mock()` for module mocks, `vi.spyOn()` for spies
+- Always call `vi.restoreAllMocks()` in `afterEach`
+- Place test files next to source files with `.test.ts` / `.test.tsx` extension
+
+### Backend Tests (xUnit + Moq)
+- Use `[Fact]` for single tests, `[Theory]` with `[InlineData]` for parameterized tests
+- Use Moq for mocking dependencies
+- Naming convention: `MethodName_Scenario_ExpectedBehavior`
+- Place tests in `src/backend/Jeffpardy.Tests/`
 
 ## Azure Integration
 
