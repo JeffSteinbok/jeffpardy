@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { ICategory } from "../../../Types";
 import { IGameData, IGameRound, RoundDescriptor } from "../Types";
@@ -38,7 +41,7 @@ export interface IHostStartScreenState {
 }
 
 /**
- * Root page for the host view, begins the rendering.
+ * Pre-game setup screen where the host can review and modify categories, load custom game data, and enter the lobby.
  */
 export class HostStartScreen extends React.Component<IHostStartScreenProps, IHostStartScreenState> {
     constructor(props: IHostStartScreenProps) {

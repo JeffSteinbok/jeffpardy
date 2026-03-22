@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 
@@ -6,6 +9,7 @@ export interface IEndRoundDialogProps {
     onClose: () => void;
 }
 
+/** Confirmation dialog that prompts the host before forcibly ending the current round. */
 export class EndRoundDialog extends React.Component<IEndRoundDialogProps> {
     public render() {
         return (

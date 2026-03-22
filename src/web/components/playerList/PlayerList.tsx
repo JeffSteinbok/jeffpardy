@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { TeamDictionary } from "../../Types";
 import { Logger } from "../../utilities/Logger";
@@ -7,9 +10,7 @@ export interface IPlayerListProps {
     scores?: { [key: string]: number };
     lockedInPlayerIds?: string[];
 }
-/**
- * Top bar containing toolbar buttons and drop downs
- */
+/** Displays a list of teams and their players, optionally showing scores and locked-in indicators. */
 export class PlayerList extends React.Component<IPlayerListProps> {
     constructor(props: IPlayerListProps) {
         super(props);

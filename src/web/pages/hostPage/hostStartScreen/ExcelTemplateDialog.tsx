@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Link } from "@mui/material";
 
@@ -10,6 +13,7 @@ interface IExcelTemplateDialogState {
     tsv: string;
 }
 
+/** Dialog for loading custom game data by pasting tab-separated content copied from the Excel template. */
 export class ExcelTemplateDialog extends React.Component<IExcelTemplateDialogProps, IExcelTemplateDialogState> {
     constructor(props: IExcelTemplateDialogProps) {
         super(props);

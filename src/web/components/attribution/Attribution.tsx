@@ -1,5 +1,9 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 
+/** Displays game attribution text, including the COVID-19 origin story and Jeopardy Productions disclaimer. */
 export class Attribution extends React.Component {
     constructor(props: Record<string, never>) {
         super(props);

@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { ICategory } from "../../../Types";
 
@@ -10,6 +13,7 @@ export interface ICategoryRevealProps {
     roundLogoSrc: string;
 }
 
+/** Animates the reveal of game board categories, showing a placeholder board and filmstrip-style category name reveals. */
 export class CategoryReveal extends React.Component<ICategoryRevealProps> {
     public render() {
         const { categories, round, revealCategoryIndex, revealShowingName, boardFillRevealed, roundLogoSrc } =

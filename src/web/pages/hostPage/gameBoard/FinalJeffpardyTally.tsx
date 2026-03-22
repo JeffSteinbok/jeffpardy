@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { IPlayer, TeamDictionary, ITeam } from "../../../Types";
 import { Logger } from "../../../utilities/Logger";
@@ -34,6 +37,7 @@ interface ITallyTeam {
     isCorrect: boolean;
 }
 
+/** Manages the Final Jeffpardy tally phase, revealing team wagers and answers one-by-one and scoring correct/incorrect responses. */
 export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyProps, IFinalJeffpardyTallyState> {
     tallyTeams: ITallyTeam[] = [];
     isRevealBlocked: boolean = false;
