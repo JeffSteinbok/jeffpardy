@@ -22,7 +22,7 @@ export class WebServerApiManager {
     public executeApi(apiExecutionContext: IApiExecutionContext) {
         axios.get(apiExecutionContext.apiName).then(
             (response: AxiosResponse<any>) => {
-                let result = response;
+                const result = response;
 
                 if (apiExecutionContext.json == null || apiExecutionContext.json) {
                     apiExecutionContext.success(result.data);
@@ -48,7 +48,7 @@ export class WebServerApiManager {
         postBody: string) {
         axios.post(apiExecutionContext.apiName, postBody).then(
             (response: AxiosResponse<any>) => {
-                let result = response;
+                const result = response;
 
                 if (apiExecutionContext.json == null || apiExecutionContext.json) {
                     apiExecutionContext.success(result.data);

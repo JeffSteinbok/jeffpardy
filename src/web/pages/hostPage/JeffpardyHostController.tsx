@@ -51,7 +51,7 @@ export class JeffpardyHostController {
         Logger.debug("JeffpardyHostController:loadGameData");
 
         if (!Debug.IsFlagSet(DebugFlags.LocalCategories)) {
-            let context: IApiExecutionContext = {
+            const context: IApiExecutionContext = {
                 apiName: "/api/Categories/GameData",
                 json: true,
                 success: (results: IGameData) => {
@@ -60,7 +60,7 @@ export class JeffpardyHostController {
                 error: null
             };
 
-            let wsam: WebServerApiManager = new WebServerApiManager();
+            const wsam: WebServerApiManager = new WebServerApiManager();
             wsam.executeApi(context);
         }
         else {
@@ -93,7 +93,7 @@ export class JeffpardyHostController {
         }
 
         if (!Debug.IsFlagSet(DebugFlags.LocalCategories)) {
-            let context: IApiExecutionContext = {
+            const context: IApiExecutionContext = {
                 apiName: "/api/Categories/RandomCategory/" + roundDescriptor,
                 json: true,
                 success: (results: ICategory) => {
@@ -108,7 +108,7 @@ export class JeffpardyHostController {
                 error: null
             };
 
-            let wsam: WebServerApiManager = new WebServerApiManager();
+            const wsam: WebServerApiManager = new WebServerApiManager();
             wsam.executeApi(context);
         }
         else {
@@ -160,10 +160,10 @@ export class JeffpardyHostController {
     public updateRound(round: IGameRound) {
         appInsights.trackEvent({ name: "UpdateRound" });
 
-        let updateRoundId = round.id;
+        const updateRoundId = round.id;
 
         if (!Debug.IsFlagSet(DebugFlags.LocalCategories)) {
-            let context: IApiExecutionContext = {
+            const context: IApiExecutionContext = {
                 apiName: "/api/Categories/GameData",
                 json: true,
                 success: (results: IGameData) => {
@@ -173,7 +173,7 @@ export class JeffpardyHostController {
                 error: null
             };
 
-            let wsam: WebServerApiManager = new WebServerApiManager();
+            const wsam: WebServerApiManager = new WebServerApiManager();
             wsam.executeApi(context);
         }
         else {
@@ -191,7 +191,7 @@ export class JeffpardyHostController {
             gameRound.name = gameRound.id == 0 ? "Jeffpardy" : "Super Jeffpardy";
             gameRound.categories.forEach((category: ICategory) => {
                 category.hasDailyDouble = false;
-                for (var i: number = 0; i < category.clues.length; i++) {
+                for (let i: number = 0; i < category.clues.length; i++) {
                     category.clues[i].isDailyDouble = false;
                     category.clues[i].value = (i + 1) * 100 * (gameRound.id + 1);
                 }
@@ -204,11 +204,11 @@ export class JeffpardyHostController {
         // There are actually 30 spots on the board.  We're going
         // to triple the weight of the bottom 3 rows.
         if (!Debug.IsFlagSet(DebugFlags.DailyDouble00)) {
-            for (var i: number = 0; i < gameData.rounds.length; i++) {
-                let round: IGameRound = gameData.rounds[i];
-                let numDDs = Math.pow(2, i);
+            for (let i: number = 0; i < gameData.rounds.length; i++) {
+                const round: IGameRound = gameData.rounds[i];
+                const numDDs = Math.pow(2, i);
 
-                for (var dd: number = 0; dd < numDDs; dd++) {
+                for (let dd: number = 0; dd < numDDs; dd++) {
                     let ddCat: number;
 
                     // Pick a category randomly
@@ -238,7 +238,7 @@ export class JeffpardyHostController {
         if (Debug.IsFlagSet(DebugFlags.ShortRound)) {
             gameData.rounds.forEach((gameRound: IGameRound) => {
                 gameRound.categories.forEach((category: ICategory) => {
-                    for (var i: number = 0; i < category.clues.length; i++) {
+                    for (let i: number = 0; i < category.clues.length; i++) {
                         category.clues[i].isAsked = true;
                     }
                     category.isAsked = true;
@@ -262,7 +262,7 @@ export class JeffpardyHostController {
         Logger.debug("JeffpardyHostController:updateUsers", teams);
         let teamCount: number = 0;
 
-        for (var key in teams) {
+        for (const key in teams) {
             if (teams.hasOwnProperty(key)) {
 
                 // Copy the score over to the new teams object
@@ -388,7 +388,7 @@ export class JeffpardyHostController {
         this.scoreboard.onStartFinalJeffpardy();
         this.hostPage.startFinalJeffpardy();
 
-        let scores: { [key: string]: number } = {};
+        const scores: { [key: string]: number } = {};
 
         // Get all the scores
         Object.keys(this.teams).map((teamName, index) => {

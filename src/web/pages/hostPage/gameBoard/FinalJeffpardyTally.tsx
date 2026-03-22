@@ -1,10 +1,8 @@
 import * as React from "react";
 import { IPlayer, TeamDictionary, ITeam } from "../../../Types";
 import { Logger } from "../../../utilities/Logger";
-import { FinalJeffpardySubmissionDictionary, FinalJeffpardyAnswerDictionary, FinalJeffpardyWagerDictionary } from "../Types";
-import { IClue } from "../../../Types";
+import { FinalJeffpardyAnswerDictionary, FinalJeffpardyWagerDictionary } from "../Types";
 import { SpecialKey } from "../../../utilities/Key";
-import { stringify } from "querystring";
 
 export interface IFinalJeffpardyTallyProps {
     teams: TeamDictionary,
@@ -16,6 +14,8 @@ export interface IFinalJeffpardyTallyProps {
 }
 
 export interface IFinalJeffpardyTallyState {
+    // revealStep: incremented by Space key; each press reveals one cell (wager or answer)
+    // in the current team's player table. Reset to 0 when moving to the next team.
     revealStep: number;
     currentTeamIndex: number;
     isTallyCompleted: boolean;
@@ -52,11 +52,11 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
         // Answers have to go in order of wager, lowest to highest; with ties going to quickest.
 
 
-        for (var key in this.props.teams) {
+        for (const key in this.props.teams) {
             if (this.props.teams.hasOwnProperty(key)) {
-                let team: ITeam = this.props.teams[key];
+                const team: ITeam = this.props.teams[key];
 
-                let tallyTeam: ITallyTeam = {
+                const tallyTeam: ITallyTeam = {
                     name: team.name,
                     score: team.score,
                     players: [],
@@ -65,7 +65,7 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
 
                 team.players.forEach((player: IPlayer) => {
                     if (player.connectionId in this.props.wagers) {
-                        let tallyPlayer: ITallyPlayer = {
+                        const tallyPlayer: ITallyPlayer = {
                             name: player.name,
                             wager: this.props.wagers[player.connectionId],
                             answer: player.connectionId in this.props.answers ? this.props.answers[player.connectionId].answer : null,
@@ -112,10 +112,10 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
                     revealStep: this.state.revealStep + 1
                 })
                 break;
-            case 90: // Z = correct
+            case 90: // Z = mark current team's response correct
                 this.correctResponse();
                 break;
-            case 88: // X = incorrect
+            case 88: // X = mark current team's response incorrect
                 this.incorrectResponse();
                 break;
         }
@@ -139,12 +139,13 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
 
     processResponse = (isCorrect: boolean) => {
 
-        let tallyTeam: ITallyTeam = this.tallyTeams[this.state.currentTeamIndex];
+        const tallyTeam: ITallyTeam = this.tallyTeams[this.state.currentTeamIndex];
+        // Team score is adjusted by the highest individual wager on the team (players are sorted by wager asc)
         let maxWager: number = 0;
         if (tallyTeam.players.length > 0) {
             maxWager = tallyTeam.players[tallyTeam.players.length - 1].wager;
         }
-        let teamObject: ITeam = this.props.teams[tallyTeam.name];
+        const teamObject: ITeam = this.props.teams[tallyTeam.name];
         tallyTeam.isCorrect = isCorrect;
 
         let adjustment: number = maxWager;
@@ -154,7 +155,7 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
 
         this.props.onScoreChange(teamObject, teamObject.score + adjustment);
 
-        let newTeamIndex: number = this.state.currentTeamIndex + 1;
+        const newTeamIndex: number = this.state.currentTeamIndex + 1;
 
         if (newTeamIndex >= this.tallyTeams.length) {
             this.setState({
@@ -171,9 +172,13 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
     public render() {
         Logger.debug("FinalJeffpardyTally:render", this.props.teams);
 
+        // Counter reset per team during render; shouldRender() increments it so each
+        // wager and answer cell maps to a sequential Space-press step.
         let revealCurrStep: number = 0;
-        let visibleStyle = {};
-        let hiddenStyle = { visibility: "hidden" };
+        // Tables are always in the DOM (for stable layout) but individual cells use
+        // visibility:hidden until their reveal step is reached.
+        const visibleStyle = {};
+        const hiddenStyle = { visibility: "hidden" };
 
         return (
             <div style={{ width: "100%", display: "flex", flexDirection: "column", flexGrow: 1 }}>
@@ -181,7 +186,9 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
                     {
                         this.tallyTeams.map((tallyTeam: ITallyTeam, index: number) => {
 
-                            let shouldRender = (): boolean => {
+                            // Returns true if this cell should be visible. Past teams always show;
+                            // current team reveals cells one-by-one via revealStep; future teams are hidden.
+                            const shouldRender = (): boolean => {
                                 if (this.state.currentTeamIndex > index) {
                                     return true;
                                 } else if (this.state.currentTeamIndex == index) {
@@ -222,6 +229,7 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
                                         </tbody>
                                     </table>
                                     <div className="tallyAction">
+                                        {/* Show correct/incorrect buttons only after all cells revealed (2 per player: wager + answer) */}
                                         { this.state.currentTeamIndex == index &&
                                             this.state.revealStep >= tallyTeam.players.length * 2 &&
                                             <>

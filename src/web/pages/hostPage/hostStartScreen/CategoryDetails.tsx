@@ -119,7 +119,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                                     dense={ true } >
                                     {
                                         this.state.categorySearchResults.map((categoryMetaData, index) => {
-                                            let airDate: Date = new Date(categoryMetaData.airDate);
+                                            const airDate: Date = new Date(categoryMetaData.airDate);
                                             return (
                                                 <ListItem key={ index } disablePadding={ true }>
 
@@ -155,7 +155,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
 
             this.setState({ searchInProgress: true });
 
-            let context: IApiExecutionContext = {
+            const context: IApiExecutionContext = {
                 apiName: "/api/Categories/RandomCategory/" + this.props.roundDescriptor,
                 json: true,
                 success: (results: ICategory) => {
@@ -167,7 +167,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                 }
             };
 
-            let wsam: WebServerApiManager = new WebServerApiManager();
+            const wsam: WebServerApiManager = new WebServerApiManager();
             wsam.executeApi(context);
         }
         else {
@@ -189,7 +189,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
         if (!Debug.IsFlagSet(DebugFlags.LocalCategories)) {
             this.setState({ searchInProgress: true });
 
-            let context: IApiExecutionContext = {
+            const context: IApiExecutionContext = {
                 apiName: "/api/Categories/" + categoryMetadata.season + "/" + categoryMetadata.fileName + "?index=" + categoryMetadata.index,
                 json: true,
                 success: (results: ICategory) => {
@@ -201,7 +201,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                 }
             };
 
-            let wsam: WebServerApiManager = new WebServerApiManager();
+            const wsam: WebServerApiManager = new WebServerApiManager();
             wsam.executeApi(context);
         }
         else {
@@ -217,7 +217,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
 
             this.setState({ searchInProgress: true });
 
-            let context: IApiExecutionContext = {
+            const context: IApiExecutionContext = {
                 apiName: "/api/CategoryMetadata/Search/" + this.props.roundDescriptor + "/" + this.categorySearchTerm,
                 json: true,
                 success: (results: ICategoryMetadata[]) => {
@@ -229,7 +229,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                 }
             };
 
-            let wsam: WebServerApiManager = new WebServerApiManager();
+            const wsam: WebServerApiManager = new WebServerApiManager();
             wsam.executeApi(context);
         }
         else {
@@ -247,7 +247,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                 roundMultiplier = 2;
             }
             // Assign the scores
-            for (var i: number = 0; i < category.clues.length; i++) {
+            for (let i: number = 0; i < category.clues.length; i++) {
                 category.clues[i].value = (i + 1) * 100 * roundMultiplier;
             }
         }

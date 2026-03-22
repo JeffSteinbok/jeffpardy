@@ -34,7 +34,7 @@ export class StartPage extends React.Component<any, any> {
 
 
 // Start the application
-let root = document.createElement("div");
+const root = document.createElement("div");
 root.id = 'main';
 document.body.appendChild(root);
 createRoot(document.getElementById("main")!).render(

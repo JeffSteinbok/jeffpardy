@@ -7,7 +7,6 @@ import { Scoreboard } from "./scoreboard/Scoreboard";
 import { Logger } from "../../utilities/Logger";
 import { Debug, DebugFlags } from "../../utilities/Debug";
 import { HostStartScreen } from "./hostStartScreen/HostStartScreen";
-import { PlayerList } from "../../components/playerList/PlayerList";
 import { HostLobby } from "./HostLobby";
 import * as QRCode from "qrcode.react";
 import { IGameData, FinalJeffpardyAnswerDictionary, FinalJeffpardyWagerDictionary } from "./Types";
@@ -91,20 +90,20 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
     }
 
     private makeGameCode(): string {
-        let length: number = 6;
-        var result = '';
-        var characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
-        var charactersLength = characters.length;
-        for (var i = 0; i < length; i++) {
+        const length: number = 6;
+        let result = '';
+        const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
+        const charactersLength = characters.length;
+        for (let i = 0; i < length; i++) {
             result += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
         return result;
     }
 
     private getRandomTeam(teams: TeamDictionary): ITeam {
-        let teamNameArray: string[] = [];
+        const teamNameArray: string[] = [];
 
-        for (let teamName in teams) {
+        for (const teamName in teams) {
             if (teams.hasOwnProperty(teamName)) {
                 teamNameArray.push(teamName);
             }
@@ -122,10 +121,10 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
         let lowestScore: number = Number.MAX_SAFE_INTEGER;
         let lowestScoreKeyArray: string[] = [];
 
-        for (let teamName in teams) {
+        for (const teamName in teams) {
             if (teams.hasOwnProperty(teamName)) {
 
-                let team: ITeam = teams[teamName]
+                const team: ITeam = teams[teamName]
 
                 if (team.score < lowestScore) {
                     lowestScoreKeyArray = [teamName]
@@ -341,7 +340,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
 
 
 // Start the application
-let root = document.createElement("div");
+const root = document.createElement("div");
 root.id = 'main';
 document.body.appendChild(root);
 const reactRoot = createRoot(root)

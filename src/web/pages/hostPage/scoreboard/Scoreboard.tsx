@@ -8,6 +8,8 @@ import { IClue } from "../../../Types";
 import { Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button } from "@mui/material"
 
 
+// Tracks the host scoreboard's view of the current game phase.
+// Controls which keyboard shortcuts and toolbar buttons are active.
 enum GameBoardState {
     Normal,
     CategoryReveal,
@@ -16,8 +18,8 @@ enum GameBoardState {
     ClueAnswered,
     Question,
     Intermission,
-    FinalJeffpardy,
-    FinalJeffpardyClue,
+    FinalJeffpardy,         // Category shown, waiting for wagers
+    FinalJeffpardyClue,     // Clue revealed, waiting for timer start
     Completed
 }
 
@@ -194,12 +196,14 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         }
     };
 
+    // Guard: only transition from category → clue (prevents double-press during animation)
     showFinalJeffpardyClue = () => {
         if (this.state.gameBoardState == GameBoardState.FinalJeffpardy) {
             this.props.jeffpardyHostController.jeffpardyBoard.showFinalJeffpardyClue();
         }
     };
 
+    // Guard: only start timer once the clue is already visible
     startFinalJeffpardyTimer = () => {
         if (this.state.gameBoardState == GameBoardState.FinalJeffpardyClue) {
             this.props.jeffpardyHostController.jeffpardyBoard.startFinalJeffpardyTimer();
@@ -237,7 +241,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         })
     }
 
-    processResponse = (responseCorrect: Boolean) => {
+    processResponse = (responseCorrect: boolean) => {
 
         if (this.state.gameBoardState == GameBoardState.ClueAnswered) {
 
@@ -263,7 +267,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                 return;
             }
 
-            let oldScore: number = currentTeam.score;
+            const oldScore: number = currentTeam.score;
 
             let adjustment: number = this.state.activeClue.value;
             if (this.state.activeClue.isDailyDouble) {
@@ -308,6 +312,8 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
     handleKeyDown = (event: KeyboardEvent) => {
         switch (event.keyCode) {
+            // Space advances through the game flow based on current state.
+            // Final Jeffpardy progresses: FinalJeffpardy → show clue → start timer.
             case SpecialKey.SPACE:
                 if (this.state.gameBoardState == GameBoardState.Question)
                     this.showBoard();
@@ -346,10 +352,10 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         this.teamCount = 0;
         let topScore: number = Number.MIN_SAFE_INTEGER;
 
-        for (var key in this.props.teams) {
+        for (const key in this.props.teams) {
             this.teamCount++;
 
-            let score: number = this.props.teams[key].score;
+            const score: number = this.props.teams[key].score;
             if (score > topScore) {
                 topScore = score;
             }

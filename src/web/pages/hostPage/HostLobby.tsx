@@ -1,8 +1,5 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import { JeffpardyHostController } from "./JeffpardyHostController";
-import { JeffpardyBoard } from "./gameBoard/JeffpardyBoard";
-import { Scoreboard } from "./scoreboard/Scoreboard";
 import { Logger } from "../../utilities/Logger";
 import { PlayerList } from "../../components/playerList/PlayerList";
 import { TeamDictionary } from "../../Types";
@@ -47,7 +44,7 @@ export class HostLobby extends React.Component<IHostLobbyProps, IHostLobbyState>
 
     public render() {
         Logger.debug("Lobby:render", this.props.teams);
-        let playerUri: string = "https://" +
+        const playerUri: string = "https://" +
             window.location.hostname +
             (window.location.port != "" ? ":" + window.location.port : "") +
             "/player#" +

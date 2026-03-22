@@ -79,7 +79,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
     private finalJeopardySound: HTMLAudioElement = new Audio("/sounds/finalJeopardy.mp3");
 
     private getRoundLogoSrc = (): string => {
-        let roundName = this.props.jeffpardyHostController.gameData.rounds[this.props.round].name;
+        const roundName = this.props.jeffpardyHostController.gameData.rounds[this.props.round].name;
         if (roundName.toLowerCase().includes("super")) return "/images/SuperJeffpardy.png";
         if (roundName.toLowerCase().includes("final")) return "/images/FinalJeffpardy.png";
         return "/images/Jeffpardy.png";
@@ -115,6 +115,8 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             dailyDoubleRevealed: false,
             wagerError: null,
             boardFillRevealed: new Set<number>(),
+            // Animation state machine for Final Jeffpardy category reveal:
+            // revealing (3s zoom/scale CSS) → settling (0.8s ease-out transition) → idle
             finalCategoryRevealing: false,
             finalCategorySettling: false
         }
@@ -235,8 +237,8 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
         this.clearTimer();
 
         // Are all the clues used?
-        let boardEmpty: Boolean = true;
-        for (var i = 0; i < this.props.categories.length; i++) {
+        let boardEmpty: boolean = true;
+        for (let i = 0; i < this.props.categories.length; i++) {
             if (!this.props.categories[i].isAsked) {
                 boardEmpty = false;
             }
@@ -256,7 +258,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
     };
 
     public startNewRound = () => {
-        let numRounds: number = this.props.jeffpardyHostController.gameData.rounds.length;
+        const numRounds: number = this.props.jeffpardyHostController.gameData.rounds.length;
 
         if (this.props.round < (numRounds - 1)) {
             this.props.jeffpardyHostController.startNewRound();
@@ -266,6 +268,9 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                 revealShowingName: false
             })
         } else {
+            // Final Jeffpardy category reveal animation: a chained setTimeout drives the
+            // state machine: revealing (3s) → settling (0.8s) → idle.
+            // CSS classes are applied based on these flags (see render).
             this.finalRevealSound.play();
             this.props.jeffpardyHostController.startFinalJeffpardy();
             this.setState({
@@ -274,11 +279,13 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                 finalCategorySettling: false
             })
             setTimeout(() => {
+                // Transition from revealing → settling (ease-out)
                 this.setState({
                     finalCategoryRevealing: false,
                     finalCategorySettling: true
                 })
                 setTimeout(() => {
+                    // Animation complete — UI elements hidden during animation are now shown
                     this.setState({ finalCategorySettling: false })
                 }, 800);
             }, 3000);
@@ -287,7 +294,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
 
     public endRound = () => {
         // Mark all the questions completed and show the board.
-        for (var i = 0; i < this.props.categories.length; i++) {
+        for (let i = 0; i < this.props.categories.length; i++) {
             this.props.categories[i].isAsked = true;
         }
 
@@ -295,6 +302,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
     }
 
     showFinalJeffpardyClue = () => {
+        // Block advancing to the clue while the category reveal animation is still playing
         if (this.state.finalCategoryRevealing || this.state.finalCategorySettling) return;
         this.props.jeffpardyHostController.showFinalJeffpardyClue(this.props.categories[0].clues[0]);
         this.props.jeffpardyHostController.scoreboard.onShowFinalJeffpardyClue();
@@ -313,7 +321,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
     }
 
     public validateAndSubmitDailyDoubleBet = (maxBet: number) => {
-        let ddBet = Number.parseInt(this.dailyDoubleBetTemp, 10);
+        const ddBet = Number.parseInt(this.dailyDoubleBetTemp, 10);
         if (isNaN(ddBet) || ddBet > maxBet || ddBet < 0) {
             this.setState({ wagerError: "Please enter a wager between 0 and " + maxBet + "." });
             setTimeout(() => { this.setState({ wagerError: null }); }, 3000);
@@ -343,7 +351,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
     public onTimerFire = () => {
 
         this.timerRemainingDurationInSeconds = this.timerRemainingDurationInSeconds - 0.25;
-        let percentRemaing = (this.timerRemainingDurationInSeconds) / this.timerDurationInSeconds;
+        const percentRemaing = (this.timerRemainingDurationInSeconds) / this.timerDurationInSeconds;
         if (percentRemaing != this.state.timerPercentageRemaining) {
             this.setState({
                 timerPercentageRemaining: percentRemaing
@@ -374,7 +382,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
 
         Logger.debug("JeffpardyBoard:render", this.props.categories);
 
-        let boardGridElements: React.JSX.Element[] = [];
+        const boardGridElements: React.JSX.Element[] = [];
         let dailyDoubleMaxBet: number;
 
         if (this.state.jeopardyBoardView == JeopardyBoardView.Board &&
@@ -383,17 +391,17 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             Logger.debug("Drawing Categories!", this.props.categories);
             // Generate the grid of DIVs.  Doesn't work super-well in the below because they are not
             // nested.
-            var keyCounter: number = 0;
-            for (var i: number = 0; i < this.props.categories.length; i++) {
-                let category: ICategory = this.props.categories[i];
+            let keyCounter: number = 0;
+            for (let i: number = 0; i < this.props.categories.length; i++) {
+                const category: ICategory = this.props.categories[i];
                 boardGridElements.push(<JeffpardyCategory
                     key={ keyCounter++ }
                     style={ { gridRow: 1, gridColumn: i + 1 } }
                     category={ category }
                     jeffpardyBoard={ this } />);
 
-                for (var j: number = 0; j < category.clues.length; j++) {
-                    let clue: IClue = category.clues[j];
+                for (let j: number = 0; j < category.clues.length; j++) {
+                    const clue: IClue = category.clues[j];
                     boardGridElements.push(<JeffpardyClue
                         key={ keyCounter++ }
                         style={ { gridRow: j + 2, gridColumn: i + 1 } }
@@ -409,7 +417,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             this.state.activeClue.isDailyDouble) {
 
             if (this.props.controllingTeam != null) {
-                let currentTeamScore: number = this.props.controllingTeam.score;
+                const currentTeamScore: number = this.props.controllingTeam.score;
                 dailyDoubleMaxBet = Math.max(currentTeamScore, 2 * (500 * (this.props.round + 1)));
             } else {
                 // Controlling team not here, but we're at the DD, so just to be safe, set to 0.
@@ -453,11 +461,11 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                             <div className="categoryRevealFilmstrip">
                                 <div className="categoryRevealTrack" style={ { transform: `translateX(-${this.state.revealCategoryIndex * 100}%)` } }>
                                     { this.props.categories.map((cat, i) => {
-                                        let airDate = new Date(cat.airDate);
-                                        let dateStr = (airDate.getMonth() + 1) + "/" + airDate.getDate() + "/" + airDate.getFullYear();
-                                        let roundName = this.props.jeffpardyHostController.gameData.rounds[this.props.round].name.toUpperCase() + "!";
-                                        let isActive = i === this.state.revealCategoryIndex;
-                                        let showName = isActive && this.state.revealShowingName;
+                                        const airDate = new Date(cat.airDate);
+                                        const dateStr = (airDate.getMonth() + 1) + "/" + airDate.getDate() + "/" + airDate.getFullYear();
+                                        const roundName = this.props.jeffpardyHostController.gameData.rounds[this.props.round].name.toUpperCase() + "!";
+                                        const isActive = i === this.state.revealCategoryIndex;
+                                        const showName = isActive && this.state.revealShowingName;
                                         return (
                                             <div key={ i } className={ "categoryRevealSlide" + (showName ? " revealed" : "") }>
                                                 <div className="categoryRevealDarkOverlay"></div>
@@ -533,6 +541,8 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                                 }
                             </div>
                         }
+                        {/* Final views share a wrapper; "revealing"/"settling" CSS classes
+                            drive the zoom-in and ease-out animations for the category name */}
                         { (this.state.jeopardyBoardView == JeopardyBoardView.FinalCategory ||
                             this.state.jeopardyBoardView == JeopardyBoardView.FinalClue ||
                             this.state.jeopardyBoardView == JeopardyBoardView.FinalTally) &&

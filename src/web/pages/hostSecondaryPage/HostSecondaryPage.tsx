@@ -3,12 +3,9 @@ import { createRoot } from "react-dom/client";
 import "../../Jeffpardy.scss";
 import * as signalR from "@microsoft/signalr";
 import { Logger } from "../../utilities/Logger";
-import { IPlayer, TeamDictionary } from "../../Types"
-import { PlayerList } from "../../components/playerList/PlayerList";
 import { IClue } from "../../Types";
 import { Debug } from "../../utilities/Debug";
-import { Attribution } from "../../components/attribution/Attribution";
-import { inherits } from "util";
+
 import { IGameRound } from "../hostPage/Types";
 
 enum HostSecondardyPageState {
@@ -63,8 +60,8 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
                     console.log('Connection started!');
 
                     if (window.location.hash.length == 13) {
-                        let gameCode: string = window.location.hash.substr(1, 6);
-                        let hostCode: string = window.location.hash.substr(7);
+                        const gameCode: string = window.location.hash.substr(1, 6);
+                        const hostCode: string = window.location.hash.substr(7);
 
 
                         this.setState({
@@ -126,7 +123,7 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
                         <ul className="categories">
                             {
                                 this.state.round.categories.map((category, index) => {
-                                    let airDate: Date = new Date(category.airDate);
+                                    const airDate: Date = new Date(category.airDate);
                                     return (
                                         <li key={ index }>
                                             <div>
@@ -154,7 +151,7 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
 
 
 // Start the application
-let root = document.createElement("div");
+const root = document.createElement("div");
 root.id = 'main';
 document.body.appendChild(root);
 createRoot(document.getElementById("main")!).render(

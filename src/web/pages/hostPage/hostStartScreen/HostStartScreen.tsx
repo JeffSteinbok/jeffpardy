@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import { ICategory } from "../../../Types";
 import { IGameData, IGameRound, RoundDescriptor } from "../Types";
 import { Logger } from "../../../utilities/Logger";
@@ -7,9 +6,7 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Slide from '@mui/material/Slide';
 import { TextField, Link } from "@mui/material";
 import { AnswerKey } from "./AnswerKey";
 import { CategoryDetails } from "./CategoryDetails";
@@ -78,11 +75,11 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
         this.setState({ isCustomCategoryTsvDialogOpen: false })
 
         // TODO: fix name
-        let tsv: string = this.customCategoryTsv;
+        const tsv: string = this.customCategoryTsv;
 
-        let lines: string[] = tsv.split("\n");
+        const lines: string[] = tsv.split("\n");
 
-        let gameData: IGameData = {
+        const gameData: IGameData = {
             rounds: [],
             finalJeffpardyCategory: null
         }
@@ -127,10 +124,10 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
     }
 
     parseRoundFromTsv = (lines: string[], startLineIndex: number): ICategory[] => {
-        let categories: ICategory[] = [];
+        const categories: ICategory[] = [];
 
         lines[startLineIndex + 1].split("\t").forEach((value, index) => {
-            let category: ICategory = {
+            const category: ICategory = {
                 title: value,
                 clues: [],
                 comment: '',
@@ -143,8 +140,8 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
 
         for (let i: number = 0; i < 5; i++) {
 
-            let clues: string[] = lines[startLineIndex + 2 + (i * 2)].split("\t");
-            let questions: string[] = lines[startLineIndex + 2 + (i * 2) + 1].split("\t");
+            const clues: string[] = lines[startLineIndex + 2 + (i * 2)].split("\t");
+            const questions: string[] = lines[startLineIndex + 2 + (i * 2) + 1].split("\t");
 
             for (let j: number = 0; j < 6; j++) {
                 categories[j].clues.push({
@@ -207,7 +204,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
         let finalCategory: ICategory;
         let finalAirDate: Date;
 
-        let hostSecondaryWindowUri: string = "https://" +
+        const hostSecondaryWindowUri: string = "https://" +
             window.location.hostname +
             (window.location.port != "" ? ":" + window.location.port : "") +
             "/hostSecondary#" +
@@ -242,7 +239,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                                         <ul>
                                                             {
                                                                 round.categories.map((category, index) => {
-                                                                    let airDate: Date = new Date(category.airDate);
+                                                                    const airDate: Date = new Date(category.airDate);
                                                                     return (
                                                                         <li key={ index }>
                                                                             <a href="#" onClick={ (e) => { this.updateSingleCategory(category); } }>🔄</a>

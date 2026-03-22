@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IPlayer, TeamDictionary } from "../../Types";
+import { TeamDictionary } from "../../Types";
 import { Logger } from "../../utilities/Logger";
 
 export interface IPlayerListProps {

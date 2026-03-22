@@ -34,16 +34,16 @@ export class AnswerKey extends React.Component<IAnswerKeyProps, any> {
     }
 
     public getRoundGrid = (round: IGameRound): React.JSX.Element[] => {
-        let boardGridElements: React.JSX.Element[] = [];
+        const boardGridElements: React.JSX.Element[] = [];
 
         if (round.categories) {
 
             // Generate the grid of DIVs.  Doesn't work super-well in the below because they are not
             // nested.
-            var keyCounter: number = 0;
-            for (var i: number = 0; i < round.categories.length; i++) {
-                let category: ICategory = round.categories[i];
-                let airDate: Date = new Date(category.airDate);
+            let keyCounter: number = 0;
+            for (let i: number = 0; i < round.categories.length; i++) {
+                const category: ICategory = round.categories[i];
+                const airDate: Date = new Date(category.airDate);
                 boardGridElements.push(
                     <div className="answerKeyCategory" key={ keyCounter++ } style={ { gridRow: 1, gridColumn: i + 1 } }>
                         <div className="title">{ category.title }</div>
@@ -51,8 +51,8 @@ export class AnswerKey extends React.Component<IAnswerKeyProps, any> {
                         <div>{ airDate.getMonth() + 1 + "/" + airDate.getDay() + "/" + airDate.getFullYear() }</div>
                     </div>);
 
-                for (var j: number = 0; j < category.clues.length; j++) {
-                    let clue: IClue = category.clues[j];
+                for (let j: number = 0; j < category.clues.length; j++) {
+                    const clue: IClue = category.clues[j];
                     boardGridElements.push(
                         <div className="answerKeyClue" key={ keyCounter++ } style={ { gridRow: j + 2, gridColumn: i + 1 } }>
                             <div className="value">{ clue.value }{ clue.isDailyDouble ? " - DD" : "" }</div>
@@ -79,7 +79,7 @@ export class AnswerKey extends React.Component<IAnswerKeyProps, any> {
             finalAirDate = new Date(finalCategory.airDate);
         }
 
-        let styles: string = "body { background-color: white } html { background-color: white }";
+        const styles: string = "body { background-color: white } html { background-color: white }";
 
         return (
             <div id="hostAnswerKey">

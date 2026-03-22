@@ -9,7 +9,6 @@ import { ITeam } from "../../Types";
 import { Debug } from "../../utilities/Debug";
 import { SpecialKey } from "../../utilities/Key";
 import { Attribution } from "../../components/attribution/Attribution";
-import { inherits } from "util";
 
 enum PlayerPageState {
     FrontPage,
@@ -46,7 +45,7 @@ export interface IPlayerPageState {
     finalJeffpardyScores: { [key: string]: number };
     lockedInPlayerIds: string[];
     gameCodeInputLength: number;
-    toastMessage: string;
+    toastMessage: string; // Transient notification text; auto-clears after 3s via showToast
 }
 
 /**
@@ -100,6 +99,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         };
     }
 
+    // Display a brief notification overlay that auto-dismisses after 3 seconds
     showToast = (message: string) => {
         this.setState({ toastMessage: message });
         setTimeout(() => {
@@ -187,7 +187,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
                 // Get the max wager for this team.
                 // If negative, then 0
-                let maxWager: number = Math.max(scores[this.state.team], 0);
+                const maxWager: number = Math.max(scores[this.state.team], 0);
 
                 this.setState({
                     playerPageState: PlayerPageState.FinalJeffpardy,
@@ -284,7 +284,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         } else if (this.state.buzzerActive) {
             Logger.debug("Buzzer clicked when active. Time:", new Date().getTime());
 
-            let reactionTime: number = new Date().getTime() - this.buzzerActivateTime.getTime();
+            const reactionTime: number = new Date().getTime() - this.buzzerActivateTime.getTime();
 
             this.state.hubConnection
                 .invoke('buzzIn', this.state.gameCode, reactionTime, this.handicap)
@@ -310,7 +310,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
     submitFinalJeffpardyWager = () => {
 
-        let fjBet = this.finalJeffpardyWagerTemp;
+        const fjBet = this.finalJeffpardyWagerTemp;
         if (this.state.finalJeffpardyWagerEnabled) {
             if (isNaN(fjBet) || fjBet > this.state.finalJeffpardyMaxWager || fjBet < 0) {
                 this.showToast("Please enter a wager between 0 and " + this.state.finalJeffpardyMaxWager + ".");
@@ -335,7 +335,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                 return;
             }
 
-            let reactionTime: number = new Date().getTime() - this.finalJeffpardyClueShownTime.getTime();
+            const reactionTime: number = new Date().getTime() - this.finalJeffpardyClueShownTime.getTime();
 
             this.state.hubConnection
                 .invoke('submitAnswer', this.state.gameCode, this.finalJeffpardyAnswerTemp, reactionTime)
@@ -363,7 +363,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
     public render() {
         let buzzerButtonText: string = "Buzz";
-        let buzzerClassName: string = "inactive";
+        let buzzerClassName: string;
         let showBuzzerReactionTime: boolean = false;
 
         if (this.state.buzzerLocked || this.state.buzzerEarlyClickLock) {
@@ -563,7 +563,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
 
 // Start the application
-let root = document.createElement("div");
+const root = document.createElement("div");
 root.id = 'main';
 document.body.appendChild(root);
 const reactRoot = createRoot(root)

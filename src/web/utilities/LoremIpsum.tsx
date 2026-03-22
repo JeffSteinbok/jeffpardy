@@ -41,11 +41,11 @@ export class LoremIpsum {
      */
     public static generate = function (numWords: number) {
 
-        let words: string[] = [];
+        const words: string[] = [];
 
         for (let i: number = 0; i < numWords; i++) {
-            let position: number = Math.floor(Math.random() * LoremIpsum.words.length);
-            let word: string = LoremIpsum.words[position];
+            const position: number = Math.floor(Math.random() * LoremIpsum.words.length);
+            const word: string = LoremIpsum.words[position];
 
             if (i > 0 && words[i - 1] === word) {
                 i -= 1;
