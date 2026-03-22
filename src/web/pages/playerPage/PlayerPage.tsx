@@ -383,7 +383,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             <div id="playerPage">
                 {this.state.toastMessage && <div className="toast">{this.state.toastMessage}</div>}
                 <img src="/images/JeffpardyTitle.png" className="title" />
-                <div className="gameCode">{this.state.gameCode}</div>
+                <div className="gameCode jeffpardy-label">{this.state.gameCode}</div>
 
                 {this.state.playerPageState == PlayerPageState.FrontPage && (
                     <div className="gameCodeEntry">

@@ -35,7 +35,7 @@ export class ScoreboardEntry extends React.Component<IScoreboardEntryProps> {
             buzzerIndicatorClass += " wrongAnswer";
         }
 
-        let scoreboardEntryClass = "scoreboardEntry";
+        let scoreboardEntryClass = "scoreboardEntry jeffpardy-label";
         if (this.props.buzzerState == ScoreboardEntryBuzzerState.Off && this.props.isControllingTeam) {
             scoreboardEntryClass += " controllingTeam";
         }

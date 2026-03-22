@@ -280,7 +280,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                 )}
                 {(this.state.viewMode == HostPageViewMode.Game || this.state.viewMode == HostPageViewMode.End) && (
                     <div className="topPageNormal">
-                        <div className="topSection">
+                        <div className="topSection jeffpardy-label">
                             <img src="/images/JeffpardyTitle.png" className="title" />
                             <div className="gameCode">Game Code: {this.gameCode}</div>
                         </div>
@@ -313,7 +313,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                             </div>
                             <div className={"qrDrawer" + (this.state.isQrDrawerOpen ? " open" : "")}>
                                 <button
-                                    className="qrDrawerToggle"
+                                    className="qrDrawerToggle jeffpardy-label"
                                     onClick={() => this.setState({ isQrDrawerOpen: !this.state.isQrDrawerOpen })}
                                 >
                                     {this.state.isQrDrawerOpen ? "▼" : "▲ Join"}

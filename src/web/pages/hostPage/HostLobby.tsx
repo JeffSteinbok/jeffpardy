@@ -47,7 +47,7 @@ export class HostLobby extends React.Component<IHostLobbyProps> {
         return (
             <div className="hostStartPage">
                 <img src="/images/JeffpardyTitle.png" className="title" />
-                <div className="gameCode">Game Code: {this.props.gameCode}</div>
+                <div className="gameCode jeffpardy-label">Game Code: {this.props.gameCode}</div>
                 Give the above game code to the players or give them this direct link:
                 <br />
                 <a target="#" href={playerUri}>

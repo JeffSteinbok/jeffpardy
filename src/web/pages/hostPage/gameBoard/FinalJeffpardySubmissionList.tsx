@@ -30,7 +30,7 @@ export class FinalJeffpardySubmissionList extends React.Component<IFinalJeffpard
                         );
                         return (
                             <li key={index} className={allSubmitted ? "submitted" : ""}>
-                                <div className="fjTeamName">{teamName}</div>
+                                <div className="fjTeamName jeffpardy-label">{teamName}</div>
                                 {this.props.teams[teamName].players.map((player, pIndex) => {
                                     const hasValue = player.connectionId in this.props.submissions;
                                     return (

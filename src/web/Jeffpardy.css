@@ -11,27 +11,8 @@
     --color-scoreboard-bg: #0f0f1a;
 }
 
-div#startPage .startPageButton,
-div#startPage div.title,
-div.hostStartPage div.gameCode,
-div#jeffpardyBoard div.categoryPlaceholderClue,
-div#jeffpardyBoard div.categoryRevealSlide,
-div#jeffpardyBoard div.categoryRevealDate,
-div#jeffpardyBoard div.categoryRevealHint,
-div#jeffpardyBoard div.jeffpardyCategory,
-div#jeffpardyBoard div.jeffpardyClue,
-div#jeffpardyBoard div.jeffpardyActiveClue .dailyDouble div.title,
-div#jeffpardyBoard div.jeffpardyFinal div.category,
-div#jeffpardyBoard div.jeffpardyIntermission div.title,
-div#jeffpardyBoard div.jeffpardyEnd div.title,
-ul.finalJeffpardySubmissionList .fjTeamName,
-div#buzzerView div.buzzerViewTitle,
-div#buzzerView div.buzzerViewTitleGameCode,
-div#playerPage div.gameCode,
-div#scoreboard .scoreboardEntry,
-.topSection,
-.qrDrawerToggle,
-.qrGameCode {
+/* Shared Jeopardy-style label: bold, condensed, uppercase Arial with drop shadow */
+.jeffpardy-label {
     color: white;
     text-transform: uppercase;
     text-shadow: 2px 2px black;
