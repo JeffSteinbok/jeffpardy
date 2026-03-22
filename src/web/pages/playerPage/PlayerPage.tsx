@@ -43,6 +43,7 @@ export interface IPlayerPageState {
     finalJeffpardyAnswer: string;
     finalJeffpardyWagerEnabled: boolean;
     finalJeffpardyAnswerEnabled: boolean;
+    gameCodeInputLength: number;
 }
 
 /**
@@ -89,6 +90,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             finalJeffpardyAnswer: null,
             finalJeffpardyWagerEnabled: true,
             finalJeffpardyAnswerEnabled: true,
+            gameCodeInputLength: 0,
         };
     }
 
@@ -378,10 +380,10 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                 autoFocus
                                 type="text"
                                 maxLength={ 6 }
-                                onChange={ e => this.gameCodeTemp = e.target.value }
+                                onChange={ e => { this.gameCodeTemp = e.target.value; this.setState({ gameCodeInputLength: e.target.value.length }); } }
                             />
                             <p />
-                            <button type="submit">Start</button>
+                            <button type="submit" disabled={ this.state.gameCodeInputLength !== 6 }>Start</button>
                         </form>
                         <div className="flexGrowSpacer" />
                     </div>

@@ -1032,6 +1032,12 @@ div#playerPage button:not(#buzzer):hover {
     @extend %bigButtonHover;
 }
 
+div#playerPage button:not(#buzzer):disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
 div#playerPage div.gameCode {
     @extend %jeffpardyMainFont;
     font-size: 1.4rem;
