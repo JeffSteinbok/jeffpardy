@@ -458,6 +458,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                         keepMounted
                         maxWidth="xs"
                         onClose={ () => this.setState({ isTeamFixupDialogShown: false }) }
+                        onKeyDown={ (e) => { if (e.key === "Enter") { this.setState({ isTeamFixupDialogShown: false }); } } }
                         PaperProps={ { className: "gameDialog" } }
                     >
                         <DialogTitle>Adjust Control &amp; Scores</DialogTitle>
@@ -490,7 +491,10 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                             }
                         </DialogContent>
                         <DialogActions>
-                            <Button onClick={ () => { this.setState({ isTeamFixupDialogShown: false }) } } color="primary">
+                            <Button onClick={ () => { this.setState({ isTeamFixupDialogShown: false }) } } style={{ backgroundColor: "#555", color: "white" }}>
+                                Cancel
+                            </Button>
+                            <Button onClick={ () => { this.setState({ isTeamFixupDialogShown: false }) } } color="primary" autoFocus>
                                 OK
                             </Button>
                         </DialogActions>
@@ -509,10 +513,10 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                             Are you sure you want to end the current round?
                         </DialogContent>
                         <DialogActions>
-                            <Button onClick={ () => { this.setState({ isEndRoundDialogShown: false }) } }>
+                            <Button onClick={ () => { this.setState({ isEndRoundDialogShown: false }) } } style={{ backgroundColor: "#555", color: "white" }}>
                                 Cancel
                             </Button>
-                            <Button onClick={ this.confirmEndRound } color="primary">
+                            <Button onClick={ this.confirmEndRound } color="primary" autoFocus>
                                 End Round
                             </Button>
                         </DialogActions>

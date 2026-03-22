@@ -295,6 +295,7 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
     }
 
     showFinalJeffpardyClue = () => {
+        if (this.state.finalCategoryRevealing || this.state.finalCategorySettling) return;
         this.props.jeffpardyHostController.showFinalJeffpardyClue(this.props.categories[0].clues[0]);
         this.props.jeffpardyHostController.scoreboard.onShowFinalJeffpardyClue();
         this.setState({
@@ -543,15 +544,17 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                                 { !this.state.finalCategoryRevealing &&
                                     <div className="categoryDate">{ new Date(this.props.categories[0].airDate).toLocaleDateString() }</div>
                                 }
+                                { !this.state.finalCategoryRevealing && !this.state.finalCategorySettling &&
+                                    <div className="finalTallyDivider"></div>
+                                }
 
                                 { !this.state.finalCategoryRevealing && !this.state.finalCategorySettling && this.state.jeopardyBoardView == JeopardyBoardView.FinalCategory &&
                                     <div className="jeffpardyFinalCategory">
-                                        <div className="finalTallyDivider"></div>
                                         <FinalJeffpardySubmissionList
                                             teams={ this.props.teams }
                                             submissions={ this.props.finalJeffpardyWagers }
-                                            waitingText="Waiting"
-                                            receivedText="LOCKED" />
+                                            waitingText="⏳"
+                                            receivedText="🔒" />
 
                                         <div className="categoryRevealHint">Hit Space to Show Clue</div>
                                     </div>

@@ -1017,7 +1017,10 @@ div#jeffpardyBoard div.jeffpardyFinalTally {
     display: flex;
     flex-direction: column;
     align-items: center;
-    animation: boardFadeIn 0.6s ease-out;
+}
+
+div#jeffpardyBoard div.jeffpardyFinalCategory {
+    width: 100%;
 }
 
 div#jeffpardyBoard div.jeffpardyFinalClue,
@@ -1081,17 +1084,28 @@ ul.finalJeffpardyTally {
     padding: 20px 0;
     gap: 12px;
     margin: 0;
+    width: 100%;
+}
+
+ul.finalJeffpardyTally {
+    flex-grow: 1;
+    align-items: stretch;
 }
 
 ul.finalJeffpardySubmissionList li,
 ul.finalJeffpardyTally li {
-    flex: 0 0 220px;
+    flex: 0 0 calc(20% - 12px);
     font-size: 1.2rem;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
     padding: 10px 14px;
     text-align: center;
+}
+
+ul.finalJeffpardyTally li {
+    display: flex;
+    flex-direction: column;
 }
 
 ul.finalJeffpardySubmissionList table,
@@ -1152,6 +1166,14 @@ div#jeffpardyBoard ul.finalJeffpardyTally button {
     font-size: 1rem;
     padding: 1px 6px;
     margin: 2px 4px 0 0;
+}
+
+div#jeffpardyBoard ul.finalJeffpardyTally .tallyAction {
+    min-height: 30px;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -1427,6 +1449,13 @@ div#playerPage div.finalJeffpardy input[type="number"] {
     -moz-appearance: textfield;
 }
 
+div#playerPage div.finalJeffpardy .finalTallyDivider {
+    width: 80%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    margin: 10px auto;
+}
+
 div#playerPage div.buzzerRegistration h1 {
     font-size: 1.6rem;
     margin-bottom: 16px;
@@ -1567,6 +1596,26 @@ div#playerPage div.buzzerCurrentUserView div.buzzerHint {
     font-style: italic;
     margin-top: 8px;
     margin-bottom: 8px;
+}
+
+div#playerPage .toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 1rem;
+    z-index: 1000;
+    animation: toastFadeIn 0.3s ease-out;
+}
+
+@keyframes toastFadeIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 div#scoreboard {

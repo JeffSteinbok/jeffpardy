@@ -29,7 +29,7 @@ export class PlayerList extends React.Component<IPlayerListProps, any> {
                         return (
                             <li key={ index }>Team: { teamName }
                                 { this.props.scores && this.props.scores[teamName] !== undefined &&
-                                    <span className="teamScore"> — { this.props.scores[teamName].toLocaleString() }</span>
+                                    <span className="teamScore"> — { this.props.scores[teamName] }</span>
                                 }
                                 <ul>
                                     {
