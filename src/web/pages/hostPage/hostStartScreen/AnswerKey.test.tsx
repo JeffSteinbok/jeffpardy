@@ -17,8 +17,20 @@ const mockGameData: IGameData = {
                     isAsked: false,
                     hasDailyDouble: false,
                     clues: [
-                        { clue: "Test clue 1", question: "Test question 1", value: 200, isAsked: false, isDailyDouble: false },
-                        { clue: "Test clue 2", question: "Test question 2", value: 400, isAsked: false, isDailyDouble: true },
+                        {
+                            clue: "Test clue 1",
+                            question: "Test question 1",
+                            value: 200,
+                            isAsked: false,
+                            isDailyDouble: false,
+                        },
+                        {
+                            clue: "Test clue 2",
+                            question: "Test question 2",
+                            value: 400,
+                            isAsked: false,
+                            isDailyDouble: true,
+                        },
                     ],
                 },
             ],

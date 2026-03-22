@@ -31,11 +31,7 @@ describe("JeffpardyCategory", () => {
     it("renders the category title text when category.isAsked is false", () => {
         const category = makeCategory({ isAsked: false });
         const { container } = render(
-            <JeffpardyCategory
-                style={{}}
-                jeffpardyBoard={makeMockBoard() as IJeffpardyBoard}
-                category={category}
-            />
+            <JeffpardyCategory style={{}} jeffpardyBoard={makeMockBoard() as IJeffpardyBoard} category={category} />
         );
         expect(container.textContent).toContain("SCIENCE");
     });
@@ -43,11 +39,7 @@ describe("JeffpardyCategory", () => {
     it("does not render the title text when category.isAsked is true", () => {
         const category = makeCategory({ isAsked: true });
         const { container } = render(
-            <JeffpardyCategory
-                style={{}}
-                jeffpardyBoard={makeMockBoard() as IJeffpardyBoard}
-                category={category}
-            />
+            <JeffpardyCategory style={{}} jeffpardyBoard={makeMockBoard() as IJeffpardyBoard} category={category} />
         );
         expect(container.textContent).not.toContain("SCIENCE");
     });
@@ -56,11 +48,7 @@ describe("JeffpardyCategory", () => {
         const category = makeCategory();
         const style: React.CSSProperties = { backgroundColor: "blue", width: "100px" };
         const { container } = render(
-            <JeffpardyCategory
-                style={style}
-                jeffpardyBoard={makeMockBoard() as IJeffpardyBoard}
-                category={category}
-            />
+            <JeffpardyCategory style={style} jeffpardyBoard={makeMockBoard() as IJeffpardyBoard} category={category} />
         );
         const div = container.querySelector(".jeffpardyCategory") as HTMLElement;
         expect(div.style.backgroundColor).toBe("blue");
@@ -70,11 +58,7 @@ describe("JeffpardyCategory", () => {
     it('the div has className "jeffpardyCategory"', () => {
         const category = makeCategory();
         const { container } = render(
-            <JeffpardyCategory
-                style={{}}
-                jeffpardyBoard={makeMockBoard() as IJeffpardyBoard}
-                category={category}
-            />
+            <JeffpardyCategory style={{}} jeffpardyBoard={makeMockBoard() as IJeffpardyBoard} category={category} />
         );
         const div = container.querySelector(".jeffpardyCategory");
         expect(div).toBeInTheDocument();

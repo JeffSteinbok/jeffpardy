@@ -167,12 +167,8 @@ describe("WebServerApiManager", () => {
             const manager = new WebServerApiManager();
             manager.defaultErrorHandler("404", "Not Found");
 
-            expect(alertSpy).toHaveBeenCalledWith(
-                expect.stringContaining("StatusText: 404")
-            );
-            expect(alertSpy).toHaveBeenCalledWith(
-                expect.stringContaining("ResponseText: Not Found")
-            );
+            expect(alertSpy).toHaveBeenCalledWith(expect.stringContaining("StatusText: 404"));
+            expect(alertSpy).toHaveBeenCalledWith(expect.stringContaining("ResponseText: Not Found"));
         });
 
         it("calls alert with no-info message when both params are empty", () => {
@@ -181,9 +177,7 @@ describe("WebServerApiManager", () => {
             const manager = new WebServerApiManager();
             manager.defaultErrorHandler("", "");
 
-            expect(alertSpy).toHaveBeenCalledWith(
-                expect.stringContaining("No error information was returned.")
-            );
+            expect(alertSpy).toHaveBeenCalledWith(expect.stringContaining("No error information was returned."));
         });
     });
 });

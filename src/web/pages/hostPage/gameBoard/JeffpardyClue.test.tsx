@@ -75,12 +75,7 @@ describe("JeffpardyClue", () => {
         const category = makeCategory([clue]);
         const mockBoard = makeMockBoard();
         const { container } = render(
-            <JeffpardyClue
-                style={{}}
-                jeffpardyBoard={mockBoard as IJeffpardyBoard}
-                category={category}
-                clue={clue}
-            />
+            <JeffpardyClue style={{}} jeffpardyBoard={mockBoard as IJeffpardyBoard} category={category} clue={clue} />
         );
         const link = container.querySelector("a")!;
         fireEvent.click(link);
