@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { Logger } from "../../../utilities/Logger";
 import { JeffpardyHostController } from "../JeffpardyHostController";
@@ -64,6 +67,7 @@ export interface IJeffpardyBoard {
     startFinalJeffpardyTimer: () => void;
 }
 
+/** Manages the main game board view, including clue display, category reveal, daily doubles, and Final Jeffpardy phases. */
 export class JeffpardyBoard
     extends React.Component<IJeffpardyBoardProps, IJeffpardyBoardState>
     implements IJeffpardyBoard

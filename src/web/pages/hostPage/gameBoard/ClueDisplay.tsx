@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { Timer } from "./Timer";
 import { ICategory, IClue } from "../../../Types";
@@ -9,6 +12,7 @@ export interface IClueDisplayProps {
     timerPercentageRemaining: number;
 }
 
+/** Displays the active clue during gameplay, showing the category header, clue text, answer, and countdown timer. */
 export class ClueDisplay extends React.Component<IClueDisplayProps> {
     public render() {
         const { activeCategory, activeClue, showQuestion, timerPercentageRemaining } = this.props;

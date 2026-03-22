@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { ScoreboardEntry, ScoreboardEntryBuzzerState } from "./ScoreboardEntry";
 import { Logger } from "../../../utilities/Logger";
@@ -59,9 +62,7 @@ export interface IScoreboard {
     onShowFinalJeffpardyClue: () => void;
     clearControl: () => void;
 }
-/**
- * Top bar containing toolbar buttons and drop downs
- */
+/** Host scoreboard panel showing team scores, buzzer states, and game controls for each phase of gameplay. */
 export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardState> implements IScoreboard {
     private teamCount: number = 0;
     private keyboardHandler: (event: KeyboardEvent) => void;

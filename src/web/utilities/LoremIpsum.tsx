@@ -1,3 +1,7 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+/** Utility class for generating random Lorem Ipsum placeholder text from a fixed word list. */
 export class LoremIpsum {
     /**
      * List of possible words.

@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { IJeffpardyBoard } from "./JeffpardyBoard";
 import { ICategory, IClue } from "../../../Types";
@@ -13,6 +16,7 @@ export interface IJeffpardyClueProps {
     clue: IClue;
 }
 
+/** Renders a single clue cell on the game board; clicking it marks the clue as asked and triggers the clue display. */
 export class JeffpardyClue extends React.Component<IJeffpardyClueProps, IJeffpardyClueState> {
     private contextMenuTarget: HTMLElement;
 

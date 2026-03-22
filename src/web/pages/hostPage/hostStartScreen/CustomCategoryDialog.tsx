@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 import { IGameData } from "../Types";
@@ -13,6 +16,7 @@ interface ICustomCategoryDialogState {
     json: string;
 }
 
+/** Dialog for loading custom game data by editing raw JSON with a CodeMirror editor. */
 export class CustomCategoryDialog extends React.Component<ICustomCategoryDialogProps, ICustomCategoryDialogState> {
     constructor(props: ICustomCategoryDialogProps) {
         super(props);

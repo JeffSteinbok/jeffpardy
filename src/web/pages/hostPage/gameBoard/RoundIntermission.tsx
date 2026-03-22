@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 
 export interface IRoundIntermissionProps {
@@ -6,6 +9,7 @@ export interface IRoundIntermissionProps {
     onStartNewRound: () => void;
 }
 
+/** Displays the intermission screen between rounds, prompting the host to start the next round or Final Jeffpardy. */
 export class RoundIntermission extends React.Component<IRoundIntermissionProps> {
     public render() {
         const { round, totalNonFinalRounds, onStartNewRound } = this.props;

@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { JeffpardyCategory } from "./JeffpardyCategory";
 import { JeffpardyClue } from "./JeffpardyClue";
@@ -9,6 +12,7 @@ export interface IGameBoardGridProps {
     jeffpardyBoard: IJeffpardyBoard;
 }
 
+/** Displays the game board grid with all categories and clues arranged in a CSS grid layout. */
 export class GameBoardGrid extends React.Component<IGameBoardGridProps> {
     public render() {
         const boardGridElements: React.JSX.Element[] = [];

@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { EditorState } from "@codemirror/state";
 import { EditorView, keymap, lineNumbers, highlightActiveLine } from "@codemirror/view";
@@ -11,6 +14,7 @@ export interface IJsonEditorProps {
     onChange: (value: string) => void;
 }
 
+/** CodeMirror-based JSON editor component with syntax highlighting, line numbers, and bracket matching. */
 export class JsonEditor extends React.Component<IJsonEditorProps> {
     private editorRef = React.createRef<HTMLDivElement>();
     private view: EditorView | null = null;

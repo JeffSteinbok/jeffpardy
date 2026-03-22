@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import { ICategory } from "../../../Types";
 import { IGameData } from "../Types";
 
@@ -50,6 +53,7 @@ export function parseGameDataFromTsv(tsv: string): IGameData {
     return gameData;
 }
 
+/** Parses a single round's categories from tab-separated lines starting at the given line index. */
 export function parseRoundFromTsv(lines: string[], startLineIndex: number): ICategory[] {
     const categories: ICategory[] = [];
 

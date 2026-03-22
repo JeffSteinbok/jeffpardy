@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { ICategory, IClue } from "../../../Types";
 
@@ -11,6 +14,7 @@ export interface IDailyDoubleRevealProps {
     onSubmitWager: (maxBet: number) => void;
 }
 
+/** Displays the Daily Double reveal screen with the category header, wager input, and submit button. */
 export class DailyDoubleReveal extends React.Component<IDailyDoubleRevealProps> {
     public render() {
         const { activeCategory, activeClue, dailyDoubleMaxBet, dailyDoubleRevealed, wagerError } = this.props;
