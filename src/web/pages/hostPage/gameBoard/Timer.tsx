@@ -1,9 +1,13 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 
 export interface ITimerProps {
     percentageRemaining: number;
 }
 
+/** Visual countdown timer bar that fills from left to right as time elapses. */
 export class Timer extends React.Component<ITimerProps> {
     constructor(props: ITimerProps) {
         super(props);

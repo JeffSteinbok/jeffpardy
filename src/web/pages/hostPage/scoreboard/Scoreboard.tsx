@@ -1,11 +1,15 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { ScoreboardEntry, ScoreboardEntryBuzzerState } from "./ScoreboardEntry";
 import { Logger } from "../../../utilities/Logger";
 import { JeffpardyHostController } from "../JeffpardyHostController";
-import { Key, SpecialKey } from "../../../utilities/Key";
 import { IPlayer, TeamDictionary, ITeam } from "../../../Types";
 import { IClue } from "../../../Types";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
+import { TeamFixupDialog } from "./TeamFixupDialog";
+import { EndRoundDialog } from "./EndRoundDialog";
+import { createKeyboardHandler } from "./useKeyboardShortcuts";
 
 // Tracks the host scoreboard's view of the current game phase.
 // Controls which keyboard shortcuts and toolbar buttons are active.
@@ -58,11 +62,10 @@ export interface IScoreboard {
     onShowFinalJeffpardyClue: () => void;
     clearControl: () => void;
 }
-/**
- * Top bar containing toolbar buttons and drop downs
- */
+/** Host scoreboard panel showing team scores, buzzer states, and game controls for each phase of gameplay. */
 export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardState> implements IScoreboard {
     private teamCount: number = 0;
+    private keyboardHandler: (event: KeyboardEvent) => void;
 
     constructor(props: IScoreboardProps) {
         super(props);
@@ -306,29 +309,18 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         }
     };
 
-    handleKeyDown = (event: KeyboardEvent) => {
-        switch (event.keyCode) {
-            // Space advances through the game flow based on current state.
-            // Final Jeffpardy progresses: FinalJeffpardy → show clue → start timer.
-            case SpecialKey.SPACE:
-                if (this.state.gameBoardState == GameBoardState.Question) this.showBoard();
-                else if (this.state.gameBoardState == GameBoardState.CategoryReveal) this.advanceCategoryReveal();
-                else if (this.state.gameBoardState == GameBoardState.Intermission) this.startNewRound();
-                else if (this.state.gameBoardState == GameBoardState.FinalJeffpardy) this.showFinalJeffpardyClue();
-                else if (this.state.gameBoardState == GameBoardState.FinalJeffpardyClue)
-                    this.startFinalJeffpardyTimer();
-                break;
-            case Key.A:
-                this.activateBuzzer();
-                break;
-            case Key.Z:
-                this.correctResponse();
-                break;
-            case Key.X:
-                this.incorrectResponse();
-                break;
-        }
-    };
+    handleKeyDown = createKeyboardHandler({
+        onSpace: () => {
+            if (this.state.gameBoardState == GameBoardState.Question) this.showBoard();
+            else if (this.state.gameBoardState == GameBoardState.CategoryReveal) this.advanceCategoryReveal();
+            else if (this.state.gameBoardState == GameBoardState.Intermission) this.startNewRound();
+            else if (this.state.gameBoardState == GameBoardState.FinalJeffpardy) this.showFinalJeffpardyClue();
+            else if (this.state.gameBoardState == GameBoardState.FinalJeffpardyClue) this.startFinalJeffpardyTimer();
+        },
+        onActivateBuzzer: () => this.activateBuzzer(),
+        onCorrectResponse: () => this.correctResponse(),
+        onIncorrectResponse: () => this.incorrectResponse(),
+    });
 
     componentDidMount = () => {
         window.addEventListener("keydown", this.handleKeyDown);
@@ -507,104 +499,20 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                 </div>
 
                 {this.state.isTeamFixupDialogShown && (
-                    <Dialog
-                        open={this.state.isTeamFixupDialogShown}
-                        keepMounted
-                        maxWidth="xs"
+                    <TeamFixupDialog
+                        teams={this.props.teams}
+                        controllingTeam={this.props.controllingTeam}
+                        jeffpardyHostController={this.props.jeffpardyHostController}
+                        onControllingUserClear={() => this.setState({ controllingUser: null })}
                         onClose={() => this.setState({ isTeamFixupDialogShown: false })}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                this.setState({ isTeamFixupDialogShown: false });
-                            }
-                        }}
-                        PaperProps={{ className: "gameDialog" }}
-                    >
-                        <DialogTitle>Adjust Control &amp; Scores</DialogTitle>
-                        <DialogContent>
-                            <div className="teamFixupHeader">
-                                <span className="teamFixupHeaderControl">Control</span>
-                                <span className="teamFixupHeaderName">Team</span>
-                                <span className="teamFixupHeaderScore">Score</span>
-                            </div>
-                            {Object.keys(this.props.teams)
-                                .sort()
-                                .map((teamName, index) => {
-                                    return (
-                                        <div key={index} className="teamFixupRow">
-                                            <input
-                                                type="radio"
-                                                name="controllingTeamName"
-                                                checked={
-                                                    this.props.controllingTeam &&
-                                                    this.props.controllingTeam.name == teamName
-                                                }
-                                                onChange={(_e) => {
-                                                    this.setState({ controllingUser: null });
-                                                    this.props.jeffpardyHostController.controllingTeamChange(
-                                                        this.props.teams[teamName]
-                                                    );
-                                                }}
-                                            />
-                                            <span className="teamFixupName">{teamName}</span>
-                                            <input
-                                                type="text"
-                                                className="teamFixupScore"
-                                                defaultValue={this.props.teams[teamName].score}
-                                                onChange={(e) =>
-                                                    (this.props.teams[teamName].score = Number.parseInt(
-                                                        e.target.value,
-                                                        10
-                                                    ))
-                                                }
-                                            />
-                                        </div>
-                                    );
-                                })}
-                        </DialogContent>
-                        <DialogActions>
-                            <Button
-                                onClick={() => {
-                                    this.setState({ isTeamFixupDialogShown: false });
-                                }}
-                                style={{ backgroundColor: "#555", color: "white" }}
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                onClick={() => {
-                                    this.setState({ isTeamFixupDialogShown: false });
-                                }}
-                                color="primary"
-                                autoFocus
-                            >
-                                OK
-                            </Button>
-                        </DialogActions>
-                    </Dialog>
+                    />
                 )}
 
                 {this.state.isEndRoundDialogShown && (
-                    <Dialog
-                        open={this.state.isEndRoundDialogShown}
+                    <EndRoundDialog
+                        onConfirm={this.confirmEndRound}
                         onClose={() => this.setState({ isEndRoundDialogShown: false })}
-                        PaperProps={{ className: "gameDialog" }}
-                    >
-                        <DialogTitle>End Round</DialogTitle>
-                        <DialogContent>Are you sure you want to end the current round?</DialogContent>
-                        <DialogActions>
-                            <Button
-                                onClick={() => {
-                                    this.setState({ isEndRoundDialogShown: false });
-                                }}
-                                style={{ backgroundColor: "#555", color: "white" }}
-                            >
-                                Cancel
-                            </Button>
-                            <Button onClick={this.confirmEndRound} color="primary" autoFocus>
-                                End Round
-                            </Button>
-                        </DialogActions>
-                    </Dialog>
+                    />
                 )}
             </div>
         );

@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { JeffpardyHostController } from "./JeffpardyHostController";
 import { Logger } from "../../utilities/Logger";
@@ -12,6 +15,7 @@ export interface IHostLobbyProps {
     onStartGame: () => void;
 }
 
+/** Lobby screen shown after game setup, displaying the game code, player join link, and player list before the game starts. */
 export class HostLobby extends React.Component<IHostLobbyProps> {
     jeffpardyHostController: JeffpardyHostController;
     gameCode: string;

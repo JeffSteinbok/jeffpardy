@@ -19,6 +19,11 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 if (builder.Environment.IsDevelopment())
 {
     builder.Configuration.AddUserSecrets<Program>();
+
+    // Set DevMode before AzureBlobCategoryLoader.Instance is accessed,
+    // so the singleton constructor uses the connection string instead of DefaultAzureCredential.
+    AzureBlobCategoryLoader.DevMode = true;
+    AzureBlobCategoryLoader.DevConnectionString = builder.Configuration["BlobConnectionString"];
 }
 
 builder.Services.AddRazorPages();
@@ -32,8 +37,6 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    AzureBlobCategoryLoader.DevMode = true;
-    AzureBlobCategoryLoader.DevConnectionString = app.Configuration["BlobConnectionString"];
     app.UseDeveloperExceptionPage();
 }
 else
