@@ -12,21 +12,39 @@ namespace Jeffpardy
     [Route("api/Diagnostics")]
     public class DiagnosticsController : Controller
     {
+        private readonly ISeasonManifestCache _cache;
+
+        public DiagnosticsController(ISeasonManifestCache cache)
+        {
+            _cache = cache;
+        }
+
         [HttpGet]
         public JeffpardyDiagnostics GetDiagnostics()
         {
-            return new JeffpardyDiagnostics();
+            return new JeffpardyDiagnostics(_cache);
         }
 
     }
 
     public class JeffpardyDiagnostics
     {
+        private readonly ISeasonManifestCache _cache;
+
+        public JeffpardyDiagnostics()
+        {
+        }
+
+        public JeffpardyDiagnostics(ISeasonManifestCache cache)
+        {
+            _cache = cache;
+        }
+
         public int NumJeopardyCategories
         {
             get
             {
-                return SeasonManifestCache.Instance.JeopardyCategoryList.Count;
+                return _cache.JeopardyCategoryList.Count;
             }
         }
         
@@ -34,7 +52,7 @@ namespace Jeffpardy
         {
             get
             {
-                return SeasonManifestCache.Instance.DoubleJeopardyCategoryList.Count;
+                return _cache.DoubleJeopardyCategoryList.Count;
             }
         }
 
@@ -42,7 +60,7 @@ namespace Jeffpardy
         {
             get
             {
-                return SeasonManifestCache.Instance.FinalJeopardyCategoryList.Count;
+                return _cache.FinalJeopardyCategoryList.Count;
             }
         }
 
@@ -50,9 +68,9 @@ namespace Jeffpardy
         {
             get
             {
-                return SeasonManifestCache.Instance.JeopardyCategoryList.Count +
-                       SeasonManifestCache.Instance.DoubleJeopardyCategoryList.Count +
-                       SeasonManifestCache.Instance.FinalJeopardyCategoryList.Count;
+                return _cache.JeopardyCategoryList.Count +
+                       _cache.DoubleJeopardyCategoryList.Count +
+                       _cache.FinalJeopardyCategoryList.Count;
             }
         }
 
@@ -60,7 +78,7 @@ namespace Jeffpardy
         {
             get
             {
-                var allCategories = SeasonManifestCache.Instance.JeopardyCategoryList.Concat(SeasonManifestCache.Instance.DoubleJeopardyCategoryList).Concat(SeasonManifestCache.Instance.FinalJeopardyCategoryList);
+                var allCategories = _cache.JeopardyCategoryList.Concat(_cache.DoubleJeopardyCategoryList).Concat(_cache.FinalJeopardyCategoryList);
                 return allCategories.Min(c => c.AirDate);
             }
         }
@@ -69,7 +87,7 @@ namespace Jeffpardy
         {
             get
             {
-                var allCategories = SeasonManifestCache.Instance.JeopardyCategoryList.Concat(SeasonManifestCache.Instance.DoubleJeopardyCategoryList).Concat(SeasonManifestCache.Instance.FinalJeopardyCategoryList);
+                var allCategories = _cache.JeopardyCategoryList.Concat(_cache.DoubleJeopardyCategoryList).Concat(_cache.FinalJeopardyCategoryList);
                 return allCategories.Max(c => c.AirDate);
             }
         }
