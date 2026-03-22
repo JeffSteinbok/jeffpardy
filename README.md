@@ -2,6 +2,27 @@
 
 You'll need to contact Jeff for some keys for this to work.  Right now, the app won't load without a connection to the blob store.
 
+## GitHub Codespaces
+
+You can develop Jeffpardy entirely in a GitHub Codespace — no local setup required.
+
+1. Click **Code → Codespaces → Create codespace on master** from the repo page.
+2. The container will install .NET 10, Node.js 22, and restore all dependencies automatically.
+3. Store your Azure Blob connection string:
+    ```
+    dotnet user-secrets set "BlobConnectionString" "[string from Azure Portal]" --project src/backend/Jeffpardy.csproj
+    ```
+4. Build the frontend and run the server:
+    ```
+    npm run build
+    cd src/backend && dotnet run
+    ```
+5. When the server starts, Codespaces will detect ports **5000**/**5001** and show a notification. Click **Open in Browser** to access the app.
+
+> **Tip:** Use `?debugMode=2` (LocalCategories) to bypass the Azure Blob connection entirely for frontend development.
+
+## Local Development
+
 To work on the service:
 
 1. Make sure you have a key for the Azure blob store for the questions.

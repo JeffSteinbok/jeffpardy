@@ -1,0 +1,31 @@
+{
+    "name": "Jeffpardy",
+    "image": "mcr.microsoft.com/devcontainers/dotnet:10.0",
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "22"
+        }
+    },
+    "forwardPorts": [5000, 5001],
+    "portsAttributes": {
+        "5000": {
+            "label": "Jeffpardy (HTTP)",
+            "onAutoForward": "notify"
+        },
+        "5001": {
+            "label": "Jeffpardy (HTTPS)",
+            "onAutoForward": "notify"
+        }
+    },
+    "postCreateCommand": "npm ci --legacy-peer-deps && dotnet restore src/backend/Jeffpardy.csproj",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-dotnettools.csharp",
+                "ms-dotnettools.csdevkit",
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode"
+            ]
+        }
+    }
+}
