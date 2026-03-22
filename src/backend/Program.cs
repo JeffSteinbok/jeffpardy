@@ -1,3 +1,4 @@
+using System.IO;
 using Jeffpardy;
 using Jeffpardy.Hubs;
 using Microsoft.AspNetCore.Builder;
@@ -7,8 +8,11 @@ using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// In development, wwwroot is at the repository root (two levels up from src/backend/)
 if (builder.Environment.IsDevelopment())
 {
+    builder.Environment.WebRootPath = Path.GetFullPath(
+        Path.Combine(builder.Environment.ContentRootPath, "..", "..", "wwwroot"));
     builder.Configuration.AddUserSecrets<Program>();
 }
 
