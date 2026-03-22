@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 import { createRoot } from "react-dom/client";
-import "../../Jeffpardy.scss";
+import "../../Jeffpardy.css";
 import * as signalR from "@microsoft/signalr";
 import { Logger } from "../../utilities/Logger";
 import { IPlayer, TeamDictionary } from "../../Types";

@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 import { createRoot } from "react-dom/client";
-import "../../Jeffpardy.scss";
+import "../../Jeffpardy.css";
 import { JeffpardyHostController } from "./JeffpardyHostController";
 import { JeffpardyBoard } from "./gameBoard/JeffpardyBoard";
 import { Scoreboard } from "./scoreboard/Scoreboard";

@@ -35,7 +35,7 @@ public class CategoriesController : ControllerBase
 - **Components**: Use `.tsx` extension for React components
 - **Types**: Define shared types in `Types.tsx`
 - **File organization**: Organize components in feature-based folders under `/src/web/`
-- **Styling**: Use Sass/SCSS files alongside components
+- **Styling**: Use CSS files alongside components
 
 Example interface pattern:
 ```typescript
