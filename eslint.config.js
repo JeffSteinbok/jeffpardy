@@ -23,26 +23,16 @@ export default tseslint.config(
         rules: {
             ...react.configs.recommended.rules,
 
-            // Relax TypeScript rules for existing codebase
-            "@typescript-eslint/no-explicit-any": "warn",
-            "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
-            "@typescript-eslint/no-require-imports": "warn",
-            "@typescript-eslint/no-empty-object-type": "warn",
-            "@typescript-eslint/no-wrapper-object-types": "warn",
+            // TypeScript strictness
+            "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
 
-            // Disable React rules that don't apply
+            // Disable React rules that don't apply with TypeScript
             "react/prop-types": "off",
-            "react/no-deprecated": "off",
             "react/react-in-jsx-scope": "off",
 
-            // Relax other common rules for existing codebase
+            // Disable base rules that are handled by TypeScript
             "no-unused-vars": "off", // handled by @typescript-eslint/no-unused-vars
             "no-undef": "off", // TypeScript handles this
-            "prefer-const": "warn",
-            "no-var": "warn",
-            "no-prototype-builtins": "warn",
-            "no-dupe-else-if": "warn",
-            "react/no-unescaped-entities": "warn",
         },
     }
 );
