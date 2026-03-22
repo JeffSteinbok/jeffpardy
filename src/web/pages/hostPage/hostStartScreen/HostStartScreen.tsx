@@ -225,7 +225,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                     this.state.viewMode == HostStartScreenViewMode.Normal &&
 
                     <div className="hostStartPage">
-                        <div className="title">Jeffpardy!</div>
+                        <img src="/images/JeffpardyTitle.png" className="title" />
 
                         { this.props.gameData == null &&
                             <div>Finding some really great clues...</div>
@@ -275,28 +275,30 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
 
                                     <div className="buttons">
                                         <button onClick={ () => { this.setState({ isCustomCategoryDialogOpen: true }) } }>Edit Game Data JSON</button>
-                                        <button onClick={ () => { this.setState({ isCustomCategoryTsvDialogOpen: true }) } }>Paste from Excel Template</button>
+                                        <button onClick={ () => { this.setState({ isCustomCategoryTsvDialogOpen: true }) } }>Use Excel Template</button>
                                         <button onClick={ this.showAnswerKey }>Printable Answer Key</button>
                                     </div>
-
-                                    <a href="/JeffpardyGameDataTemplate.xlsx" target="#">Download Excel Template</a>
                                 </div>
                                 <p></p>
 
-                                <div className="secondaryWindow">
-                                    <button onClick={ () => {
-                                        window.open(hostSecondaryWindowUri, 'Jeffpardy Host Secondary Window', 'width=600,height=600');
-                                    } }> Host Secondary Window</button><br />
-                                    Show this page on another window to show the answer to just the host.  Do not share this link with the players.
-                                    <p />
-                                    <QRCode.QRCodeCanvas
-                                        value={ hostSecondaryWindowUri }
-                                        size={ 128 }
-                                        includeMargin={ true } />
+                                <div className="lobbyButtons">
+                                    <div className="lobbyButtonGroup">
+                                        <button onClick={ () => {
+                                            window.open(hostSecondaryWindowUri, 'Jeffpardy Host Secondary Window', 'width=600,height=600');
+                                        } }>Launch Host Window</button>
+                                        <span className="lobbyButtonSubtext">Shows answers to the host only</span>
+                                        <span className="lobbyButtonSubtext">Do not share this window</span>
+                                        <div style={ { background: 'white', padding: '8px', display: 'inline-block', borderRadius: '4px', marginTop: '8px' } }>
+                                            <QRCode.QRCodeCanvas
+                                                value={ hostSecondaryWindowUri }
+                                                size={ 128 }
+                                                includeMargin={ false } />
+                                        </div>
+                                    </div>
+                                    <div className="lobbyButtonGroup">
+                                        <button onClick={ this.props.onEnterLobby }>Enter Game Lobby</button>
+                                    </div>
                                 </div>
-                                <p />
-
-                                <button onClick={ this.props.onEnterLobby }>Enter Game Lobby</button>
 
                                 <div className="flexGrowSpacer"></div>
                                 <Attribution />
@@ -342,7 +344,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                     onClose={ () => this.setState({ isCustomCategoryTsvDialogOpen: false }) }
                                     PaperProps={ { className: "gameDialog", style: { height: "85vh" } } }
                                 >
-                                    <DialogTitle>Paste from Excel Template</DialogTitle>
+                                    <DialogTitle>Use Excel Template</DialogTitle>
                                     <DialogContent style={ { display: "flex", flexDirection: "column", overflow: "hidden", flex: 1 } }>
                                         <Link href="/JeffpardyGameDataTemplate.xlsx"
                                             target="#">Download Excel Template</Link>

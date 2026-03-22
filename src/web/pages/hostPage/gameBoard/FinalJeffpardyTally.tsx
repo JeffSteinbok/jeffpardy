@@ -112,6 +112,12 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
                     revealStep: this.state.revealStep + 1
                 })
                 break;
+            case 90: // Z = correct
+                this.correctResponse();
+                break;
+            case 88: // X = incorrect
+                this.incorrectResponse();
+                break;
         }
     }
 
@@ -170,8 +176,8 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
         let hiddenStyle = { visibility: "hidden" };
 
         return (
-            <div>
-                <ul className="FinalJeffpardyTally">
+            <div style={{ width: "100%", display: "flex", flexDirection: "column", flexGrow: 1 }}>
+                <ul className="finalJeffpardyTally">
                     {
                         this.tallyTeams.map((tallyTeam: ITallyTeam, index: number) => {
 
@@ -187,46 +193,46 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
 
                             return (
                                 <li key={ index }>Team: { tallyTeam.name }
-                                    { this.state.currentTeamIndex >= index &&
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th className="player">Player</th>
-                                                    <th className="wager">Wager</th>
-                                                    <th className="response">Response</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {
-                                                    tallyTeam.players.map((player: ITallyPlayer, index: number) => {
-                                                        return (
-                                                            <tr key={ index }>
-                                                                <td>{ player.name }</td>
-                                                                <td><div style={ shouldRender() ? visibleStyle : hiddenStyle }>
-                                                                    { player.wager }
-                                                                </div></td>
-                                                                <td>
-                                                                    <div style={ shouldRender() ? visibleStyle : hiddenStyle }>
-                                                                        { player.answer != null ? player.answer : "[BLANK]" }
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        )
-                                                    })
-                                                }
-                                            </tbody>
-                                        </table>
-                                    }
-                                    { this.state.currentTeamIndex == index &&
-                                        this.state.revealStep >= tallyTeam.players.length * 2 &&
-                                        <div>
-                                            <button onClick={ this.correctResponse }>Right</button>
-                                            <button onClick={ this.incorrectResponse }>Wrong</button>
-                                        </div>
-                                    }
-                                    { this.state.currentTeamIndex > index &&
-                                        <div>{ tallyTeam.isCorrect ? "Right" : "Wrong" }</div>
-                                    }
+                                    <table style={ this.state.currentTeamIndex >= index ? {} : { visibility: "hidden" } }>
+                                        <thead>
+                                            <tr>
+                                                <th className="player">Player</th>
+                                                <th className="wager">Wager</th>
+                                                <th className="response">Response</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                tallyTeam.players.map((player: ITallyPlayer, index: number) => {
+                                                    return (
+                                                        <tr key={ index }>
+                                                            <td>{ player.name }</td>
+                                                            <td><div style={ shouldRender() ? visibleStyle : hiddenStyle }>
+                                                                { player.wager }
+                                                            </div></td>
+                                                            <td>
+                                                                <div style={ shouldRender() ? visibleStyle : hiddenStyle }>
+                                                                    { player.answer != null ? player.answer : "[BLANK]" }
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    )
+                                                })
+                                            }
+                                        </tbody>
+                                    </table>
+                                    <div className="tallyAction">
+                                        { this.state.currentTeamIndex == index &&
+                                            this.state.revealStep >= tallyTeam.players.length * 2 &&
+                                            <>
+                                                <button onClick={ this.correctResponse } style={{ color: "#4caf50" }}>✓</button>
+                                                <button onClick={ this.incorrectResponse } style={{ color: "#f44336" }}>✗</button>
+                                            </>
+                                        }
+                                        { this.state.currentTeamIndex > index &&
+                                            <span>{ tallyTeam.isCorrect ? <span style={{ color: "#4caf50" }}>✓</span> : <span style={{ color: "#f44336" }}>✗</span> }</span>
+                                        }
+                                    </div>
                                 </li>
                             )
                         })
@@ -234,10 +240,10 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
                 </ul>
                 <div className="postTally">
                     { !this.state.isTallyCompleted &&
-                        <i>Hit SPACE to reveal responses</i>
+                        <div className="categoryRevealHint">Hit Space to Reveal Responses</div>
                     }
                     { this.state.isTallyCompleted &&
-                        <div>Thank you for playing.  Refresh your browser to start a new game.</div>
+                        <div className="categoryRevealHint">Thank you for playing.  Refresh your browser to start a new game.</div>
                     }
                 </div>
             </div>

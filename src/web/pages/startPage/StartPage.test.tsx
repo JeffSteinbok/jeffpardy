@@ -17,9 +17,11 @@ import { StartPage } from './StartPage';
 vi.restoreAllMocks();
 
 describe('StartPage', () => {
-    it('renders the title "Jeffpardy!"', () => {
+    it('renders the title logo', () => {
         const { container } = render(<StartPage />);
-        expect(within(container).getByText('Jeffpardy!')).toBeInTheDocument();
+        const logo = container.querySelector('img.startPageLogo') as HTMLImageElement;
+        expect(logo).toBeInTheDocument();
+        expect(logo.src).toContain('JeffpardyTitle.png');
     });
 
     it('has a "Host a Game" link pointing to /host', () => {

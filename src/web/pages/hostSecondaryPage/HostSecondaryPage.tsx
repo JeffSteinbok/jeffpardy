@@ -112,7 +112,7 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
     public render() {
         return (
             <div id="hostSecondaryPage">
-                <div className="title">Jeffpardy!</div>
+                <img src="/images/JeffpardyTitle.png" className="title" />
 
                 { this.state.hostSecondardyPageState == HostSecondardyPageState.None &&
                     <div>

@@ -43,7 +43,10 @@ export interface IPlayerPageState {
     finalJeffpardyAnswer: string;
     finalJeffpardyWagerEnabled: boolean;
     finalJeffpardyAnswerEnabled: boolean;
+    finalJeffpardyScores: { [key: string]: number };
+    lockedInPlayerIds: string[];
     gameCodeInputLength: number;
+    toastMessage: string;
 }
 
 /**
@@ -90,8 +93,18 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             finalJeffpardyAnswer: null,
             finalJeffpardyWagerEnabled: true,
             finalJeffpardyAnswerEnabled: true,
+            finalJeffpardyScores: null,
+            lockedInPlayerIds: [],
             gameCodeInputLength: 0,
+            toastMessage: null,
         };
+    }
+
+    showToast = (message: string) => {
+        this.setState({ toastMessage: message });
+        setTimeout(() => {
+            this.setState({ toastMessage: null });
+        }, 3000);
     }
 
     componentDidMount = () => {
@@ -178,7 +191,8 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
                 this.setState({
                     playerPageState: PlayerPageState.FinalJeffpardy,
-                    finalJeffpardyMaxWager: maxWager
+                    finalJeffpardyMaxWager: maxWager,
+                    finalJeffpardyScores: scores
                 })
 
                 // If max wager is 0, just set it.
@@ -217,12 +231,19 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                     finalJeffpardyAnswerEnabled: false
                 })
             })
+
+            this.state.hubConnection.on('wagerLockedIn', (connectionId: string) => {
+                Logger.debug("on wagerLockedIn", connectionId);
+                this.setState({
+                    lockedInPlayerIds: [...this.state.lockedInPlayerIds, connectionId]
+                })
+            })
         });
     }
 
     registerPlayer = () => {
         if (this.nameTemp == "" || this.teamTemp == "") {
-            alert("Please fill in a team name and player name.");
+            this.showToast("Please fill in a team name and player name.");
             return;
         }
 
@@ -240,7 +261,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
     setGameCode = () => {
         if (this.gameCodeTemp.length != 6) {
-            alert("Please enter a 6 character game code.");
+            this.showToast("Please enter a 6 character game code.");
             return;
         }
 
@@ -292,7 +313,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         let fjBet = this.finalJeffpardyWagerTemp;
         if (this.state.finalJeffpardyWagerEnabled) {
             if (isNaN(fjBet) || fjBet > this.state.finalJeffpardyMaxWager || fjBet < 0) {
-                alert("Please enter a wager between 0 and " + this.state.finalJeffpardyMaxWager + ".");
+                this.showToast("Please enter a wager between 0 and " + this.state.finalJeffpardyMaxWager + ".");
                 return;
             } else {
                 this.state.hubConnection
@@ -310,7 +331,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     submitFinalJeffpardyAnswer = () => {
         if (this.state.finalJeffpardyAnswerEnabled) {
             if (this.finalJeffpardyClueShownTime == null) {
-                alert("You can't submit your answer before the clue is shown.");
+                this.showToast("You can't submit your response before the clue is shown.");
                 return;
             }
 
@@ -368,7 +389,10 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
 
             <div id="playerPage">
-                <div className="title">Jeffpardy!</div>
+                { this.state.toastMessage &&
+                    <div className="toast">{ this.state.toastMessage }</div>
+                }
+                <img src="/images/JeffpardyTitle.png" className="title" />
                 <div className="gameCode">{ this.state.gameCode }</div>
 
                 { this.state.playerPageState == PlayerPageState.FrontPage &&
@@ -486,32 +510,34 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                             <button type="submit">Submit Wager</button>
                                         }
                                         { !this.state.finalJeffpardyWagerEnabled &&
-                                            <div>Wager Locked</div>
+                                            <div>Wager Locked 🔒</div>
                                         }
                                     </form>
-                                    <p />
+                                    { this.state.finalJeffpardyWager >= 0 &&
+                                        <div className="finalTallyDivider"></div>
+                                    }
                                     { this.state.finalJeffpardyWager >= 0 &&
                                         <div>
                                             <form
                                                 onSubmit={ (e) => { e.preventDefault(); this.submitFinalJeffpardyAnswer() } } >
-                                                <div>Answer</div>
+                                                <div>Response</div>
                                                 <input
                                                     autoFocus
                                                     disabled={ !this.state.finalJeffpardyAnswerEnabled }
                                                     onChange={ e => { this.finalJeffpardyAnswerTemp = e.target.value } } />
                                                 <br />
                                                 { this.state.finalJeffpardyAnswerEnabled &&
-                                                    <button type="submit">Submit Answer</button>
+                                                    <button type="submit">Submit Response</button>
                                                 }
                                                 { !this.state.finalJeffpardyAnswerEnabled &&
                                                     this.state.finalJeffpardyAnswer != null &&
 
-                                                    <div>Answer Submitted</div>
+                                                    <div>Response Submitted</div>
                                                 }
                                                 { !this.state.finalJeffpardyAnswerEnabled &&
                                                     this.state.finalJeffpardyAnswer == null &&
 
-                                                    <div>Answer Not Submitted in Time</div>
+                                                    <div>Response Not Submitted in Time</div>
                                                 }
                                             </form>
                                         </div>
@@ -523,7 +549,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                         <div className="buzzerUserListView">
                             <h1>Current Players</h1>
                             <div>
-                                <PlayerList teams={ this.state.teams } />
+                                <PlayerList teams={ this.state.teams } scores={ this.state.finalJeffpardyScores } lockedInPlayerIds={ this.state.lockedInPlayerIds } />
                             </div>
                         </div>
                     </div>

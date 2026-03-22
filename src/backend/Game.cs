@@ -214,6 +214,9 @@ namespace Jeffpardy
             await gameHubContext.Clients.Group(this.hostGroupName).SendAsync("submitWager",
                                                                                 players[connectionId], 
                                                                                 wager);
+
+            // Notify all players that this player locked in their wager
+            await gameHubContext.Clients.Group(this.GameCode).SendAsync("wagerLockedIn", connectionId);
         }
 
         public async Task SubmitAnswerAsync(string connectionId, string answer, int timeInMilliseconds)
