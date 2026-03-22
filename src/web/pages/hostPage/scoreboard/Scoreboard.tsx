@@ -10,6 +10,7 @@ import { Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button } 
 
 enum GameBoardState {
     Normal,
+    CategoryReveal,
     ClueGiven,
     ClueGivenBuzzerActive,
     ClueAnswered,
@@ -50,6 +51,7 @@ export interface IScoreboard {
     onSetDailyDoubleWager: (wager: number) => void;
     onStartIntermission: () => void;
     onStartNormalRound: () => void;
+    onStartCategoryReveal: () => void;
     onStartFinalJeffpardy: () => void;
     clearControl: () => void;
 }
@@ -70,7 +72,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
             users: [],
             logMessages: [],
             buzzedInUser: null,
-            gameBoardState: GameBoardState.Normal,
+            gameBoardState: GameBoardState.CategoryReveal,
             activeClue: null,
             dailyDoubleWager: 0,
             numResponses: 0,
@@ -134,6 +136,12 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         });
     }
 
+    onStartCategoryReveal = () => {
+        this.setState({
+            gameBoardState: GameBoardState.CategoryReveal
+        });
+    }
+
     onStartIntermission = () => {
         this.setState({
             gameBoardState: GameBoardState.Intermission
@@ -169,6 +177,18 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                 buzzedInUser: null
             });
             this.resetBuzzer();
+        }
+    };
+
+    startNewRound = () => {
+        if (this.state.gameBoardState == GameBoardState.Intermission) {
+            this.props.jeffpardyHostController.jeffpardyBoard.startNewRound();
+        }
+    };
+
+    advanceCategoryReveal = () => {
+        if (this.state.gameBoardState == GameBoardState.CategoryReveal) {
+            this.props.jeffpardyHostController.advanceCategoryReveal();
         }
     };
 
@@ -271,6 +291,10 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
             case SpecialKey.SPACE:
                 if (this.state.gameBoardState == GameBoardState.Question)
                     this.showBoard();
+                else if (this.state.gameBoardState == GameBoardState.CategoryReveal)
+                    this.advanceCategoryReveal();
+                else if (this.state.gameBoardState == GameBoardState.Intermission)
+                    this.startNewRound();
                 break;
             case Key.A:
                 this.activateBuzzer();
@@ -310,13 +334,14 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         return (
             <div id="scoreboard">
                 <div id="hostControlsDrawer" className={ this.state.isControlsCollapsed ? "collapsed" : "" }>
-                    <button className="drawerToggle" onClick={ () => this.setState({ isControlsCollapsed: !this.state.isControlsCollapsed }) }>
-                        { this.state.isControlsCollapsed ? "▶" : "◀" }
-                    </button>
                     <div id="hostControls">
                     <div>Board:</div>
                     <div>
-                        <button disabled={ this.state.gameBoardState != GameBoardState.Question } onClick={ this.showBoard }>Cont (sp)</button>
+                        <button disabled={ this.state.gameBoardState != GameBoardState.Question &&
+                            this.state.gameBoardState != GameBoardState.CategoryReveal &&
+                            this.state.gameBoardState != GameBoardState.Intermission }
+                            onClick={ this.state.gameBoardState == GameBoardState.CategoryReveal ? this.advanceCategoryReveal :
+                                      this.state.gameBoardState == GameBoardState.Intermission ? this.startNewRound : this.showBoard }>Cont (sp)</button>
                         <button disabled={ this.state.gameBoardState != GameBoardState.Normal } onClick={ this.endRound }>End Round</button>
                     </div>
                     <div>Buzzer:</div>
@@ -338,6 +363,9 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                         } }>Host Window</button>
                     </div>
                     </div>
+                    <button className="drawerToggle" onClick={ () => this.setState({ isControlsCollapsed: !this.state.isControlsCollapsed }) }>
+                        { this.state.isControlsCollapsed ? "▶" : "◀" }
+                    </button>
                 </div>
 
                 <div className="scoreEntries">

@@ -6,13 +6,18 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-var builder = WebApplication.CreateBuilder(args);
+// wwwroot is at the repository root (two levels up from src/backend/)
+var repoRoot = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", ".."));
+var webRootPath = Path.Combine(repoRoot, "wwwroot");
 
-// In development, wwwroot is at the repository root (two levels up from src/backend/)
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    WebRootPath = Directory.Exists(webRootPath) ? webRootPath : null
+});
+
 if (builder.Environment.IsDevelopment())
 {
-    builder.Environment.WebRootPath = Path.GetFullPath(
-        Path.Combine(builder.Environment.ContentRootPath, "..", "..", "wwwroot"));
     builder.Configuration.AddUserSecrets<Program>();
 }
 

@@ -276,7 +276,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                     <div className="buttons">
                                         <button onClick={ () => { this.setState({ isCustomCategoryDialogOpen: true }) } }>Edit Game Data JSON</button>
                                         <button onClick={ () => { this.setState({ isCustomCategoryTsvDialogOpen: true }) } }>Paste from Excel Template</button>
-                                        <button onClick={ this.showAnswerKey }>Show Clues &amp; Answers</button>
+                                        <button onClick={ this.showAnswerKey }>Printable Answer Key</button>
                                     </div>
 
                                     <a href="/JeffpardyGameDataTemplate.xlsx" target="#">Download Excel Template</a>
@@ -297,9 +297,6 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                 <p />
 
                                 <button onClick={ this.props.onEnterLobby }>Enter Game Lobby</button>
-                                <br />
-                                Don't forget to save or print the answer key before you start, or use the host secondary screen.<br />
-                                If you don't, you won't be able to during the game.
 
                                 <div className="flexGrowSpacer"></div>
                                 <Attribution />

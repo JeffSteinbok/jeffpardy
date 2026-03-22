@@ -73,7 +73,7 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
                         });
 
                         this.state.hubConnection
-                            .invoke('connectHost', this.state.gameCode, this.state.hostCode)
+                            .invoke('connectHost', gameCode, hostCode)
                             .then(() => {
                                 // Do something to say Connected!
                             })

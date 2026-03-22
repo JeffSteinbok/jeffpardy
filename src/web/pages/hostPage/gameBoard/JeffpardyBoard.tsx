@@ -13,6 +13,7 @@ import { HostPageViewMode } from "../HostPage";
 
 export enum JeopardyBoardView {
     Board,
+    CategoryReveal,
     DailyDouble,
     Clue,
     Question,
@@ -39,6 +40,10 @@ export interface IJeffpardyBoardState {
     jeopardyBoardView: JeopardyBoardView;
     timerPercentageRemaining: number;
     finalJeffpardyTimerActive: boolean;
+    revealCategoryIndex: number;
+    revealShowingName: boolean;
+    dailyDoubleRevealed: boolean;
+    wagerError: string;
 }
 
 export interface IJeffpardyBoard {
@@ -48,6 +53,7 @@ export interface IJeffpardyBoard {
     startTimer: () => void;
     stopTimer: () => void;
     endRound: () => void;
+    advanceCategoryReveal: () => void;
 }
 
 export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffpardyBoardState> implements IJeffpardyBoard {
@@ -58,6 +64,14 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
     private timerDurationInSeconds: number;
     private timerRemainingDurationInSeconds: number;
     private dailyDoubleBetTemp: string;
+    private revealNameTimeout: any;
+
+    private getRoundLogoSrc = (): string => {
+        let roundName = this.props.jeffpardyHostController.gameData.rounds[this.props.round].name;
+        if (roundName.toLowerCase().includes("super")) return "/images/SuperJeffpardy.png";
+        if (roundName.toLowerCase().includes("final")) return "/images/FinalJeffpardy.png";
+        return "/images/Jeffpardy.png";
+    }
 
     constructor(props: any) {
         super(props);
@@ -70,7 +84,10 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
         }
 
         // HACK HACK
-        let boardView: JeopardyBoardView = JeopardyBoardView.Board;
+        let boardView: JeopardyBoardView = JeopardyBoardView.CategoryReveal;
+        if (Debug.IsFlagSet(DebugFlags.SkipCategoryReveal)) {
+            boardView = JeopardyBoardView.Board;
+        }
         if (Debug.IsFlagSet(DebugFlags.FinalJeffpardy)) {
             boardView = JeopardyBoardView.Intermission;
         }
@@ -80,10 +97,53 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             activeClue: null,
             activeCategory: null,
             timerPercentageRemaining: 1,
-            finalJeffpardyTimerActive: false
+            finalJeffpardyTimerActive: false,
+            revealCategoryIndex: -1,  // -1 = showing placeholder board, 0+ = filmstrip reveal
+            revealShowingName: false,
+            dailyDoubleRevealed: false,
+            wagerError: null
         }
 
         this.props.jeffpardyHostController.setJeffpardyBoard(this);
+    }
+
+    componentDidMount() {
+    }
+
+    componentWillUnmount() {
+    }
+
+    public advanceCategoryReveal = () => {
+        if (this.revealNameTimeout) {
+            clearTimeout(this.revealNameTimeout);
+            this.revealNameTimeout = null;
+        }
+
+        if (this.state.revealCategoryIndex === -1) {
+            // Move from placeholder board to first category filmstrip
+            this.setState({ revealCategoryIndex: 0, revealShowingName: false });
+            this.scheduleNameReveal();
+        } else {
+            const nextIndex = this.state.revealCategoryIndex + 1;
+            if (this.props.categories && nextIndex >= this.props.categories.length) {
+                // Done revealing — show the real board, notify scoreboard
+                this.setState({
+                    jeopardyBoardView: JeopardyBoardView.Board,
+                    revealCategoryIndex: -1,
+                    revealShowingName: false
+                });
+                this.props.jeffpardyHostController.onCategoryRevealComplete();
+            } else {
+                this.setState({ revealCategoryIndex: nextIndex, revealShowingName: false });
+                this.scheduleNameReveal();
+            }
+        }
+    }
+
+    private scheduleNameReveal = () => {
+        this.revealNameTimeout = setTimeout(() => {
+            this.setState({ revealShowingName: true });
+        }, 600);
     }
 
     public showClue = (category: ICategory, clue: IClue) => {
@@ -91,8 +151,13 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
             this.setState({
                 activeClue: clue,
                 activeCategory: category,
-                jeopardyBoardView: JeopardyBoardView.DailyDouble
+                jeopardyBoardView: JeopardyBoardView.DailyDouble,
+                dailyDoubleRevealed: false
             });
+            // After the sound/animation plays, reveal the wager form
+            setTimeout(() => {
+                this.setState({ dailyDoubleRevealed: true });
+            }, 3000);
         } else {
             this.setState({
                 activeClue: clue,
@@ -135,15 +200,20 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
         })
     };
 
+    private finalRevealSound: HTMLAudioElement = new Audio("/finalJeffpardyReveal.mp3");
+
     public startNewRound = () => {
         let numRounds: number = this.props.jeffpardyHostController.gameData.rounds.length;
 
         if (this.props.round < (numRounds - 1)) {
             this.props.jeffpardyHostController.startNewRound();
             this.setState({
-                jeopardyBoardView: JeopardyBoardView.Board
+                jeopardyBoardView: JeopardyBoardView.CategoryReveal,
+                revealCategoryIndex: -1,
+                revealShowingName: false
             })
         } else {
+            this.finalRevealSound.play();
             this.props.jeffpardyHostController.startFinalJeffpardy();
             this.setState({
                 jeopardyBoardView: JeopardyBoardView.FinalCategory
@@ -179,9 +249,11 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
     public validateAndSubmitDailyDoubleBet = (maxBet: number) => {
         let ddBet = Number.parseInt(this.dailyDoubleBetTemp, 10);
         if (isNaN(ddBet) || ddBet > maxBet || ddBet < 0) {
-            alert("Please enter a wager between 0 and " + maxBet + ".");
+            this.setState({ wagerError: "Please enter a wager between 0 and " + maxBet + "." });
+            setTimeout(() => { this.setState({ wagerError: null }); }, 3000);
             return;
         } else {
+            this.setState({ wagerError: null });
             this.props.jeffpardyHostController.setDailyDoubleWager(ddBet);
             this.showClue(this.state.activeCategory, this.state.activeClue);
         }
@@ -288,6 +360,49 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                                 { boardGridElements }
                             </div>
                         }
+                        { this.state.jeopardyBoardView == JeopardyBoardView.CategoryReveal && this.props.categories &&
+                            this.state.revealCategoryIndex === -1 &&
+                            <div className="jeffpardyBoardClues categoryRevealBoard">
+                                { this.props.categories.map((cat, i) => (
+                                    <div key={ i } className="jeffpardyCategory categoryPlaceholder" style={ { gridRow: 1, gridColumn: i + 1 } }>
+                                        <img src={ this.getRoundLogoSrc() } className="categoryPlaceholderLogo" />
+                                    </div>
+                                )) }
+                                { this.props.categories.map((cat, i) =>
+                                    cat.clues.map((clue, j) => (
+                                        <div key={ `${i}-${j}` } className="jeffpardyClue categoryPlaceholderClue" style={ { gridRow: j + 2, gridColumn: i + 1 } }>
+                                            <span className="placeholderValue">{ clue.value }</span>
+                                        </div>
+                                    ))
+                                ) }
+                                <div className="categoryRevealHint">press SPACE to continue</div>
+                            </div>
+                        }
+                        { this.state.jeopardyBoardView == JeopardyBoardView.CategoryReveal && this.props.categories &&
+                            this.state.revealCategoryIndex >= 0 &&
+                            <div className="categoryRevealFilmstrip">
+                                <div className="categoryRevealTrack" style={ { transform: `translateX(-${this.state.revealCategoryIndex * 100}%)` } }>
+                                    { this.props.categories.map((cat, i) => {
+                                        let airDate = new Date(cat.airDate);
+                                        let dateStr = (airDate.getMonth() + 1) + "/" + airDate.getDate() + "/" + airDate.getFullYear();
+                                        let roundName = this.props.jeffpardyHostController.gameData.rounds[this.props.round].name.toUpperCase() + "!";
+                                        let isActive = i === this.state.revealCategoryIndex;
+                                        let showName = isActive && this.state.revealShowingName;
+                                        return (
+                                            <div key={ i } className={ "categoryRevealSlide" + (showName ? " revealed" : "") }>
+                                                <div className="categoryRevealDarkOverlay"></div>
+                                                <div className="categoryRevealTitleContainer">
+                                                    <div className={ "categoryRevealTitle categoryRevealPlaceholderText" + (showName ? " hidden" : "") }><img src={ this.getRoundLogoSrc() } className="categoryRevealLogo" /></div>
+                                                    <div className={ "categoryRevealTitle categoryRevealNameText" + (showName ? " visible" : "") }>{ cat.title }</div>
+                                                </div>
+                                                <div className={ "categoryRevealDate" + (showName ? " visible" : "") }>{ dateStr }</div>
+                                            </div>
+                                        );
+                                    }) }
+                                </div>
+                                <div className="categoryRevealHint">press SPACE to continue</div>
+                            </div>
+                        }
                         { (this.state.jeopardyBoardView == JeopardyBoardView.Clue || this.state.jeopardyBoardView == JeopardyBoardView.Question) &&
                             <div className="jeffpardyActiveClue">
                                 <div className="header">{ this.state.activeCategory.title } for { this.state.activeClue.value }</div>
@@ -299,39 +414,52 @@ export class JeffpardyBoard extends React.Component<IJeffpardyBoardProps, IJeffp
                             </div>
                         }
                         { (this.state.jeopardyBoardView == JeopardyBoardView.DailyDouble) &&
-                            <div className="jeffpardyActiveClue">
+                            <div className="jeffpardyActiveClue dailyDoubleView">
                                 <audio autoPlay>
                                     <source src="/dailyDouble.mp3" type="audio/mp3" />
                                 </audio>
-                                <div className="header">{ this.state.activeCategory.title } for { this.state.activeClue.value }</div>
-                                <div className="dailyDouble">
-                                    <div>The answer is a....</div>
-                                    <div className="title">Daily Double!</div>
-                                    <div className="wager">
-                                        Wager amount:<br />
-                                        <input
-                                            type="number"
-                                            min={ 0 }
-                                            max={ dailyDoubleMaxBet }
-                                            onChange={ e => { this.dailyDoubleBetTemp = e.target.value } } />
+                                <img src="/images/DailyDouble.jpg" className={ "dailyDoubleImage" + (this.state.dailyDoubleRevealed ? " faded" : "") } />
+                                <div className={ "dailyDoubleContent" + (this.state.dailyDoubleRevealed ? " visible" : "") }>
+                                    <div className="header">{ this.state.activeCategory.title } for { this.state.activeClue.value }</div>
+                                    <div className="dailyDouble">
+                                        <div>The answer is a....</div>
+                                        <div className="title">Daily Double!</div>
+                                        <div className="wager">
+                                            Wager amount:<br />
+                                            <div className="wagerInputContainer">
+                                                <input
+                                                    type="number"
+                                                    min={ 0 }
+                                                    max={ dailyDoubleMaxBet }
+                                                    onChange={ e => { this.dailyDoubleBetTemp = e.target.value } } />
+                                                { this.state.wagerError &&
+                                                    <div className="wagerError">{ this.state.wagerError }</div>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className="wagerHint">Enter a value up to { dailyDoubleMaxBet }.</div>
+                                        <p />
+                                        <button onClick={ () => { this.validateAndSubmitDailyDoubleBet(dailyDoubleMaxBet) } }>Submit</button>
                                     </div>
-                                    <div><i>Enter a value up to { dailyDoubleMaxBet }.</i></div>
-                                    <p />
-                                    <button onClick={ () => { this.validateAndSubmitDailyDoubleBet(dailyDoubleMaxBet) } }>Submit</button>
                                 </div>
                             </div>
                         }
                         { this.state.jeopardyBoardView == JeopardyBoardView.Intermission &&
                             <div className="jeffpardyIntermission">
-                                Get ready for... <br />
                                 { this.props.round < (this.props.jeffpardyHostController.gameData.rounds.length - 1) &&
-                                    <div className="title">Super Jeffpardy!</div>
+                                    <>
+                                        Get ready for... <br />
+                                        <div className="title">Super Jeffpardy!</div>
+                                        <p />
+                                        <button onClick={ this.startNewRound }>Start</button>
+                                    </>
                                 }
                                 { this.props.round >= (this.props.jeffpardyHostController.gameData.rounds.length - 1) &&
-                                    <div className="title">Final Jeffpardy!</div>
+                                    <>
+                                        <img src="/images/FinalJeffpardy.png" className="intermissionLogo" />
+                                        <div className="categoryRevealHint">press SPACE to continue</div>
+                                    </>
                                 }
-                                <p />
-                                <button onClick={ this.startNewRound }>Start</button>
                             </div>
                         }
                         { (this.state.jeopardyBoardView == JeopardyBoardView.FinalCategory ||

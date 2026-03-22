@@ -14,10 +14,12 @@ export enum DebugFlags {
     ShortTimers = 1 << 6,
     FinalJeffpardy = 1 << 7,
     FastFinalJeffpardy = 1 << 8,
+    SkipCategoryReveal = 1 << 9,
 }
 
 // Some helpful values:
 // Skip Intro Only: 4
+// Skip Intro & Skip Category Reveal: 204
 // Skip Intro & Local Categories:  6
 // Skip Intro & Local Categories & Quick Timers:  46
 // Skip Intro & Local Categories & DD:  1E
@@ -46,7 +48,7 @@ export class Debug {
 
     public static generateCategory(): ICategory {
         return {
-            title: LoremIpsum.generate(Math.floor(Math.random() * 2) + 1),
+            title: LoremIpsum.generate(Math.floor(Math.random() * 2) + 1).toUpperCase(),
             airDate: "1994-01-21T00:11:00",
             comment: LoremIpsum.generate(Math.floor(Math.random() * 10) + 6),
             isAsked: false,
@@ -62,7 +64,7 @@ export class Debug {
 
     public static generateFinalCategory(): ICategory {
         return {
-            title: LoremIpsum.generate(Math.floor(Math.random() * 2) + 1),
+            title: LoremIpsum.generate(Math.floor(Math.random() * 2) + 1).toUpperCase(),
             airDate: "1994-01-21T00:11:00",
             comment: LoremIpsum.generate(Math.floor(Math.random() * 10) + 6),
             isAsked: false,

@@ -360,9 +360,17 @@ export class JeffpardyHostController {
         this.jeffpardyBoard.showBoard();
     }
 
+    public advanceCategoryReveal = () => {
+        this.jeffpardyBoard.advanceCategoryReveal();
+    }
+
+    public onCategoryRevealComplete = () => {
+        this.scoreboard.onStartNormalRound();
+    }
+
     public startNewRound = () => {
         this.hostPage.startNewRound();
-        this.scoreboard.onStartNormalRound();
+        this.scoreboard.onStartCategoryReveal();
     }
 
     public startIntermission = () => {
