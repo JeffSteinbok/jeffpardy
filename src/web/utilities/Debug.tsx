@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import { Logger } from "./Logger";
 import { IGameData } from "../pages/hostPage/Types";
 import { LoremIpsum } from "./LoremIpsum";
@@ -24,6 +27,7 @@ export enum DebugFlags {
 // Skip Intro & Local Categories & Quick Timers:  46
 // Skip Intro & Local Categories & DD:  1E
 
+/** Utility class for managing debug flags and generating mock game data for local development and testing. */
 export class Debug {
     static flags = DebugFlags.None;
 

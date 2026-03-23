@@ -1,19 +1,18 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { ICategory } from "../../../Types";
 import { IGameData, IGameRound, RoundDescriptor } from "../Types";
 import { Logger } from "../../../utilities/Logger";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import { TextField, Link } from "@mui/material";
 import { AnswerKey } from "./AnswerKey";
 import { CategoryDetails } from "./CategoryDetails";
 import { Attribution } from "../../../components/attribution/Attribution";
 import { TeamDictionary } from "../../../Types";
 import { JeffpardyHostController } from "../JeffpardyHostController";
-import { JsonEditor } from "../../../components/JsonEditor";
+import { CustomCategoryDialog } from "./CustomCategoryDialog";
+import { ExcelTemplateDialog } from "./ExcelTemplateDialog";
+import { parseGameDataFromTsv } from "./TsvCategoryParser";
 
 import * as QRCode from "qrcode.react";
 
@@ -42,14 +41,9 @@ export interface IHostStartScreenState {
 }
 
 /**
- * Root page for the host view, begins the rendering.
+ * Pre-game setup screen where the host can review and modify categories, load custom game data, and enter the lobby.
  */
 export class HostStartScreen extends React.Component<IHostStartScreenProps, IHostStartScreenState> {
-    customCategoryJSON: string;
-    customCategoryTsv: string;
-    isCustomCategoryDialogOpen: boolean = false;
-    isCategoryDetailsDialogOpen: boolean = false;
-
     constructor(props: IHostStartScreenProps) {
         super(props);
 
@@ -63,95 +57,17 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
         };
     }
 
-    public loadCustomCategories = () => {
+    public loadCustomCategories = (json: string) => {
         this.setState({ isCustomCategoryDialogOpen: false });
-        this.props.onModifyGameData(JSON.parse(this.customCategoryJSON));
+        this.props.onModifyGameData(JSON.parse(json));
         alert("Please check the answer key to see if this loaded correctly.");
     };
 
-    public loadCustomCategoriesFromExcelPaste = () => {
+    public loadCustomCategoriesFromExcelPaste = (tsv: string) => {
         this.setState({ isCustomCategoryTsvDialogOpen: false });
-
-        // TODO: fix name
-        const tsv: string = this.customCategoryTsv;
-
-        const lines: string[] = tsv.split("\n");
-
-        const gameData: IGameData = {
-            rounds: [],
-            finalJeffpardyCategory: null,
-        };
-
-        // Totally hardcoding this.  Any failure will fail all
-        let finalJeffpardyLineStart: number = 13;
-
-        gameData.rounds.push({
-            id: 0,
-            name: "Jeffpardy",
-            categories: this.parseRoundFromTsv(lines, 0),
-        });
-
-        if (lines[13].startsWith("Round 2")) {
-            gameData.rounds.push({
-                id: 1,
-                name: "Super Jeffpardy",
-                categories: this.parseRoundFromTsv(lines, 13),
-            });
-            finalJeffpardyLineStart = 26;
-        }
-
-        gameData.finalJeffpardyCategory = {
-            title: lines[finalJeffpardyLineStart + 1],
-            comment: "",
-            airDate: "1900-01-21T00:11:00",
-            hasDailyDouble: false,
-            isAsked: false,
-            clues: [
-                {
-                    clue: lines[finalJeffpardyLineStart + 2],
-                    question: lines[finalJeffpardyLineStart + 3],
-                    isDailyDouble: false,
-                    isAsked: false,
-                    value: 0,
-                },
-            ],
-        };
-
+        const gameData = parseGameDataFromTsv(tsv);
         this.props.onModifyGameData(gameData);
         alert("Please check the answer key to see if this loaded correctly.");
-    };
-
-    parseRoundFromTsv = (lines: string[], startLineIndex: number): ICategory[] => {
-        const categories: ICategory[] = [];
-
-        lines[startLineIndex + 1].split("\t").forEach((value, _index) => {
-            const category: ICategory = {
-                title: value,
-                clues: [],
-                comment: "",
-                airDate: "1900-01-21T00:11:00",
-                hasDailyDouble: false,
-                isAsked: false,
-            };
-            categories.push(category);
-        });
-
-        for (let i: number = 0; i < 5; i++) {
-            const clues: string[] = lines[startLineIndex + 2 + i * 2].split("\t");
-            const questions: string[] = lines[startLineIndex + 2 + i * 2 + 1].split("\t");
-
-            for (let j: number = 0; j < 6; j++) {
-                categories[j].clues.push({
-                    clue: clues[j],
-                    question: questions[j],
-                    isAsked: false,
-                    isDailyDouble: false,
-                    value: 0,
-                });
-            }
-        }
-
-        return categories;
     };
 
     public updateSingleCategory = (category: ICategory) => {
@@ -365,95 +281,19 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                 <div className="flexGrowSpacer"></div>
                                 <Attribution />
                                 {this.state.isCustomCategoryDialogOpen && (
-                                    <Dialog
-                                        open={this.state.isCustomCategoryDialogOpen}
-                                        keepMounted
-                                        fullWidth
-                                        maxWidth="lg"
+                                    <CustomCategoryDialog
+                                        gameData={this.props.gameData}
+                                        onLoad={(json) => this.loadCustomCategories(json)}
                                         onClose={() => this.setState({ isCustomCategoryDialogOpen: false })}
-                                        PaperProps={{ className: "gameDialog", style: { height: "85vh" } }}
-                                    >
-                                        <DialogTitle>Modify Game Data JSON</DialogTitle>
-                                        <DialogContent
-                                            style={{
-                                                display: "flex",
-                                                flexDirection: "column",
-                                                overflow: "hidden",
-                                                paddingBottom: 0,
-                                                flex: 1,
-                                            }}
-                                        >
-                                            <JsonEditor
-                                                defaultValue={JSON.stringify(
-                                                    this.props.gameData,
-                                                    (key, value) => {
-                                                        if (key == "isAsked") return undefined;
-                                                        else if (key == "isDailyDouble") return undefined;
-                                                        else if (key == "hasDailyDouble") return undefined;
-                                                        else if (key == "value") return undefined;
-                                                        else return value;
-                                                    },
-                                                    4
-                                                )}
-                                                onChange={(value) => (this.customCategoryJSON = value)}
-                                            />
-                                        </DialogContent>
-                                        <DialogActions>
-                                            <Button
-                                                onClick={() => {
-                                                    this.setState({ isCustomCategoryDialogOpen: false });
-                                                }}
-                                            >
-                                                Cancel
-                                            </Button>
-                                            <Button onClick={this.loadCustomCategories} color="primary">
-                                                Load JSON
-                                            </Button>
-                                        </DialogActions>
-                                    </Dialog>
+                                    />
                                 )}
 
-                                <Dialog
-                                    open={this.state.isCustomCategoryTsvDialogOpen}
-                                    keepMounted
-                                    fullWidth
-                                    maxWidth="lg"
-                                    onClose={() => this.setState({ isCustomCategoryTsvDialogOpen: false })}
-                                    PaperProps={{ className: "gameDialog", style: { height: "85vh" } }}
-                                >
-                                    <DialogTitle>Use Excel Template</DialogTitle>
-                                    <DialogContent
-                                        style={{
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            overflow: "hidden",
-                                            flex: 1,
-                                        }}
-                                    >
-                                        <Link href="/JeffpardyGameDataTemplate.xlsx" target="#">
-                                            Download Excel Template
-                                        </Link>
-                                        <TextField
-                                            label="Paste Excel content here."
-                                            fullWidth
-                                            multiline
-                                            sx={{ flex: 1, mt: 1 }}
-                                            onChange={(event) => (this.customCategoryTsv = event.target.value)}
-                                        />
-                                    </DialogContent>
-                                    <DialogActions>
-                                        <Button
-                                            onClick={() => {
-                                                this.setState({ isCustomCategoryTsvDialogOpen: false });
-                                            }}
-                                        >
-                                            Cancel
-                                        </Button>
-                                        <Button onClick={this.loadCustomCategoriesFromExcelPaste} color="primary">
-                                            Load
-                                        </Button>
-                                    </DialogActions>
-                                </Dialog>
+                                {this.state.isCustomCategoryTsvDialogOpen && (
+                                    <ExcelTemplateDialog
+                                        onLoad={(tsv) => this.loadCustomCategoriesFromExcelPaste(tsv)}
+                                        onClose={() => this.setState({ isCustomCategoryTsvDialogOpen: false })}
+                                    />
+                                )}
 
                                 {this.state.isCategoryDetailsDialogOpen && (
                                     <CategoryDetails

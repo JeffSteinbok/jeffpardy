@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { TeamDictionary } from "../../../Types";
 import { Logger } from "../../../utilities/Logger";
@@ -10,6 +13,7 @@ export interface IFinalJeffpardySubmissionListProps {
     receivedText: string;
 }
 
+/** Displays a list of teams and players showing whether each player has submitted their Final Jeffpardy wager or answer. */
 export class FinalJeffpardySubmissionList extends React.Component<IFinalJeffpardySubmissionListProps> {
     constructor(props: IFinalJeffpardySubmissionListProps) {
         super(props);
@@ -30,7 +34,7 @@ export class FinalJeffpardySubmissionList extends React.Component<IFinalJeffpard
                         );
                         return (
                             <li key={index} className={allSubmitted ? "submitted" : ""}>
-                                <div className="fjTeamName">{teamName}</div>
+                                <div className="fjTeamName jeffpardy-label">{teamName}</div>
                                 {this.props.teams[teamName].players.map((player, pIndex) => {
                                     const hasValue = player.connectionId in this.props.submissions;
                                     return (

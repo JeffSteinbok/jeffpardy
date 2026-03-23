@@ -1,6 +1,9 @@
-﻿import * as React from "react";
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+import * as React from "react";
 import { createRoot } from "react-dom/client";
-import "../../Jeffpardy.scss";
+import "../../Jeffpardy.css";
 import { Attribution } from "../../components/attribution/Attribution";
 /**
  * Root page for the application, begins the rendering.
@@ -16,10 +19,10 @@ export class StartPage extends React.Component {
                 <div className="startPageContent">
                     <img src="/images/JeffpardyTitle.png" className="startPageLogo" />
                     <div className="startPageButtons">
-                        <a href="/host" className="startPageButton">
+                        <a href="/host" className="startPageButton jeffpardy-label">
                             <span className="buttonLabel">Host a Game</span>
                         </a>
-                        <a href="/player" className="startPageButton">
+                        <a href="/player" className="startPageButton jeffpardy-label">
                             <span className="buttonLabel">Join a Game</span>
                         </a>
                     </div>

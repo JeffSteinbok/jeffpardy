@@ -9,13 +9,6 @@ export default defineConfig({
         globals: true,
         setupFiles: ['./src/web/test-setup.ts'],
     },
-    css: {
-        preprocessorOptions: {
-            scss: {
-                silenceDeprecations: ['global-builtin', 'color-functions', 'import'],
-            },
-        },
-    },
     build: {
         outDir: 'wwwroot/js/dist',
         emptyOutDir: true,

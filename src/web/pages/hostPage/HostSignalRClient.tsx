@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as signalR from "@microsoft/signalr";
 import { Logger } from "../../utilities/Logger";
 import { JeffpardyHostController } from "./JeffpardyHostController";
@@ -14,6 +17,7 @@ export interface IHostSignalRClient {
     endFinalJeffpardy: () => void;
 }
 
+/** SignalR client that manages the real-time connection between the host and the game hub. */
 export class HostSignalRClient implements IHostSignalRClient {
     hubConnection: signalR.HubConnection;
     jeffpardyHostController: JeffpardyHostController;

@@ -10,6 +10,12 @@ namespace Jeffpardy
     [Route("api/CategoryMetadata")]
     public class CategoryMetadataController : Controller
     {
+        private readonly ISeasonManifestCache _cache;
+
+        public CategoryMetadataController(ISeasonManifestCache cache)
+        {
+            _cache = cache;
+        }
 
         [Route("Search/{roundDescriptor}/{searchTerm}")]
         public CategoryMetadata[] Search(RoundDescriptor roundDescriptor, string searchTerm)
@@ -18,13 +24,13 @@ namespace Jeffpardy
             switch (roundDescriptor)
             {
                 case RoundDescriptor.Jeffpardy:
-                    categoryList = SeasonManifestCache.Instance.JeopardyCategoryList;
+                    categoryList = _cache.JeopardyCategoryList;
                     break;
                 case RoundDescriptor.SuperJeffpardy:
-                    categoryList = SeasonManifestCache.Instance.DoubleJeopardyCategoryList;
+                    categoryList = _cache.DoubleJeopardyCategoryList;
                     break;
                 case RoundDescriptor.FinalJeffpardy:
-                    categoryList = SeasonManifestCache.Instance.FinalJeopardyCategoryList;
+                    categoryList = _cache.FinalJeopardyCategoryList;
                     break;
             }
 

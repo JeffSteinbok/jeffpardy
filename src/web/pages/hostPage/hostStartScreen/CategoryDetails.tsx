@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { ICategory, ICategoryMetadata } from "../../../Types";
 import { RoundDescriptor } from "../Types";
@@ -31,6 +34,7 @@ export interface ICategoryDetailsState {
     searchInProgress: boolean;
 }
 
+/** Dialog for viewing and replacing a single game category, with random selection and archive search capabilities. */
 export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICategoryDetailsState> {
     categorySearchTerm: string;
 

@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 import { SpecialKey } from "../../../utilities/Key";
 import { Logger } from "../../../utilities/Logger";
@@ -9,6 +12,7 @@ export interface IAnswerKeyProps {
     onHide: () => void;
 }
 
+/** Printable answer key overlay displaying all clues and questions for every round and the Final Jeffpardy category. */
 export class AnswerKey extends React.Component<IAnswerKeyProps> {
     constructor(props: IAnswerKeyProps) {
         super(props);

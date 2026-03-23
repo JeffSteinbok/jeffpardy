@@ -23,7 +23,7 @@
     <Content Include="..\..\wwwroot\**" LinkBase="wwwroot" CopyToOutputDirectory="Never" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
   <Target Name="Frontend Build" AfterTargets="Build" Condition="'$(SkipFrontendBuild)' != 'true'">
-    <Exec Condition="$(Configuration) == 'Debug'" Command="npm ci --legacy-peer-deps &amp;&amp; npm run build" WorkingDirectory="$(MSBuildThisFileDirectory)..\.." />
-    <Exec Condition="$(Configuration) == 'Release'" Command="npm ci --legacy-peer-deps &amp;&amp; npm run buildProd" WorkingDirectory="$(MSBuildThisFileDirectory)..\.." />
+    <Exec Condition="$(Configuration) == 'Debug'" Command="npm ci &amp;&amp; npm run build" WorkingDirectory="$(MSBuildThisFileDirectory)..\.." />
+    <Exec Condition="$(Configuration) == 'Release'" Command="npm ci &amp;&amp; npm run buildProd" WorkingDirectory="$(MSBuildThisFileDirectory)..\.." />
   </Target>
 </Project>

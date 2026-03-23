@@ -1,3 +1,6 @@
+// Copyright (c) Jeff Steinbok. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import * as React from "react";
 
 export enum ScoreboardEntryBuzzerState {
@@ -17,9 +20,7 @@ export interface IScoreboardEntryProps {
     isWinningTeam: boolean;
 }
 
-/**
- * Top bar containing toolbar buttons and drop downs
- */
+/** Displays a single team's scoreboard entry, showing buzzer state indicator, team name, and current score. */
 export class ScoreboardEntry extends React.Component<IScoreboardEntryProps> {
     constructor(props: IScoreboardEntryProps) {
         super(props);
@@ -35,7 +36,7 @@ export class ScoreboardEntry extends React.Component<IScoreboardEntryProps> {
             buzzerIndicatorClass += " wrongAnswer";
         }
 
-        let scoreboardEntryClass = "scoreboardEntry";
+        let scoreboardEntryClass = "scoreboardEntry jeffpardy-label";
         if (this.props.buzzerState == ScoreboardEntryBuzzerState.Off && this.props.isControllingTeam) {
             scoreboardEntryClass += " controllingTeam";
         }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Jeffpardy
 {
-    public class AzureBlobCategoryLoader
+    public class AzureBlobCategoryLoader : ICategoryLoader
     {
         private static readonly Lazy<AzureBlobCategoryLoader> instance = new Lazy<AzureBlobCategoryLoader>(() => new AzureBlobCategoryLoader());
 
