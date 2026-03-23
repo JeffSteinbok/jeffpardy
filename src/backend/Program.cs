@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Jeffpardy;
 using Jeffpardy.Hubs;
@@ -5,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 // wwwroot is at the repository root (two levels up from src/backend/)
 var repoRoot = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", ".."));
@@ -54,6 +56,13 @@ app.MapRazorPages();
 app.MapControllers();
 app.MapHub<GameHub>("/hub/game");
 
-AzureBlobCategoryLoader.Instance.PopulateSeasonManifest(SeasonManifestCache.Instance);
+try
+{
+    AzureBlobCategoryLoader.Instance.PopulateSeasonManifest(SeasonManifestCache.Instance);
+}
+catch (Exception ex)
+{
+    app.Logger.LogError(ex, "Failed to populate season manifest from Azure Blob Storage. The server will start with no categories loaded.");
+}
 
 app.Run();

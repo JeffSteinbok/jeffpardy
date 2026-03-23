@@ -37,6 +37,44 @@ jobs:
         run: |
           dotnet build --configuration Release
           dotnet publish src/backend/Jeffpardy.csproj -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp' 
+
+      # Smoke test: start the published app and verify health endpoint responds
+      - name: Smoke test - verify server starts and health endpoint responds
+        run: |
+          cd '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
+          ASPNETCORE_URLS="http://localhost:5000" dotnet Jeffpardy.dll &
+          SERVER_PID=$!
+
+          # Wait for the server to start (up to 30 seconds)
+          for i in $(seq 1 30); do
+            if curl -s -o /dev/null http://localhost:5000/api/health 2>/dev/null; then
+              echo "Server started successfully after ${i}s"
+              break
+            fi
+            if [ "$i" -eq 30 ]; then
+              echo "Server failed to start within 30 seconds"
+              kill $SERVER_PID 2>/dev/null || true
+              exit 1
+            fi
+            sleep 1
+          done
+
+          # Hit the health endpoint and display the response
+          echo "Health check response:"
+          curl -s http://localhost:5000/api/health | jq .
+
+          # Verify the health endpoint returns valid JSON with a status field
+          STATUS=$(curl -s http://localhost:5000/api/health | jq -r '.status')
+          echo "Server status: $STATUS"
+
+          if [ -z "$STATUS" ] || [ "$STATUS" = "null" ]; then
+            echo "Health check did not return a valid status"
+            kill $SERVER_PID 2>/dev/null || true
+            exit 1
+          fi
+
+          echo "Smoke test passed"
+          kill $SERVER_PID 2>/dev/null || true
           
       # Deploy to Azure Web apps
       - name: 'Run Azure webapp deploy action using publish profile credentials'
