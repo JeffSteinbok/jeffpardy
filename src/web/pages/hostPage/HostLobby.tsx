@@ -59,7 +59,7 @@ export class HostLobby extends React.Component<IHostLobbyProps> {
                 </a>
                 <p />
                 <div style={{ background: "white", padding: "8px", display: "inline-block", borderRadius: "4px" }}>
-                    <QRCode.QRCodeCanvas value={playerUri} size={180} includeMargin={false} />
+                    <QRCode.QRCodeCanvas value={playerUri} size={138} includeMargin={false} />
                 </div>
                 <div className="playerListBox">
                     <div className="boxTitle">Teams &amp; Players</div>

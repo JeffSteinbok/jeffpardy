@@ -14,6 +14,7 @@ import { HostLobby } from "./HostLobby";
 import * as QRCode from "qrcode.react";
 import { IGameData, FinalJeffpardyAnswerDictionary, FinalJeffpardyWagerDictionary } from "./Types";
 import { ICategory, ITeam, TeamDictionary } from "../../Types";
+import { ScreenSizeWarning } from "../../components/screenSizeWarning/ScreenSizeWarning";
 
 export enum HostPageViewMode {
     Start,
@@ -254,6 +255,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
 
         return (
             <div>
+                <ScreenSizeWarning minWidth={1250} minHeight={750} />
                 {this.state.viewMode == HostPageViewMode.Start && (
                     <HostStartScreen
                         gameCode={this.gameCode}
