@@ -4,6 +4,9 @@ on:
   schedule:
     # Run every Monday at 8:00 AM UTC
     - cron: "0 8 * * 1"
+  workflow_run:
+    workflows: ["Deploy ASP.NET Core app to Azure Web App"]
+    types: [completed]
   workflow_dispatch: # Allow manual trigger
 
 permissions: {}
