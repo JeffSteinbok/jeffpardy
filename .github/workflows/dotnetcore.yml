@@ -84,4 +84,18 @@ jobs:
           publish-profile: ${{ secrets.azureWebAppPublishProfile  }} # Define secret variable in repository settings as per action documentation
           package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
 
+      - name: Warm up deployed site
+        run: |
+          echo "Waiting for site to start..."
+          for i in $(seq 1 60); do
+            HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" --max-time 10 https://jeffpardy.azurewebsites.net/)
+            if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
+              echo "Site is up (HTTP $HTTP_STATUS) after ${i}s"
+              exit 0
+            fi
+            echo "Attempt $i: HTTP $HTTP_STATUS, retrying..."
+            sleep 2
+          done
+          echo "::warning::Site did not respond within 120s"
+
 # For more samples to get started with GitHub Action workflows to deploy to Azure, refer to https://github.com/Azure/actions-workflow-samples
