@@ -280,7 +280,7 @@ export class JeffpardyHostController {
 
     public broadcastScores = () => {
         const scores: { [key: string]: number } = {};
-        Object.keys(this.teams).map((teamName) => {
+        Object.keys(this.teams).forEach((teamName) => {
             scores[teamName] = this.teams[teamName].score;
         });
         this.hostSignalRClient.broadcastScores(scores);
