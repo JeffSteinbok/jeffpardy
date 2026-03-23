@@ -17,7 +17,10 @@
             "onAutoForward": "notify"
         }
     },
-    "postCreateCommand": "npm ci --legacy-peer-deps && dotnet restore src/backend/Jeffpardy.csproj",
+    "postCreateCommand": {
+        "npm": "npm ci --legacy-peer-deps",
+        "dotnet": "dotnet restore src/backend/Jeffpardy.csproj && dotnet restore src/backend/Jeffpardy.Tests/Jeffpardy.Tests.csproj"
+    },
     "customizations": {
         "vscode": {
             "extensions": [
