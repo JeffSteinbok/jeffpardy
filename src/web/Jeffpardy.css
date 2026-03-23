@@ -1897,7 +1897,6 @@ div.buzzerUserListView ul.playerList ul li .lockedInIndicator {
     background: white;
     color: #333;
     border-radius: 12px;
-    max-width: 500px;
 }
 
 .gameDialog .MuiDialogTitle-root {
