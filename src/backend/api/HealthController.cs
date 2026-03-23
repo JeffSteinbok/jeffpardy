@@ -32,10 +32,6 @@ namespace Jeffpardy
     {
         private readonly ISeasonManifestCache _cache;
 
-        public HealthStatus()
-        {
-        }
-
         public HealthStatus(ISeasonManifestCache cache)
         {
             _cache = cache;
