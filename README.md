@@ -1,6 +1,8 @@
 # Jeffpardy
 
-A Jeopardy-style trivia game built with ASP.NET Core, React/TypeScript, and SignalR for real-time multiplayer gameplay. Game data is stored in Azure Blob Storage.
+[![Health Check](https://github.com/JeffSteinbok/jeffpardy/actions/workflows/health-check.yml/badge.svg)](https://github.com/JeffSteinbok/jeffpardy/actions/workflows/health-check.yml)
+
+A Jeopardy-style trivia gamebuilt with ASP.NET Core, React/TypeScript, and SignalR for real-time multiplayer gameplay. Game data is stored in Azure Blob Storage.
 
 ## Prerequisites
 
