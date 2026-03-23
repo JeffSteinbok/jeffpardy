@@ -41,7 +41,7 @@ export class CategoryReveal extends React.Component<ICategoryRevealProps> {
                             return (
                                 <div
                                     key={`${i}-${j}`}
-                                    className="jeffpardyClue categoryPlaceholderClue"
+                                    className="jeffpardyClue categoryPlaceholderClue jeffpardy-label"
                                     style={{ gridRow: j + 2, gridColumn: i + 1 }}
                                 >
                                     {isRevealed && <span className="placeholderValue">{clue.value}</span>}
@@ -49,7 +49,7 @@ export class CategoryReveal extends React.Component<ICategoryRevealProps> {
                             );
                         })
                     )}
-                    <div className="categoryRevealHint">press SPACE to continue</div>
+                    <div className="categoryRevealHint">PRESS SPACE TO CONTINUE</div>
                 </div>
             );
         }
@@ -91,7 +91,7 @@ export class CategoryReveal extends React.Component<ICategoryRevealProps> {
                         );
                     })}
                 </div>
-                <div className="categoryRevealHint">press SPACE to continue</div>
+                <div className="categoryRevealHint">PRESS SPACE TO CONTINUE</div>
             </div>
         );
     }

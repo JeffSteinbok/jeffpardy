@@ -257,25 +257,25 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                         </button>
                                         <span className="lobbyButtonSubtext">Shows answers to the host only</span>
                                         <span className="lobbyButtonSubtext">Do not share this window</span>
-                                        <div
-                                            style={{
-                                                background: "white",
-                                                padding: "8px",
-                                                display: "inline-block",
-                                                borderRadius: "4px",
-                                                marginTop: "8px",
-                                            }}
-                                        >
-                                            <QRCode.QRCodeCanvas
-                                                value={hostSecondaryWindowUri}
-                                                size={128}
-                                                includeMargin={false}
-                                            />
-                                        </div>
                                     </div>
                                     <div className="lobbyButtonGroup">
                                         <button onClick={this.props.onEnterLobby}>Enter Game Lobby</button>
                                     </div>
+                                </div>
+                                <div
+                                    style={{
+                                        background: "white",
+                                        padding: "4px",
+                                        display: "inline-block",
+                                        borderRadius: "4px",
+                                        marginTop: "8px",
+                                    }}
+                                >
+                                    <QRCode.QRCodeCanvas
+                                        value={hostSecondaryWindowUri}
+                                        size={80}
+                                        includeMargin={false}
+                                    />
                                 </div>
 
                                 <div className="flexGrowSpacer"></div>

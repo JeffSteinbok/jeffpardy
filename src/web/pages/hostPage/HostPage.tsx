@@ -255,7 +255,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
 
         return (
             <div>
-                <ScreenSizeWarning minWidth={1200} />
+                <ScreenSizeWarning minWidth={1250} minHeight={750} />
                 {this.state.viewMode == HostPageViewMode.Start && (
                     <HostStartScreen
                         gameCode={this.gameCode}
