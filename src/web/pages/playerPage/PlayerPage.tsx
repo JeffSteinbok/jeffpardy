@@ -592,7 +592,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                         </div>
 
                         <div className="buzzerUserListView">
-                            <h1>Current Players</h1>
+                            <h1>{this.state.scores ? "Scores" : "Current Players"}</h1>
                             <div>
                                 <PlayerList
                                     teams={this.state.teams}

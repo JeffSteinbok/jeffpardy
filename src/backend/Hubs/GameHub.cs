@@ -126,7 +126,7 @@ namespace Jeffpardy.Hubs
             }
         }
 
-        public async void BroadcastScores(string gameCode, Dictionary<string, int> scores)
+        public async Task BroadcastScores(string gameCode, Dictionary<string, int> scores)
         {
             try
             {

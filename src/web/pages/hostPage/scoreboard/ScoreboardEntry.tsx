@@ -9,6 +9,7 @@ export enum ScoreboardEntryBuzzerState {
     BuzzedIn,
     OffNoControl,
     WrongAnswer,
+    CorrectAnswer,
 }
 
 export interface IScoreboardEntryProps {
@@ -34,6 +35,8 @@ export class ScoreboardEntry extends React.Component<IScoreboardEntryProps> {
             buzzerIndicatorClass += " buzzedIn";
         } else if (this.props.buzzerState == ScoreboardEntryBuzzerState.WrongAnswer) {
             buzzerIndicatorClass += " wrongAnswer";
+        } else if (this.props.buzzerState == ScoreboardEntryBuzzerState.CorrectAnswer) {
+            buzzerIndicatorClass += " correctAnswer";
         }
 
         let scoreboardEntryClass = "scoreboardEntry jeffpardy-label";
@@ -49,7 +52,7 @@ export class ScoreboardEntry extends React.Component<IScoreboardEntryProps> {
             <div className={scoreboardEntryClass}>
                 <div className={buzzerIndicatorClass}>{this.props.userName}</div>
                 <div className="teamName">{this.props.teamName} </div>
-                <div className="score">{this.props.score}</div>
+                <div className={"score" + (this.props.score < 0 ? " negative" : "")}>{this.props.score}</div>
             </div>
         );
     }

@@ -132,11 +132,13 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
             <div>
                 {this.state.viewMode == HostStartScreenViewMode.Normal && (
                     <div className="hostStartPage">
-                        <img src="/images/JeffpardyTitle.png" className="title" />
+                        <div className="titleContainer">
+                            <img src="/images/JeffpardyTitle.png" className="title" />
+                        </div>
 
                         {this.props.gameData == null && <div>Finding some really great clues...</div>}
                         {this.props.gameData != null && (
-                            <div className="gameDataLoaded">
+                            <div className="gameDataLoaded hostLobbyFadeIn">
                                 <div className="categoryListContainer">
                                     <ul className="categoryList">
                                         {this.props.gameData.rounds.map((round, index) => {
@@ -257,25 +259,25 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                         </button>
                                         <span className="lobbyButtonSubtext">Shows answers to the host only</span>
                                         <span className="lobbyButtonSubtext">Do not share this window</span>
+                                        <div
+                                            style={{
+                                                background: "white",
+                                                padding: "4px",
+                                                display: "inline-block",
+                                                borderRadius: "4px",
+                                                marginTop: "8px",
+                                            }}
+                                        >
+                                            <QRCode.QRCodeCanvas
+                                                value={hostSecondaryWindowUri}
+                                                size={80}
+                                                includeMargin={false}
+                                            />
+                                        </div>
                                     </div>
                                     <div className="lobbyButtonGroup">
                                         <button onClick={this.props.onEnterLobby}>Enter Game Lobby</button>
                                     </div>
-                                </div>
-                                <div
-                                    style={{
-                                        background: "white",
-                                        padding: "4px",
-                                        display: "inline-block",
-                                        borderRadius: "4px",
-                                        marginTop: "8px",
-                                    }}
-                                >
-                                    <QRCode.QRCodeCanvas
-                                        value={hostSecondaryWindowUri}
-                                        size={80}
-                                        includeMargin={false}
-                                    />
                                 </div>
 
                                 <div className="flexGrowSpacer"></div>

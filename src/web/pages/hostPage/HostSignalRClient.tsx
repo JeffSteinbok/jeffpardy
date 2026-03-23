@@ -89,7 +89,7 @@ export class HostSignalRClient implements IHostSignalRClient {
     };
 
     public broadcastScores = (scores: { [key: string]: number }) => {
-        Logger.debug("HostSignalRClient:broadcastScores");
+        Logger.debug("HostSignalRClient:broadcastScores", scores);
 
         this.hubConnection.invoke("broadcastScores", this.gameCode, scores).catch((err) => console.error(err));
     };

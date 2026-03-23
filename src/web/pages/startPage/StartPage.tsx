@@ -17,7 +17,9 @@ export class StartPage extends React.Component {
         return (
             <div id="startPage">
                 <div className="startPageContent">
-                    <img src="/images/JeffpardyTitle.png" className="startPageLogo" />
+                    <div className="titleContainer">
+                        <img src="/images/JeffpardyTitle.png" className="startPageLogo" />
+                    </div>
                     <div className="startPageButtons">
                         <a href="/host" className="startPageButton jeffpardy-label">
                             <span className="buttonLabel">Host a Game</span>
