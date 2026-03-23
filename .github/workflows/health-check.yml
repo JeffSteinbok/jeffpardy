@@ -29,7 +29,7 @@ jobs:
         run: dotnet build --no-restore -p:SkipFrontendBuild=true
 
       - name: Test
-        run: dotnet test src/backend/Jeffpardy.Tests --no-build --verbosity normal
+        run: dotnet test src/backend/Jeffpardy.Tests --no-build --verbosity normal -p:SkipFrontendBuild=true
 
   frontend:
     name: Frontend Build & Test
@@ -45,7 +45,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+        run: npm ci
 
       - name: Build
         run: npm run buildProd
@@ -67,7 +67,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+        run: npm ci
 
       - name: Lint
         run: npm run lint
