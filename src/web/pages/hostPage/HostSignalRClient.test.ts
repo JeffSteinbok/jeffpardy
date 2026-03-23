@@ -121,6 +121,16 @@ describe("HostSignalRClient", () => {
         expect(mockInvoke).toHaveBeenCalledWith("startFinalJeffpardy", "GAME1", scores);
     });
 
+    it("broadcastScores invokes broadcastScores with gameCode and scores", () => {
+        const client = new HostSignalRClient(mockController, "GAME1", "HOST1");
+        mockInvoke.mockClear();
+
+        const scores = { TeamA: 300, TeamB: 400 };
+        client.broadcastScores(scores);
+
+        expect(mockInvoke).toHaveBeenCalledWith("broadcastScores", "GAME1", scores);
+    });
+
     it("showFinalJeffpardyClue invokes showFinalJeffpardyClue with gameCode", () => {
         const client = new HostSignalRClient(mockController, "GAME1", "HOST1");
         mockInvoke.mockClear();

@@ -302,6 +302,8 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
             currentTeam.score = oldScore + adjustment;
 
+            this.props.jeffpardyHostController.broadcastScores();
+
             // Not sure why this is here...trigger re-draw?
             this.setState({
                 buzzedInUser: this.state.buzzedInUser,
@@ -504,7 +506,10 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                         controllingTeam={this.props.controllingTeam}
                         jeffpardyHostController={this.props.jeffpardyHostController}
                         onControllingUserClear={() => this.setState({ controllingUser: null })}
-                        onClose={() => this.setState({ isTeamFixupDialogShown: false })}
+                        onClose={() => {
+                            this.props.jeffpardyHostController.broadcastScores();
+                            this.setState({ isTeamFixupDialogShown: false });
+                        }}
                     />
                 )}
 

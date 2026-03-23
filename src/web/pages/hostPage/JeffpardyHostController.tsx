@@ -278,6 +278,14 @@ export class JeffpardyHostController {
         this.hostPage.onUpdateTeams(this.teams);
     }
 
+    public broadcastScores = () => {
+        const scores: { [key: string]: number } = {};
+        Object.keys(this.teams).map((teamName) => {
+            scores[teamName] = this.teams[teamName].score;
+        });
+        this.hostSignalRClient.broadcastScores(scores);
+    };
+
     public submitWager(user: IPlayer, wager: number) {
         // TODO:  Something to stop a wager from being entered twice, or after the clue is shown
         // Or, take this all out of the controller

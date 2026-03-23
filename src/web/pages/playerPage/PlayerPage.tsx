@@ -45,6 +45,7 @@ export interface IPlayerPageState {
     finalJeffpardyWagerEnabled: boolean;
     finalJeffpardyAnswerEnabled: boolean;
     finalJeffpardyScores: { [key: string]: number };
+    scores: { [key: string]: number };
     lockedInPlayerIds: string[];
     gameCodeInputLength: number;
     toastMessage: string; // Transient notification text; auto-clears after 3s via showToast
@@ -94,6 +95,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             finalJeffpardyWagerEnabled: true,
             finalJeffpardyAnswerEnabled: true,
             finalJeffpardyScores: null,
+            scores: null,
             lockedInPlayerIds: [],
             gameCodeInputLength: 0,
             toastMessage: null,
@@ -132,6 +134,11 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             this.state.hubConnection.on("updateUsers", (teams: { [key: string]: ITeam }) => {
                 Logger.debug("Update Users: " + JSON.stringify(teams));
                 this.setState({ teams: teams });
+            });
+
+            this.state.hubConnection.on("broadcastScores", (scores: { [key: string]: number }) => {
+                Logger.debug("Broadcast Scores: " + JSON.stringify(scores));
+                this.setState({ scores: scores });
             });
 
             this.state.hubConnection.on("assignWinner", (user: IPlayer, reactionTime: number) => {
@@ -193,6 +200,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                     playerPageState: PlayerPageState.FinalJeffpardy,
                     finalJeffpardyMaxWager: maxWager,
                     finalJeffpardyScores: scores,
+                    scores: scores,
                 });
 
                 // If max wager is 0, just set it.
@@ -588,7 +596,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                             <div>
                                 <PlayerList
                                     teams={this.state.teams}
-                                    scores={this.state.finalJeffpardyScores}
+                                    scores={this.state.scores}
                                     lockedInPlayerIds={this.state.lockedInPlayerIds}
                                 />
                             </div>
