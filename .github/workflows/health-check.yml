@@ -1,0 +1,90 @@
+name: Health Check
+
+on:
+  schedule:
+    # Run every Monday at 8:00 AM UTC
+    - cron: "0 8 * * 1"
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore -p:SkipFrontendBuild=true
+
+      - name: Test
+        run: dotnet test src/backend/Jeffpardy.Tests --no-build --verbosity normal -p:SkipFrontendBuild=true
+
+  frontend:
+    name: Frontend Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run buildProd
+
+      - name: Test
+        run: npm test
+
+  lint:
+    name: Lint & Format Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format:check
+
+  site-availability:
+    name: Site Availability Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check deployed site
+        run: |
+          HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" --max-time 30 https://jeffpardy.azurewebsites.net/)
+          echo "HTTP Status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" -lt 200 ] || [ "$HTTP_STATUS" -ge 400 ]; then
+            echo "::error::Site returned HTTP $HTTP_STATUS"
+            exit 1
+          fi
