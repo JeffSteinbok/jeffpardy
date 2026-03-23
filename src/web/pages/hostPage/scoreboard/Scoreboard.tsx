@@ -187,6 +187,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
             this.setState({
                 gameBoardState: GameBoardState.Normal,
                 buzzedInUser: null,
+                wrongTeams: [],
             });
             this.resetBuzzer();
         }
@@ -301,6 +302,8 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
             }
 
             currentTeam.score = oldScore + adjustment;
+
+            this.props.jeffpardyHostController.broadcastScores();
 
             // Not sure why this is here...trigger re-draw?
             this.setState({
@@ -460,7 +463,11 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                             }
 
                             if (this.state.buzzedInUser != null && this.state.buzzedInUser.team == teamName) {
-                                buzzerState = ScoreboardEntryBuzzerState.BuzzedIn;
+                                if (this.state.gameBoardState == GameBoardState.Question) {
+                                    buzzerState = ScoreboardEntryBuzzerState.CorrectAnswer;
+                                } else {
+                                    buzzerState = ScoreboardEntryBuzzerState.BuzzedIn;
+                                }
                                 userName = this.state.buzzedInUser.name;
                             }
 
@@ -504,14 +511,21 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                         controllingTeam={this.props.controllingTeam}
                         jeffpardyHostController={this.props.jeffpardyHostController}
                         onControllingUserClear={() => this.setState({ controllingUser: null })}
-                        onClose={() => this.setState({ isTeamFixupDialogShown: false })}
+                        onClose={() => {
+                            this.props.jeffpardyHostController.broadcastScores();
+                            this.setState({ isTeamFixupDialogShown: false });
+                            (document.activeElement as HTMLElement)?.blur();
+                        }}
                     />
                 )}
 
                 {this.state.isEndRoundDialogShown && (
                     <EndRoundDialog
                         onConfirm={this.confirmEndRound}
-                        onClose={() => this.setState({ isEndRoundDialogShown: false })}
+                        onClose={() => {
+                            this.setState({ isEndRoundDialogShown: false });
+                            (document.activeElement as HTMLElement)?.blur();
+                        }}
                     />
                 )}
             </div>

@@ -201,9 +201,18 @@ div#startPage .startPageContent {
     padding: 40px;
 }
 
+div#startPage .titleContainer {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin: 8px 0;
+}
+
 div#startPage .startPageLogo {
-    max-width: 500px;
-    width: 60%;
+    max-height: 120px;
+    width: auto;
     object-fit: contain;
     filter: drop-shadow(0 10px 40px rgba(0, 0, 0, 0.6));
 }
@@ -281,6 +290,22 @@ div.hostStartPage > * {
     z-index: 1;
 }
 
+@keyframes lobbyFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+div.hostStartPage.hostLobbyFadeIn > *,
+div.gameDataLoaded.hostLobbyFadeIn > * {
+    animation: lobbyFadeIn 0.8s ease-out both;
+}
+
 div.hostStartPage a {
     font-size: 1.5rem;
     color: white;
@@ -327,9 +352,18 @@ div.hostStartPage .lobbyButtonSubtext {
     line-height: 1.2;
 }
 
+div.hostStartPage div.titleContainer {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin: 8px 0;
+}
+
 div.hostStartPage img.title {
-    max-width: 320px;
-    width: 50%;
+    max-height: 80px;
+    width: auto;
     object-fit: contain;
     margin: 4px 0;
     padding: 4px 0;
@@ -477,17 +511,20 @@ div#jeffpardyBoardInnerFrame {
     box-sizing: inherit;
     min-width: 1200px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    position: relative;
 }
 
 div#jeffpardyBoard {
-    width: 100%;
-    height: 100%;
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
     background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     flex-direction: row;
-    position: relative;
     padding: 4px;
-    box-sizing: inherit;
+    box-sizing: border-box;
     border-radius: 4px;
 }
 
@@ -514,7 +551,8 @@ div#jeffpardyBoard {
 /* Category placeholder board (initial state before reveal) */
 div#jeffpardyBoard div.categoryRevealBoard {
     position: relative;
-    animation: boardFadeIn 0.3s ease-out;
+    height: 100%;
+    animation: categoryRevealIn 0.3s ease-out;
 }
 
 div#jeffpardyBoard div.categoryPlaceholder {
@@ -624,7 +662,11 @@ div#jeffpardyBoard div.categoryRevealSlide .categoryRevealTitle {
     font-size: 10rem;
     color: white;
     text-align: center;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    text-shadow: 2px 2px black;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    line-height: 0.9;
     transition: opacity 0.6s ease;
 }
 
@@ -661,7 +703,7 @@ div#jeffpardyBoard div.categoryRevealSlide .categoryRevealNameText.visible {
 }
 
 div#jeffpardyBoard div.categoryRevealSlide .categoryRevealDate {
-    font-size: 2rem;
+    font-size: 1rem;
     color: rgba(255, 255, 255, 0.5);
     position: absolute;
     bottom: 10px;
@@ -1363,12 +1405,13 @@ div#playerPage input::placeholder {
 div#playerPageMain {
     padding: 20px;
     color: white;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
     gap: 24px;
     flex-grow: 1;
     box-sizing: border-box;
-    align-content: start;
+    width: 100%;
 }
 
 div#playerPageMain > div {
@@ -1395,6 +1438,16 @@ div#playerPage div.buzzerCurrentUserView {
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
     padding: 24px;
+    width: 350px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+div#playerPage div.buzzerCurrentUserView > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
 
 div#playerPage div.buzzerCurrentUserView h1 {
@@ -1468,6 +1521,12 @@ div#playerPage div.buzzerRegistration form > div {
     margin-bottom: 4px;
 }
 
+div#playerPage div.buzzerRegistration input,
+div#playerPage div.finalJeffpardy input {
+    max-width: calc(100% - 24px);
+    box-sizing: border-box;
+}
+
 div#playerPage div.buzzerCurrentUserView div.playerName {
     font-size: 1.5rem;
     margin-bottom: 20px;
@@ -1479,6 +1538,8 @@ div#playerPage div.buzzerCurrentUserView div.buzzedInUser {
     background: rgba(255, 69, 0, 0.85);
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.15);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 div#playerPage div.buzzerCurrentUserView div.buzzedInUser.buzzedInWinner {
@@ -1741,6 +1802,7 @@ div#scoreboard .scoreEntries {
     flex-grow: 1;
     flex-direction: row;
     align-items: center;
+    justify-content: flex-start;
     text-align: center;
     padding-left: 10px;
     gap: 10px;
@@ -1750,6 +1812,7 @@ div#scoreboard .scoreEntries {
 div#scoreboard .scoreboardEntry {
     min-width: 0;
     flex: 1 1 0;
+    max-width: 250px;
     background: linear-gradient(
         180deg,
         color-mix(in srgb, var(--color-game-board), white 5%) 0%,
@@ -1777,7 +1840,7 @@ div#scoreboard .scoreboardEntry .buzzerIndicator {
     background-color: rgba(255, 255, 255, 0.1);
     transition: background-color 0.2s ease;
     overflow: hidden;
-    font-size: 0.7em;
+    font-size: 0.8em;
     line-height: 20px;
 }
 
@@ -1787,13 +1850,21 @@ div#scoreboard .scoreboardEntry .buzzerIndicator.buzzerActive {
 }
 
 div#scoreboard .scoreboardEntry .buzzerIndicator.buzzedIn {
-    background-color: #f44336;
-    box-shadow: 0 0 8px rgba(244, 67, 54, 0.6);
+    background-color: #90caf9;
+    color: black;
+    text-shadow: none;
+    box-shadow: 0 0 8px rgba(144, 202, 249, 0.6);
 }
 
 div#scoreboard .scoreboardEntry .buzzerIndicator.wrongAnswer {
-    background-color: #b71c1c;
-    box-shadow: 0 0 6px rgba(183, 28, 28, 0.4);
+    background-color: #7f0000;
+    box-shadow: 0 0 6px rgba(127, 0, 0, 0.4);
+}
+
+div#scoreboard .scoreboardEntry .buzzerIndicator.correctAnswer {
+    background-color: #2e7d32;
+    color: white;
+    box-shadow: 0 0 8px rgba(46, 125, 50, 0.6);
 }
 
 div#scoreboard .scoreboardEntry .teamName {
@@ -1812,6 +1883,10 @@ div#scoreboard .scoreboardEntry .score {
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
+div#scoreboard .scoreboardEntry .score.negative {
+    color: #f44336;
+}
+
 div.buzzerUserListView {
     display: flex;
     flex-direction: column;
@@ -1820,6 +1895,8 @@ div.buzzerUserListView {
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
     padding: 24px;
+    width: 350px;
+    box-sizing: border-box;
 }
 
 div.buzzerUserListView h1 {
@@ -1846,6 +1923,10 @@ div.buzzerUserListView ul.playerList li .teamScore {
     font-weight: normal;
 }
 
+div.buzzerUserListView ul.playerList li .teamScore.negative {
+    color: #f44336;
+}
+
 div.buzzerUserListView ul.playerList ul {
     padding-left: 0;
 }
@@ -1865,6 +1946,49 @@ div.buzzerUserListView ul.playerList ul li.lockedIn {
 div.buzzerUserListView ul.playerList ul li .lockedInIndicator {
     font-size: 0.8em;
     margin-left: 4px;
+}
+
+/* Score table (in-game view) */
+div.buzzerUserListView .playerScoreTable {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+div.buzzerUserListView .playerScoreTable thead th {
+    font-size: 0.75em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 4px 8px 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+div.buzzerUserListView .playerScoreTable tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    will-change: transform;
+}
+
+div.buzzerUserListView .playerScoreTable td {
+    padding: 8px;
+    vertical-align: middle;
+}
+
+div.buzzerUserListView .playerScoreTable .teamNameCol {
+    color: var(--color-gold);
+    font-weight: bold;
+    white-space: nowrap;
+    width: 100%;
+}
+
+div.buzzerUserListView .playerScoreTable .scoreCol {
+    color: white;
+    font-weight: bold;
+    text-align: right;
+    white-space: nowrap;
+}
+
+div.buzzerUserListView .playerScoreTable .scoreCol.negative {
+    color: #f44336;
 }
 
 /* Phone responsive layout for player/buzzer page */
@@ -1945,6 +2069,10 @@ div.buzzerUserListView ul.playerList ul li .lockedInIndicator {
     color: var(--color-game-board);
     text-transform: none;
     font-weight: 600;
+}
+
+.gameDialog .MuiButton-root .MuiTouchRipple-root {
+    display: none;
 }
 
 .gameDialog .MuiButton-colorPrimary {

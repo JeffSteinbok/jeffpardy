@@ -148,17 +148,19 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                 <DialogActions>
                     <Button
                         onClick={() => {
-                            this.props.onSave(this.state.category);
+                            this.props.onCancel();
                         }}
+                        style={{ backgroundColor: "#555", color: "white" }}
                     >
-                        Save
+                        Cancel
                     </Button>
                     <Button
                         onClick={() => {
-                            this.props.onCancel();
+                            this.props.onSave(this.state.category);
                         }}
+                        color="primary"
                     >
-                        Cancel
+                        Save
                     </Button>
                 </DialogActions>
             </Dialog>

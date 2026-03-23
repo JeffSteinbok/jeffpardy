@@ -192,6 +192,21 @@ namespace Jeffpardy.Tests
         }
 
         [Fact]
+        public async Task BroadcastScoresAsync_DelegatesToGame()
+        {
+            var cache = CreateCache();
+            await cache.ConnectHostAsync("conn-host", "GAME1", "HOST1");
+
+            var scores = new Dictionary<string, int> { { "TeamA", 100 }, { "TeamB", 200 } };
+            await cache.BroadcastScoresAsync("GAME1", scores);
+
+            _mockGroupProxy.Verify(c => c.SendCoreAsync(
+                "broadcastScores",
+                It.IsAny<object?[]>(),
+                It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
         public async Task StartRoundAsync_DelegatesToGame()
         {
             var cache = CreateCache();

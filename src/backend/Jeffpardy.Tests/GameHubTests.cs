@@ -229,6 +229,20 @@ namespace Jeffpardy.Tests
         }
 
         [Fact]
+        public void BroadcastScores_WithNullGameCode_DoesNotThrow()
+        {
+            var hub = CreateHub();
+            hub.BroadcastScores(null!, new Dictionary<string, int>());
+        }
+
+        [Fact]
+        public void BroadcastScores_WithEmptyGameCode_DoesNotThrow()
+        {
+            var hub = CreateHub();
+            hub.BroadcastScores("", new Dictionary<string, int>());
+        }
+
+        [Fact]
         public void StartFinalJeffpardy_WithNullGameCode_DoesNotThrow()
         {
             var hub = CreateHub();

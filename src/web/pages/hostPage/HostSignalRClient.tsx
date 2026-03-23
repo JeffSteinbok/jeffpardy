@@ -12,6 +12,7 @@ export interface IHostSignalRClient {
     activateBuzzer: () => void;
     showClue: (clue: IClue) => void;
     startRound: (round: IGameRound) => void;
+    broadcastScores: (scores: { [key: string]: number }) => void;
     startFinalJeffpardy: (scores: { [key: string]: number }) => void;
     showFinalJeffpardyClue: () => void;
     endFinalJeffpardy: () => void;
@@ -85,6 +86,12 @@ export class HostSignalRClient implements IHostSignalRClient {
         Logger.debug("HostSignalRClient:showClue");
 
         this.hubConnection.invoke("showClue", this.gameCode, clue).catch((err) => console.error(err));
+    };
+
+    public broadcastScores = (scores: { [key: string]: number }) => {
+        Logger.debug("HostSignalRClient:broadcastScores", scores);
+
+        this.hubConnection.invoke("broadcastScores", this.gameCode, scores).catch((err) => console.error(err));
     };
 
     public startFinalJeffpardy = (scores: { [key: string]: number }) => {

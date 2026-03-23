@@ -59,7 +59,9 @@ export class CustomCategoryDialog extends React.Component<ICustomCategoryDialogP
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={this.props.onClose}>Cancel</Button>
+                    <Button onClick={this.props.onClose} style={{ backgroundColor: "#555", color: "white" }}>
+                        Cancel
+                    </Button>
                     <Button onClick={() => this.props.onLoad(this.state.json)} color="primary">
                         Load JSON
                     </Button>

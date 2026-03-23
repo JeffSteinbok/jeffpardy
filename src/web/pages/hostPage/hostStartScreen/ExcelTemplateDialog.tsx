@@ -51,7 +51,9 @@ export class ExcelTemplateDialog extends React.Component<IExcelTemplateDialogPro
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={this.props.onClose}>Cancel</Button>
+                    <Button onClick={this.props.onClose} style={{ backgroundColor: "#555", color: "white" }}>
+                        Cancel
+                    </Button>
                     <Button onClick={() => this.props.onLoad(this.state.tsv)} color="primary">
                         Load
                     </Button>
