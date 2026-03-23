@@ -79,3 +79,5 @@ export class JsonEditor extends React.Component<IJsonEditorProps> {
         );
     }
 }
+
+export default JsonEditor;

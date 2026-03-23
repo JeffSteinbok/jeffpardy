@@ -28,3 +28,5 @@ export class EndRoundDialog extends React.Component<IEndRoundDialogProps> {
         );
     }
 }
+
+export default EndRoundDialog;

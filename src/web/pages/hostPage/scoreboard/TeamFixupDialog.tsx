@@ -76,3 +76,5 @@ export class TeamFixupDialog extends React.Component<ITeamFixupDialogProps> {
         );
     }
 }
+
+export default TeamFixupDialog;

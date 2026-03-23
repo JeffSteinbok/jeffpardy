@@ -4,7 +4,7 @@
 import * as React from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 import { IGameData } from "../Types";
-import { JsonEditor } from "../../../components/JsonEditor";
+const JsonEditor = React.lazy(() => import("../../../components/JsonEditor"));
 
 export interface ICustomCategoryDialogProps {
     gameData: IGameData;
@@ -43,20 +43,22 @@ export class CustomCategoryDialog extends React.Component<ICustomCategoryDialogP
                         flex: 1,
                     }}
                 >
-                    <JsonEditor
-                        defaultValue={JSON.stringify(
-                            this.props.gameData,
-                            (key, value) => {
-                                if (key == "isAsked") return undefined;
-                                else if (key == "isDailyDouble") return undefined;
-                                else if (key == "hasDailyDouble") return undefined;
-                                else if (key == "value") return undefined;
-                                else return value;
-                            },
-                            4
-                        )}
-                        onChange={(value) => this.setState({ json: value })}
-                    />
+                    <React.Suspense fallback={null}>
+                        <JsonEditor
+                            defaultValue={JSON.stringify(
+                                this.props.gameData,
+                                (key, value) => {
+                                    if (key == "isAsked") return undefined;
+                                    else if (key == "isDailyDouble") return undefined;
+                                    else if (key == "hasDailyDouble") return undefined;
+                                    else if (key == "value") return undefined;
+                                    else return value;
+                                },
+                                4
+                            )}
+                            onChange={(value) => this.setState({ json: value })}
+                        />
+                    </React.Suspense>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.props.onClose}>Cancel</Button>
@@ -68,3 +70,5 @@ export class CustomCategoryDialog extends React.Component<ICustomCategoryDialogP
         );
     }
 }
+
+export default CustomCategoryDialog;

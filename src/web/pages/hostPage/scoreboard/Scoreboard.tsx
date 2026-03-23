@@ -7,9 +7,10 @@ import { Logger } from "../../../utilities/Logger";
 import { JeffpardyHostController } from "../JeffpardyHostController";
 import { IPlayer, TeamDictionary, ITeam } from "../../../Types";
 import { IClue } from "../../../Types";
-import { TeamFixupDialog } from "./TeamFixupDialog";
-import { EndRoundDialog } from "./EndRoundDialog";
 import { createKeyboardHandler } from "./useKeyboardShortcuts";
+
+const TeamFixupDialog = React.lazy(() => import("./TeamFixupDialog"));
+const EndRoundDialog = React.lazy(() => import("./EndRoundDialog"));
 
 // Tracks the host scoreboard's view of the current game phase.
 // Controls which keyboard shortcuts and toolbar buttons are active.
@@ -499,20 +500,24 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                 </div>
 
                 {this.state.isTeamFixupDialogShown && (
-                    <TeamFixupDialog
-                        teams={this.props.teams}
-                        controllingTeam={this.props.controllingTeam}
-                        jeffpardyHostController={this.props.jeffpardyHostController}
-                        onControllingUserClear={() => this.setState({ controllingUser: null })}
-                        onClose={() => this.setState({ isTeamFixupDialogShown: false })}
-                    />
+                    <React.Suspense fallback={null}>
+                        <TeamFixupDialog
+                            teams={this.props.teams}
+                            controllingTeam={this.props.controllingTeam}
+                            jeffpardyHostController={this.props.jeffpardyHostController}
+                            onControllingUserClear={() => this.setState({ controllingUser: null })}
+                            onClose={() => this.setState({ isTeamFixupDialogShown: false })}
+                        />
+                    </React.Suspense>
                 )}
 
                 {this.state.isEndRoundDialogShown && (
-                    <EndRoundDialog
-                        onConfirm={this.confirmEndRound}
-                        onClose={() => this.setState({ isEndRoundDialogShown: false })}
-                    />
+                    <React.Suspense fallback={null}>
+                        <EndRoundDialog
+                            onConfirm={this.confirmEndRound}
+                            onClose={() => this.setState({ isEndRoundDialogShown: false })}
+                        />
+                    </React.Suspense>
                 )}
             </div>
         );

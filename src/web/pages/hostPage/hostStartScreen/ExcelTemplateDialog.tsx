@@ -60,3 +60,5 @@ export class ExcelTemplateDialog extends React.Component<IExcelTemplateDialogPro
         );
     }
 }
+
+export default ExcelTemplateDialog;

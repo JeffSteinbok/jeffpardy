@@ -270,3 +270,5 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
         this.setState({ category: category });
     };
 }
+
+export default CategoryDetails;

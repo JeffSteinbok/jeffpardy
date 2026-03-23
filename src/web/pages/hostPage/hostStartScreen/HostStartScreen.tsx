@@ -6,13 +6,14 @@ import { ICategory } from "../../../Types";
 import { IGameData, IGameRound, RoundDescriptor } from "../Types";
 import { Logger } from "../../../utilities/Logger";
 import { AnswerKey } from "./AnswerKey";
-import { CategoryDetails } from "./CategoryDetails";
 import { Attribution } from "../../../components/attribution/Attribution";
 import { TeamDictionary } from "../../../Types";
 import { JeffpardyHostController } from "../JeffpardyHostController";
-import { CustomCategoryDialog } from "./CustomCategoryDialog";
-import { ExcelTemplateDialog } from "./ExcelTemplateDialog";
 import { parseGameDataFromTsv } from "./TsvCategoryParser";
+
+const CategoryDetails = React.lazy(() => import("./CategoryDetails"));
+const CustomCategoryDialog = React.lazy(() => import("./CustomCategoryDialog"));
+const ExcelTemplateDialog = React.lazy(() => import("./ExcelTemplateDialog"));
 
 import * as QRCode from "qrcode.react";
 
@@ -281,35 +282,41 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                 <div className="flexGrowSpacer"></div>
                                 <Attribution />
                                 {this.state.isCustomCategoryDialogOpen && (
-                                    <CustomCategoryDialog
-                                        gameData={this.props.gameData}
-                                        onLoad={(json) => this.loadCustomCategories(json)}
-                                        onClose={() => this.setState({ isCustomCategoryDialogOpen: false })}
-                                    />
+                                    <React.Suspense fallback={null}>
+                                        <CustomCategoryDialog
+                                            gameData={this.props.gameData}
+                                            onLoad={(json) => this.loadCustomCategories(json)}
+                                            onClose={() => this.setState({ isCustomCategoryDialogOpen: false })}
+                                        />
+                                    </React.Suspense>
                                 )}
 
                                 {this.state.isCustomCategoryTsvDialogOpen && (
-                                    <ExcelTemplateDialog
-                                        onLoad={(tsv) => this.loadCustomCategoriesFromExcelPaste(tsv)}
-                                        onClose={() => this.setState({ isCustomCategoryTsvDialogOpen: false })}
-                                    />
+                                    <React.Suspense fallback={null}>
+                                        <ExcelTemplateDialog
+                                            onLoad={(tsv) => this.loadCustomCategoriesFromExcelPaste(tsv)}
+                                            onClose={() => this.setState({ isCustomCategoryTsvDialogOpen: false })}
+                                        />
+                                    </React.Suspense>
                                 )}
 
                                 {this.state.isCategoryDetailsDialogOpen && (
-                                    <CategoryDetails
-                                        roundDescriptor={this.state.selectedCategoryRoundDescriptor}
-                                        category={this.state.selectedCategory}
-                                        onSave={(category: ICategory) => {
-                                            this.props.jeffpardyHostController.replaceSingleCategory(
-                                                this.state.selectedCategory,
-                                                category
-                                            );
-                                            this.setState({ isCategoryDetailsDialogOpen: false });
-                                        }}
-                                        onCancel={() => {
-                                            this.setState({ isCategoryDetailsDialogOpen: false });
-                                        }}
-                                    />
+                                    <React.Suspense fallback={null}>
+                                        <CategoryDetails
+                                            roundDescriptor={this.state.selectedCategoryRoundDescriptor}
+                                            category={this.state.selectedCategory}
+                                            onSave={(category: ICategory) => {
+                                                this.props.jeffpardyHostController.replaceSingleCategory(
+                                                    this.state.selectedCategory,
+                                                    category
+                                                );
+                                                this.setState({ isCategoryDetailsDialogOpen: false });
+                                            }}
+                                            onCancel={() => {
+                                                this.setState({ isCategoryDetailsDialogOpen: false });
+                                            }}
+                                        />
+                                    </React.Suspense>
                                 )}
                             </div>
                         )}
