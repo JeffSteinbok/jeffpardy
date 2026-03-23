@@ -28,7 +28,7 @@ export class RoundIntermission extends React.Component<IRoundIntermissionProps> 
                 {round >= totalNonFinalRounds - 1 && (
                     <>
                         <img src="/images/FinalJeffpardy.png" className="intermissionLogo" />
-                        <div className="categoryRevealHint">press SPACE to continue</div>
+                        <div className="categoryRevealHint">PRESS SPACE TO CONTINUE</div>
                     </>
                 )}
             </div>

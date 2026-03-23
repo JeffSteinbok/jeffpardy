@@ -59,7 +59,7 @@ describe("CategoryReveal", () => {
         );
 
         expect(container.querySelector(".categoryRevealBoard")).not.toBeNull();
-        expect(container.querySelector(".categoryRevealHint").textContent).toBe("press SPACE to continue");
+        expect(container.querySelector(".categoryRevealHint").textContent).toBe("PRESS SPACE TO CONTINUE");
         // Placeholder logos
         const logos = container.querySelectorAll(".categoryPlaceholderLogo");
         expect(logos.length).toBe(2);
