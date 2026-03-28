@@ -198,6 +198,9 @@ export class JeffpardyBoard
 
         if (this.state.revealCategoryIndex === -1) {
             // Move from placeholder board to first category filmstrip
+            if (this.boardFillTimeout) clearTimeout(this.boardFillTimeout);
+            this.boardFillSound.pause();
+            this.boardFillSound.currentTime = 0;
             this.setState({ revealCategoryIndex: 0, revealShowingName: false });
             this.scheduleNameReveal();
         } else {

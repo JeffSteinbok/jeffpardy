@@ -794,7 +794,7 @@ div#jeffpardyBoard div.jeffpardyActiveClue {
 }
 
 div#jeffpardyBoard div.jeffpardyActiveClue .header {
-    background-color: color-mix(in srgb, var(--color-game-board), black 5%);
+    background-color: color-mix(in srgb, var(--color-game-board), black 15%);
     font-size: 1.5em;
     flex-grow: 0;
     text-align: center;
