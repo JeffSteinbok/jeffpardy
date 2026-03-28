@@ -73,6 +73,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     nameTemp: string = "";
     connectionCheckInterval: ReturnType<typeof setInterval> | null = null;
     isReconnecting: boolean = false;
+    hiddenAt: number = 0;
 
     constructor(props: IPlayerPageProps) {
         super(props);
@@ -122,6 +123,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
     componentDidMount = () => {
         window.addEventListener("keydown", this.handleKeyDown);
+        document.addEventListener("visibilitychange", this.onVisibilityChange);
 
         const hubConnection: signalR.HubConnection = new signalR.HubConnectionBuilder().withUrl("/hub/game").build();
 
@@ -298,6 +300,44 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         }
     };
 
+    onVisibilityChange = () => {
+        if (document.visibilityState === "hidden") {
+            this.hiddenAt = Date.now();
+            return;
+        }
+
+        // Page became visible — if we were hidden for more than 2s, force a fresh connection.
+        // We can't trust hubConnection.state after a mobile suspend; the OS kills the socket
+        // silently and SignalR never finds out.
+        const hiddenMs = this.hiddenAt ? Date.now() - this.hiddenAt : 0;
+        this.hiddenAt = 0;
+
+        if (hiddenMs > 2000 && this.state.hubConnection && !this.isReconnecting) {
+            Logger.debug(`Page resumed after ${hiddenMs}ms — forcing reconnect`);
+            this.forceReconnect();
+        }
+    };
+
+    forceReconnect = () => {
+        this.isReconnecting = true;
+        this.setState({ connectionStatus: ConnectionStatus.Reconnecting });
+        this.state.hubConnection
+            .stop()
+            .catch(() => {})
+            .then(() => this.state.hubConnection.start())
+            .then(() => {
+                Logger.debug("Force reconnect succeeded");
+                this.isReconnecting = false;
+                this.setState({ connectionStatus: ConnectionStatus.Connected });
+                this.reregisterWithGame();
+            })
+            .catch(() => {
+                Logger.debug("Force reconnect failed, poll will retry");
+                this.isReconnecting = false;
+                this.setState({ connectionStatus: ConnectionStatus.Disconnected });
+            });
+    };
+
     reregisterWithGame = () => {
         if (this.state.gameCode && this.state.name && this.state.team) {
             this.state.hubConnection
@@ -425,6 +465,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
     componentWillUnmount() {
         window.removeEventListener("keydown", this.handleKeyDown);
+        document.removeEventListener("visibilitychange", this.onVisibilityChange);
         if (this.connectionCheckInterval) {
             clearInterval(this.connectionCheckInterval);
         }
