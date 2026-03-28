@@ -91,7 +91,7 @@ describe("AnswerKey", () => {
         render(<AnswerKey gameData={mockGameData} onHide={onHide} />);
 
         act(() => {
-            window.dispatchEvent(new KeyboardEvent("keydown", { keyCode: 27 }));
+            window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
         });
 
         expect(onHide).toHaveBeenCalledTimes(1);

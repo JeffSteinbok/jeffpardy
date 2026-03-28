@@ -423,7 +423,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     };
 
     handleKeyDown = (event: KeyboardEvent) => {
-        switch (event.keyCode) {
+        switch (event.key) {
             case SpecialKey.SPACE:
                 this.buzzIn();
                 break;
@@ -537,7 +537,6 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                             <input
                                                 type="text"
                                                 maxLength={25}
-                                                value={this.state.name}
                                                 onChange={(e) => {
                                                     this.nameTemp = e.target.value;
                                                 }}

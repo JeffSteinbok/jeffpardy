@@ -116,7 +116,7 @@ describe("FinalJeffpardyTally", () => {
         );
 
         // 1 player × 2 reveal steps needed; simulate by pressing space twice
-        const space = () => new KeyboardEvent("keydown", { keyCode: 32 });
+        const space = () => new KeyboardEvent("keydown", { key: " " });
         act(() => {
             window.dispatchEvent(space());
         });

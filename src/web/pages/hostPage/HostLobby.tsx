@@ -41,12 +41,7 @@ export class HostLobby extends React.Component<IHostLobbyProps> {
 
     public render() {
         Logger.debug("Lobby:render", this.props.teams);
-        const playerUri: string =
-            "https://" +
-            window.location.hostname +
-            (window.location.port != "" ? ":" + window.location.port : "") +
-            "/player#" +
-            this.props.gameCode;
+        const playerUri: string = window.location.origin + "/player#" + this.props.gameCode;
 
         return (
             <div className="hostStartPage">

@@ -62,8 +62,8 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
                     console.log("Connection started!");
 
                     if (window.location.hash.length == 13) {
-                        const gameCode: string = window.location.hash.substr(1, 6);
-                        const hostCode: string = window.location.hash.substr(7);
+                        const gameCode: string = window.location.hash.substring(1, 7);
+                        const hostCode: string = window.location.hash.substring(7);
 
                         this.setState({
                             gameCode: gameCode,
@@ -135,7 +135,7 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
                                                 {airDate.getMonth() +
                                                     1 +
                                                     "/" +
-                                                    airDate.getDay() +
+                                                    airDate.getDate() +
                                                     "/" +
                                                     airDate.getFullYear()}
                                             </span>

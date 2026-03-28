@@ -5,7 +5,7 @@ import * as React from "react";
 import { IPlayer, TeamDictionary, ITeam } from "../../../Types";
 import { Logger } from "../../../utilities/Logger";
 import { FinalJeffpardyAnswerDictionary, FinalJeffpardyWagerDictionary } from "../Types";
-import { SpecialKey } from "../../../utilities/Key";
+import { Key, SpecialKey } from "../../../utilities/Key";
 
 export interface IFinalJeffpardyTallyProps {
     teams: TeamDictionary;
@@ -89,9 +89,10 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
                     } else {
                         if (a.responseTime > b.responseTime) {
                             return -1;
-                        } else {
-                            // In the case of absolute not worrying about it. Effectively random.
+                        } else if (a.responseTime < b.responseTime) {
                             return 1;
+                        } else {
+                            return 0;
                         }
                     }
                 });
@@ -111,17 +112,17 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
     }
 
     handleKeyDown = (event: KeyboardEvent) => {
-        switch (event.keyCode) {
+        switch (event.key.toLowerCase()) {
             case SpecialKey.SPACE:
                 Logger.debug("FinalJeffpardyTally:handleKeyDown", this.state.revealStep + 1);
                 this.setState({
                     revealStep: this.state.revealStep + 1,
                 });
                 break;
-            case 90: // Z = mark current team's response correct
+            case Key.Z:
                 this.correctResponse();
                 break;
-            case 88: // X = mark current team's response incorrect
+            case Key.X:
                 this.incorrectResponse();
                 break;
         }

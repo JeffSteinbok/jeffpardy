@@ -307,12 +307,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                                     controllingTeam={this.state.controllingTeam}
                                     hilightWinningTeams={this.state.viewMode == HostPageViewMode.End}
                                     hostSecondaryWindowUri={
-                                        "https://" +
-                                        window.location.hostname +
-                                        (window.location.port != "" ? ":" + window.location.port : "") +
-                                        "/hostSecondary#" +
-                                        this.gameCode +
-                                        this.hostCode
+                                        window.location.origin + "/hostSecondary#" + this.gameCode + this.hostCode
                                     }
                                 />
                             </div>
@@ -325,13 +320,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                                 </button>
                                 <div className="qrDrawerContent">
                                     <QRCode.QRCodeCanvas
-                                        value={
-                                            "https://" +
-                                            window.location.hostname +
-                                            (window.location.port != "" ? ":" + window.location.port : "") +
-                                            "/player#" +
-                                            this.gameCode
-                                        }
+                                        value={window.location.origin + "/player#" + this.gameCode}
                                         size={120}
                                         includeMargin={true}
                                     />

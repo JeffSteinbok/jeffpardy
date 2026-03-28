@@ -27,7 +27,7 @@ export class AnswerKey extends React.Component<IAnswerKeyProps> {
     }
 
     handleKeyDown = (event: KeyboardEvent) => {
-        switch (event.keyCode) {
+        switch (event.key) {
             case SpecialKey.ESCAPE:
                 this.props.onHide();
                 break;
@@ -48,7 +48,7 @@ export class AnswerKey extends React.Component<IAnswerKeyProps> {
                     <div className="answerKeyCategory" key={keyCounter++} style={{ gridRow: 1, gridColumn: i + 1 }}>
                         <div className="title">{category.title}</div>
                         <div>{category.comment}</div>
-                        <div>{airDate.getMonth() + 1 + "/" + airDate.getDay() + "/" + airDate.getFullYear()}</div>
+                        <div>{airDate.getMonth() + 1 + "/" + airDate.getDate() + "/" + airDate.getFullYear()}</div>
                     </div>
                 );
 
@@ -106,7 +106,7 @@ export class AnswerKey extends React.Component<IAnswerKeyProps> {
                 <div className="title">{finalCategory.title}</div>
                 <div>{finalCategory.comment}</div>
                 <div>
-                    {finalAirDate.getMonth() + 1 + "/" + finalAirDate.getDay() + "/" + finalAirDate.getFullYear()}
+                    {finalAirDate.getMonth() + 1 + "/" + finalAirDate.getDate() + "/" + finalAirDate.getFullYear()}
                 </div>
                 <div className="clue">{finalCategory.clues[0].clue}</div>
                 <div className="question">{finalCategory.clues[0].question}</div>
