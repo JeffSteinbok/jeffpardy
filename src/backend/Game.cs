@@ -135,7 +135,13 @@ namespace Jeffpardy
                     ConnectionId = connectionId,
                     Team = team,
                     Name = name
-                }); 
+                });
+
+                // If the game has already started, lock in this team as permanent too
+                if (this.gameStarted)
+                {
+                    this.permanentTeamNames.Add(team);
+                }
             }
 
             await this.SendUserListToAllClientsAsync();
