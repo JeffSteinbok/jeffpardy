@@ -1689,6 +1689,21 @@ div#playerPage .toast {
     }
 }
 
+div#playerPage .connectionBanner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #cc6600;
+    color: white;
+    text-align: center;
+    padding: 8px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    z-index: 1001;
+    animation: toastFadeIn 0.3s ease-out;
+}
+
 div#scoreboard {
     min-height: 150px;
     max-height: 150px;

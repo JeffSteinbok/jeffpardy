@@ -13,7 +13,16 @@ export interface IEndRoundDialogProps {
 export class EndRoundDialog extends React.Component<IEndRoundDialogProps> {
     public render() {
         return (
-            <Dialog open={true} onClose={this.props.onClose} PaperProps={{ className: "gameDialog" }}>
+            <Dialog
+                open={true}
+                onClose={this.props.onClose}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                    }
+                }}
+                PaperProps={{ className: "gameDialog" }}
+            >
                 <DialogTitle>End Round</DialogTitle>
                 <DialogContent>Are you sure you want to end the current round?</DialogContent>
                 <DialogActions>

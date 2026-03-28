@@ -22,6 +22,12 @@ enum PlayerPageState {
 
 export type IPlayerPageProps = Record<string, never>;
 
+enum ConnectionStatus {
+    Connected,
+    Reconnecting,
+    Disconnected,
+}
+
 export interface IPlayerPageState {
     gameCode: string;
     teams: TeamDictionary;
@@ -49,6 +55,7 @@ export interface IPlayerPageState {
     lockedInPlayerIds: string[];
     gameCodeInputLength: number;
     toastMessage: string; // Transient notification text; auto-clears after 3s via showToast
+    connectionStatus: ConnectionStatus;
 }
 
 /**
@@ -64,6 +71,8 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
     teamTemp: string = "";
     nameTemp: string = "";
+    visibilityHandler: (() => void) | null = null;
+    manualReconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor(props: IPlayerPageProps) {
         super(props);
@@ -99,6 +108,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             lockedInPlayerIds: [],
             gameCodeInputLength: 0,
             toastMessage: null,
+            connectionStatus: ConnectionStatus.Connected,
         };
     }
 
@@ -246,7 +256,82 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                     lockedInPlayerIds: [...this.state.lockedInPlayerIds, connectionId],
                 });
             });
+
+            this.state.hubConnection.onreconnecting(() => {
+                Logger.debug("Connection reconnecting...");
+                this.setState({ connectionStatus: ConnectionStatus.Reconnecting });
+            });
+
+            this.state.hubConnection.onreconnected(() => {
+                Logger.debug("Connection reconnected");
+                this.setState({ connectionStatus: ConnectionStatus.Connected });
+                this.reregisterWithGame();
+            });
+
+            this.state.hubConnection.onclose(() => {
+                Logger.debug("Connection closed");
+                this.setState({ connectionStatus: ConnectionStatus.Disconnected });
+                this.startManualReconnect();
+            });
         });
+    };
+
+    reregisterWithGame = () => {
+        if (this.state.gameCode && this.state.name && this.state.team) {
+            this.state.hubConnection
+                .invoke("connectPlayer", this.state.gameCode, this.state.team, this.state.name)
+                .catch((err) => console.error("Failed to re-register player:", err));
+        } else if (this.state.gameCode) {
+            this.state.hubConnection
+                .invoke("connectPlayerLobby", this.state.gameCode)
+                .catch((err) => console.error("Failed to re-register in lobby:", err));
+        }
+    };
+
+    startManualReconnect = () => {
+        this.cleanupReconnectListeners();
+
+        this.visibilityHandler = () => {
+            if (document.visibilityState === "visible") {
+                this.attemptReconnect();
+            }
+        };
+        document.addEventListener("visibilitychange", this.visibilityHandler);
+
+        // If page is already visible, try immediately
+        if (document.visibilityState === "visible") {
+            this.attemptReconnect();
+        }
+    };
+
+    attemptReconnect = () => {
+        if (this.state.hubConnection.state === signalR.HubConnectionState.Connected) {
+            return;
+        }
+        this.setState({ connectionStatus: ConnectionStatus.Reconnecting });
+        this.state.hubConnection
+            .start()
+            .then(() => {
+                Logger.debug("Manual reconnect succeeded");
+                this.cleanupReconnectListeners();
+                this.setState({ connectionStatus: ConnectionStatus.Connected });
+                this.reregisterWithGame();
+            })
+            .catch(() => {
+                Logger.debug("Manual reconnect failed, retrying in 5s");
+                this.manualReconnectTimer = setTimeout(() => this.attemptReconnect(), 5000);
+            });
+    };
+
+    cleanupReconnectListeners = () => {
+        if (this.visibilityHandler) {
+            document.removeEventListener("visibilitychange", this.visibilityHandler);
+            this.visibilityHandler = null;
+        }
+        if (this.manualReconnectTimer) {
+            clearTimeout(this.manualReconnectTimer);
+            this.manualReconnectTimer = null;
+        }
     };
 
     registerPlayer = () => {
@@ -364,6 +449,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
     componentWillUnmount() {
         window.removeEventListener("keydown", this.handleKeyDown);
+        this.cleanupReconnectListeners();
         this.state.hubConnection.stop();
     }
 
@@ -393,6 +479,13 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         return (
             <div id="playerPage">
                 {this.state.toastMessage && <div className="toast">{this.state.toastMessage}</div>}
+                {this.state.connectionStatus !== ConnectionStatus.Connected && (
+                    <div className="connectionBanner">
+                        {this.state.connectionStatus === ConnectionStatus.Reconnecting
+                            ? "Reconnecting..."
+                            : "Disconnected — waiting for network..."}
+                    </div>
+                )}
                 <img src="/images/JeffpardyTitle.png" className="title" />
                 <div className="gameCode jeffpardy-label">{this.state.gameCode}</div>
 

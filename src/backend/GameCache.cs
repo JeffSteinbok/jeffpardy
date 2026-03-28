@@ -52,15 +52,21 @@ namespace Jeffpardy
 
         public async Task RemoveUserAsync(string connectionId)
         {
-            string gameCode = connectionToGameDictionary[connectionId];
-            Game game = this.GetGame(gameCode);
-
-            await game.RemoveUserAsync(connectionId);
-            connectionToGameDictionary.Remove(connectionId);
-            if (game.IsEmptyGame)
+            if (!connectionToGameDictionary.TryGetValue(connectionId, out string gameCode))
             {
-                this.games.Remove(gameCode);
+                return;
             }
+
+            Game game = this.GetGame(gameCode);
+            if (game != null)
+            {
+                await game.RemoveUserAsync(connectionId);
+                if (game.IsEmptyGame)
+                {
+                    this.games.Remove(gameCode);
+                }
+            }
+            connectionToGameDictionary.Remove(connectionId);
         }
 
         public async Task ResetBuzzerAsync(string gameCode)

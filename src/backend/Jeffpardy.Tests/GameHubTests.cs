@@ -54,22 +54,20 @@ namespace Jeffpardy.Tests
         }
 
         [Fact]
-        public async Task OnDisconnectedAsync_UnknownConnection_ThrowsKeyNotFoundException()
+        public async Task OnDisconnectedAsync_UnknownConnection_DoesNotThrow()
         {
             var hub = CreateHub("conn-disconnect");
 
-            // GameCache.RemoveUserAsync throws when connection ID is not registered
-            await Assert.ThrowsAsync<KeyNotFoundException>(
-                () => hub.OnDisconnectedAsync(null!));
+            // GameCache.RemoveUserAsync should gracefully handle unknown connection IDs
+            await hub.OnDisconnectedAsync(null!);
         }
 
         [Fact]
-        public async Task OnDisconnectedAsync_WithException_UnknownConnection_ThrowsKeyNotFoundException()
+        public async Task OnDisconnectedAsync_WithException_UnknownConnection_DoesNotThrow()
         {
             var hub = CreateHub("conn-disconnect");
 
-            await Assert.ThrowsAsync<KeyNotFoundException>(
-                () => hub.OnDisconnectedAsync(new Exception("connection lost")));
+            await hub.OnDisconnectedAsync(new Exception("connection lost"));
         }
 
         [Fact]

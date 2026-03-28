@@ -27,6 +27,7 @@ export class TeamFixupDialog extends React.Component<ITeamFixupDialogProps> {
                 onClose={onClose}
                 onKeyDown={(e) => {
                     if (e.key === "Enter") {
+                        e.preventDefault();
                         e.stopPropagation();
                         onClose();
                     }

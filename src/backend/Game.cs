@@ -43,6 +43,16 @@ namespace Jeffpardy
         /// </summary>
         readonly Dictionary<string, bool> connections = new Dictionary<string, bool>();
 
+        /// <summary>
+        /// Whether a round has started. Once true, teams are permanent.
+        /// </summary>
+        bool gameStarted = false;
+
+        /// <summary>
+        /// Team names that are locked in once the game starts. These persist even if all players disconnect.
+        /// </summary>
+        readonly HashSet<string> permanentTeamNames = new HashSet<string>();
+
         private Dictionary<string, Team> TeamDictionary
         {
             get
@@ -56,6 +66,20 @@ namespace Jeffpardy
                                                               Name = x.Key,
                                                               Players = x.OrderBy(o => o.Name).ToList()
                                                           });
+
+                // Include permanent teams even if they have no connected players
+                foreach (var teamName in this.permanentTeamNames)
+                {
+                    if (!buzzerTeams.ContainsKey(teamName))
+                    {
+                        buzzerTeams[teamName] = new Team()
+                        {
+                            Name = teamName,
+                            Players = new List<Player>()
+                        };
+                    }
+                }
+
                 return buzzerTeams;
             }
         }
@@ -119,6 +143,8 @@ namespace Jeffpardy
 
         public async Task RemoveUserAsync(string connectionId)
         {
+            this.connections.Remove(connectionId);
+
             if (this.players.ContainsKey(connectionId))
             {
                 var item = this.players[connectionId];
@@ -196,6 +222,17 @@ namespace Jeffpardy
 
         public async Task StartRoundAsync(GameRound round)
         {
+            if (!this.gameStarted)
+            {
+                this.gameStarted = true;
+            }
+
+            // Lock in all current teams as permanent
+            foreach (var player in this.players.Values)
+            {
+                this.permanentTeamNames.Add(player.Team);
+            }
+
             await gameHubContext.Clients.Groups(this.hostGroupName).SendAsync("startRound", round);
         }
 
