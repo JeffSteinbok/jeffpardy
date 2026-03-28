@@ -13,12 +13,6 @@ export interface IJeffpardyCategoryProps {
 
 /** Renders a single category header cell on the game board, showing the title if the category has not yet been fully asked. */
 export class JeffpardyCategory extends React.Component<IJeffpardyCategoryProps> {
-    private contextMenuTarget: HTMLElement;
-
-    constructor(props: IJeffpardyCategoryProps) {
-        super(props);
-    }
-
     public render() {
         return (
             <div className="jeffpardyCategory jeffpardy-label" style={this.props.style}>

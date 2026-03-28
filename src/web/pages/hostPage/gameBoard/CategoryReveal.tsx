@@ -31,7 +31,7 @@ export class CategoryReveal extends React.Component<ICategoryRevealProps> {
                             className="jeffpardyCategory categoryPlaceholder"
                             style={{ gridRow: 1, gridColumn: i + 1 }}
                         >
-                            <img src={roundLogoSrc} className="categoryPlaceholderLogo" />
+                            <img src={roundLogoSrc} className="categoryPlaceholderLogo" alt="" />
                         </div>
                     ))}
                     {categories.map((cat, i) =>
@@ -76,7 +76,7 @@ export class CategoryReveal extends React.Component<ICategoryRevealProps> {
                                             (showName ? " hidden" : "")
                                         }
                                     >
-                                        <img src={roundLogoSrc} className="categoryRevealLogo" />
+                                        <img src={roundLogoSrc} className="categoryRevealLogo" alt="" />
                                     </div>
                                     <div
                                         className={

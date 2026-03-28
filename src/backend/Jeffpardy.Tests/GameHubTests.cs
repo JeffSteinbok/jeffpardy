@@ -1,5 +1,6 @@
 using Jeffpardy.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace Jeffpardy.Tests
         private readonly Mock<IHubClients> _mockClients;
         private readonly Mock<IClientProxy> _mockGroupProxy;
         private readonly Mock<ISingleClientProxy> _mockSingleClientProxy;
+        private readonly Mock<ILogger<GameHub>> _mockLogger;
         private readonly GameCache _gameCache;
 
         public GameHubTests()
@@ -25,6 +27,7 @@ namespace Jeffpardy.Tests
             _mockClients = new Mock<IHubClients>();
             _mockGroupProxy = new Mock<IClientProxy>();
             _mockSingleClientProxy = new Mock<ISingleClientProxy>();
+            _mockLogger = new Mock<ILogger<GameHub>>();
 
             _mockHubContext.Setup(h => h.Groups).Returns(_mockGroups.Object);
             _mockHubContext.Setup(h => h.Clients).Returns(_mockClients.Object);
@@ -37,7 +40,7 @@ namespace Jeffpardy.Tests
 
         private GameHub CreateHub(string connectionId = "test-conn-id")
         {
-            var hub = new GameHub(_gameCache);
+            var hub = new GameHub(_gameCache, _mockLogger.Object);
 
             var mockCallerContext = new Mock<HubCallerContext>();
             mockCallerContext.Setup(c => c.ConnectionId).Returns(connectionId);
@@ -71,129 +74,129 @@ namespace Jeffpardy.Tests
         }
 
         [Fact]
-        public void ConnectHost_WithNullGameCode_DoesNotThrow()
+        public async Task ConnectHost_WithNullGameCode_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.ConnectHost(null!, "HOST1");
+            await hub.ConnectHost(null!, "HOST1");
         }
 
         [Fact]
-        public void ConnectHost_WithEmptyGameCode_DoesNotThrow()
+        public async Task ConnectHost_WithEmptyGameCode_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.ConnectHost("", "HOST1");
+            await hub.ConnectHost("", "HOST1");
         }
 
         [Fact]
-        public void ConnectHost_WithNullHostCode_DoesNotThrow()
+        public async Task ConnectHost_WithNullHostCode_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.ConnectHost("GAME1", null!);
+            await hub.ConnectHost("GAME1", null!);
         }
 
         [Fact]
-        public void ConnectHost_WithEmptyHostCode_DoesNotThrow()
+        public async Task ConnectHost_WithEmptyHostCode_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.ConnectHost("GAME1", "");
+            await hub.ConnectHost("GAME1", "");
         }
 
         [Fact]
-        public void ConnectHost_WithValidArgs_DoesNotThrow()
+        public async Task ConnectHost_WithValidArgs_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.ConnectHost("GAME1", "HOST1");
+            await hub.ConnectHost("GAME1", "HOST1");
         }
 
         [Fact]
-        public void ConnectPlayerLobby_WithNullGameCode_DoesNotThrow()
+        public async Task ConnectPlayerLobby_WithNullGameCode_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.ConnectPlayerLobby(null!);
+            await hub.ConnectPlayerLobby(null!);
         }
 
         [Fact]
-        public void ConnectPlayerLobby_WithEmptyGameCode_DoesNotThrow()
+        public async Task ConnectPlayerLobby_WithEmptyGameCode_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.ConnectPlayerLobby("");
+            await hub.ConnectPlayerLobby("");
         }
 
         [Fact]
-        public void ConnectPlayerLobby_WithValidGameCode_DoesNotThrow()
+        public async Task ConnectPlayerLobby_WithValidGameCode_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.ConnectPlayerLobby("GAME1");
+            await hub.ConnectPlayerLobby("GAME1");
         }
 
         [Fact]
-        public void ConnectPlayer_WithNullGameCode_DoesNotThrow()
+        public async Task ConnectPlayer_WithNullGameCode_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.ConnectPlayer(null!, "TeamA", "Alice");
+            await hub.ConnectPlayer(null!, "TeamA", "Alice");
         }
 
         [Fact]
-        public void ConnectPlayer_WithNullTeam_DoesNotThrow()
+        public async Task ConnectPlayer_WithNullTeam_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.ConnectPlayer("GAME1", null!, "Alice");
+            await hub.ConnectPlayer("GAME1", null!, "Alice");
         }
 
         [Fact]
-        public void ConnectPlayer_WithNullName_DoesNotThrow()
+        public async Task ConnectPlayer_WithNullName_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.ConnectPlayer("GAME1", "TeamA", null!);
+            await hub.ConnectPlayer("GAME1", "TeamA", null!);
         }
 
         [Fact]
-        public void ConnectPlayer_WithEmptyTeam_DoesNotThrow()
+        public async Task ConnectPlayer_WithEmptyTeam_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.ConnectPlayer("GAME1", "", "Alice");
+            await hub.ConnectPlayer("GAME1", "", "Alice");
         }
 
         [Fact]
-        public void ConnectPlayer_WithEmptyName_DoesNotThrow()
+        public async Task ConnectPlayer_WithEmptyName_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.ConnectPlayer("GAME1", "TeamA", "");
+            await hub.ConnectPlayer("GAME1", "TeamA", "");
         }
 
         [Fact]
-        public void ConnectPlayer_WithValidArgs_DoesNotThrow()
+        public async Task ConnectPlayer_WithValidArgs_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.ConnectPlayer("GAME1", "TeamA", "Alice");
+            await hub.ConnectPlayer("GAME1", "TeamA", "Alice");
         }
 
         [Fact]
-        public void ResetBuzzer_WithNullGameCode_DoesNotThrow()
+        public async Task ResetBuzzer_WithNullGameCode_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.ResetBuzzer(null!);
+            await hub.ResetBuzzer(null!);
         }
 
         [Fact]
-        public void ResetBuzzer_WithEmptyGameCode_DoesNotThrow()
+        public async Task ResetBuzzer_WithEmptyGameCode_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.ResetBuzzer("");
+            await hub.ResetBuzzer("");
         }
 
         [Fact]
-        public void ActivateBuzzer_WithNullGameCode_DoesNotThrow()
+        public async Task ActivateBuzzer_WithNullGameCode_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.ActivateBuzzer(null!);
+            await hub.ActivateBuzzer(null!);
         }
 
         [Fact]
-        public void ActivateBuzzer_WithEmptyGameCode_DoesNotThrow()
+        public async Task ActivateBuzzer_WithEmptyGameCode_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.ActivateBuzzer("");
+            await hub.ActivateBuzzer("");
         }
 
         [Fact]
@@ -211,87 +214,87 @@ namespace Jeffpardy.Tests
         }
 
         [Fact]
-        public void StartRound_WithNullGameCode_DoesNotThrow()
+        public async Task StartRound_WithNullGameCode_DoesNotThrow()
         {
             var hub = CreateHub();
             var round = new GameRound { Id = 1, Categories = Array.Empty<Category>() };
-            hub.StartRound(null!, round);
+            await hub.StartRound(null!, round);
         }
 
         [Fact]
-        public void ShowClue_WithNullGameCode_DoesNotThrow()
+        public async Task ShowClue_WithNullGameCode_DoesNotThrow()
         {
             var hub = CreateHub();
             var clue = new CategoryClue { Clue = "Test", Question = "What?" };
-            hub.ShowClue(null!, clue);
+            await hub.ShowClue(null!, clue);
         }
 
         [Fact]
-        public void BroadcastScores_WithNullGameCode_DoesNotThrow()
+        public async Task BroadcastScores_WithNullGameCode_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.BroadcastScores(null!, new Dictionary<string, int>());
+            await hub.BroadcastScores(null!, new Dictionary<string, int>());
         }
 
         [Fact]
-        public void BroadcastScores_WithEmptyGameCode_DoesNotThrow()
+        public async Task BroadcastScores_WithEmptyGameCode_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.BroadcastScores("", new Dictionary<string, int>());
+            await hub.BroadcastScores("", new Dictionary<string, int>());
         }
 
         [Fact]
-        public void StartFinalJeffpardy_WithNullGameCode_DoesNotThrow()
+        public async Task StartFinalJeffpardy_WithNullGameCode_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.StartFinalJeffpardy(null!, new Dictionary<string, int>());
+            await hub.StartFinalJeffpardy(null!, new Dictionary<string, int>());
         }
 
         [Fact]
-        public void SubmitWager_WithNullGameCode_DoesNotThrow()
+        public async Task SubmitWager_WithNullGameCode_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.SubmitWager(null!, 500);
+            await hub.SubmitWager(null!, 500);
         }
 
         [Fact]
-        public void SubmitAnswer_WithNullGameCode_DoesNotThrow()
+        public async Task SubmitAnswer_WithNullGameCode_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.SubmitAnswer(null!, "An answer", 1000);
+            await hub.SubmitAnswer(null!, "An answer", 1000);
         }
 
         [Fact]
-        public void ShowFinalJeffpardyClue_WithNullGameCode_DoesNotThrow()
+        public async Task ShowFinalJeffpardyClue_WithNullGameCode_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.ShowFinalJeffpardyClue(null!);
+            await hub.ShowFinalJeffpardyClue(null!);
         }
 
         [Fact]
-        public void EndFinalJeffpardy_WithNullGameCode_DoesNotThrow()
+        public async Task EndFinalJeffpardy_WithNullGameCode_DoesNotThrow()
         {
             var hub = CreateHub();
-            hub.EndFinalJeffpardy(null!);
+            await hub.EndFinalJeffpardy(null!);
         }
 
         [Theory]
         [InlineData(null)]
         [InlineData("")]
-        public void ConnectHost_InvalidGameCode_CatchesException(string? gameCode)
+        public async Task ConnectHost_InvalidGameCode_CatchesException(string? gameCode)
         {
             var hub = CreateHub();
-            hub.ConnectHost(gameCode!, "HOST1");
+            await hub.ConnectHost(gameCode!, "HOST1");
             // Exception is caught internally; no throw expected
         }
 
         [Theory]
         [InlineData(null)]
         [InlineData("")]
-        public void ConnectHost_InvalidHostCode_CatchesException(string? hostCode)
+        public async Task ConnectHost_InvalidHostCode_CatchesException(string? hostCode)
         {
             var hub = CreateHub();
-            hub.ConnectHost("GAME1", hostCode!);
+            await hub.ConnectHost("GAME1", hostCode!);
             // Exception is caught internally; no throw expected
         }
 
@@ -301,9 +304,7 @@ namespace Jeffpardy.Tests
             var hub = CreateHub("conn-host");
 
             // Connect host first so there's a game
-            hub.ConnectHost("GAME1", "HOST1");
-            // Small delay to let async void complete
-            await Task.Delay(100);
+            await hub.ConnectHost("GAME1", "HOST1");
 
             // Disconnect should not throw
             await hub.OnDisconnectedAsync(null!);

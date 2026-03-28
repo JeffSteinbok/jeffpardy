@@ -27,6 +27,7 @@ export class DailyDoubleReveal extends React.Component<IDailyDoubleRevealProps> 
                 <img
                     src="/images/DailyDouble.jpg"
                     className={"dailyDoubleImage" + (dailyDoubleRevealed ? " faded" : "")}
+                    alt="Daily Double"
                 />
                 <div className={"dailyDoubleContent" + (dailyDoubleRevealed ? " visible" : "")}>
                     <div className="header">
@@ -43,6 +44,7 @@ export class DailyDoubleReveal extends React.Component<IDailyDoubleRevealProps> 
                                     type="number"
                                     min={0}
                                     max={dailyDoubleMaxBet}
+                                    aria-label="Daily Double wager"
                                     onChange={(e) => {
                                         this.props.onWagerInputChange(e.target.value);
                                     }}

@@ -20,14 +20,14 @@ export class RoundIntermission extends React.Component<IRoundIntermissionProps> 
                     <>
                         Get ready for... <br />
                         <div className="title">Super</div>
-                        <img src="/images/JeffpardyTitle.png" className="intermissionTitle" />
+                        <img src="/images/JeffpardyTitle.png" className="intermissionTitle" alt="Jeffpardy" />
                         <p />
                         <button onClick={onStartNewRound}>Start</button>
                     </>
                 )}
                 {round >= totalNonFinalRounds - 1 && (
                     <>
-                        <img src="/images/FinalJeffpardy.png" className="intermissionLogo" />
+                        <img src="/images/FinalJeffpardy.png" className="intermissionLogo" alt="Final Jeffpardy" />
                         <div className="categoryRevealHint">PRESS SPACE TO CONTINUE</div>
                     </>
                 )}

@@ -5,10 +5,6 @@ import * as React from "react";
 import { IJeffpardyBoard } from "./JeffpardyBoard";
 import { ICategory, IClue } from "../../../Types";
 
-export interface IJeffpardyClueState {
-    isAsked: boolean;
-}
-
 export interface IJeffpardyClueProps {
     style: React.CSSProperties;
     jeffpardyBoard: IJeffpardyBoard;
@@ -17,17 +13,7 @@ export interface IJeffpardyClueProps {
 }
 
 /** Renders a single clue cell on the game board; clicking it marks the clue as asked and triggers the clue display. */
-export class JeffpardyClue extends React.Component<IJeffpardyClueProps, IJeffpardyClueState> {
-    private contextMenuTarget: HTMLElement;
-
-    constructor(props: IJeffpardyClueProps) {
-        super(props);
-
-        this.state = {
-            isAsked: false,
-        };
-    }
-
+export class JeffpardyClue extends React.Component<IJeffpardyClueProps> {
     private clickClue(event) {
         this.props.jeffpardyBoard.showClue(this.props.category, this.props.clue);
         this.props.clue.isAsked = true;

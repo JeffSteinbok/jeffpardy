@@ -128,7 +128,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                 {this.state.viewMode == HostStartScreenViewMode.Normal && (
                     <div className="hostStartPage">
                         <div className="titleContainer">
-                            <img src="/images/JeffpardyTitle.png" className="title" />
+                            <img src="/images/JeffpardyTitle.png" className="title" alt="Jeffpardy" />
                         </div>
 
                         {this.props.gameData == null && <div>Finding some really great clues...</div>}

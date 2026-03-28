@@ -49,6 +49,7 @@ export class TeamFixupDialog extends React.Component<ITeamFixupDialogProps> {
                                     <input
                                         type="radio"
                                         name="controllingTeamName"
+                                        aria-label={`Select ${teamName} as controlling team`}
                                         checked={controllingTeam && controllingTeam.name == teamName}
                                         onChange={(_e) => {
                                             this.props.onControllingUserClear();
@@ -59,6 +60,7 @@ export class TeamFixupDialog extends React.Component<ITeamFixupDialogProps> {
                                     <input
                                         type="text"
                                         className="teamFixupScore"
+                                        aria-label={`Score for ${teamName}`}
                                         defaultValue={teams[teamName].score}
                                         onChange={(e) => (teams[teamName].score = Number.parseInt(e.target.value, 10))}
                                     />

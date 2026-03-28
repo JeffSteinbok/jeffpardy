@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Jeffpardy
 {
@@ -12,6 +9,6 @@ namespace Jeffpardy
 
     public class FinalJeffpardySettings
     {
-        public Dictionary<string, FinalJeffpardySettings> TeamSettings;
+        public Dictionary<string, FinalJeffpardyTeamSettings> TeamSettings { get; set; }
     }
 }

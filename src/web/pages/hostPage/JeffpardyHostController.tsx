@@ -18,8 +18,6 @@ import {
 } from "./Types";
 import { ICategory, IClue } from "../../Types";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
-//import createTypography from "@material-ui/core/styles/createTypography";
-
 const appInsights = new ApplicationInsights({
     config: {
         instrumentationKey: "bd4b6a26-6089-4825-b9d4-0f7db9f5631a",

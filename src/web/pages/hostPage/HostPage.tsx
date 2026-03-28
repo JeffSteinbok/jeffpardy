@@ -56,8 +56,6 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
     jeffpardyHostController: JeffpardyHostController;
     gameCode: string;
     hostCode: string;
-    customCategoryJSON: string;
-
     constructor(props: IHostPageProps) {
         super(props);
 
@@ -286,7 +284,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                 {(this.state.viewMode == HostPageViewMode.Game || this.state.viewMode == HostPageViewMode.End) && (
                     <div className="topPageNormal">
                         <div className="topSection jeffpardy-label">
-                            <img src="/images/JeffpardyTitle.png" className="title" />
+                            <img src="/images/JeffpardyTitle.png" className="title" alt="Jeffpardy" />
                             <div className="gameCode">Game Code: {this.gameCode}</div>
                         </div>
                         <div className="middleSection">
