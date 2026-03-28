@@ -71,7 +71,6 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
     teamTemp: string = "";
     nameTemp: string = "";
-    visibilityHandler: (() => void) | null = null;
     manualReconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor(props: IPlayerPageProps) {
@@ -123,9 +122,13 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     componentDidMount = () => {
         window.addEventListener("keydown", this.handleKeyDown);
 
+        // Proactively check connection health when the page becomes visible (e.g. phone unlock).
+        // This fires before onclose in many mobile scenarios where the OS silently kills the socket.
+        document.addEventListener("visibilitychange", this.onVisibilityChange);
+
         const hubConnection: signalR.HubConnection = new signalR.HubConnectionBuilder()
             .withUrl("/hub/game")
-            .withAutomaticReconnect()
+            .withAutomaticReconnect([0, 1000, 5000, 10000, 30000])
             .build();
 
         this.setState({ hubConnection }, () => {
@@ -276,6 +279,25 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         });
     };
 
+    onVisibilityChange = () => {
+        if (document.visibilityState !== "visible" || !this.state.hubConnection) {
+            return;
+        }
+
+        const state = this.state.hubConnection.state;
+        if (state === signalR.HubConnectionState.Connected) {
+            return;
+        }
+
+        Logger.debug("Page became visible with connection in state: " + state);
+
+        if (state === signalR.HubConnectionState.Disconnected) {
+            // Connection is fully dead — start it fresh
+            this.attemptReconnect();
+        }
+        // If Reconnecting or Connecting, SignalR is already working on it — nothing extra needed.
+    };
+
     reregisterWithGame = () => {
         if (this.state.gameCode && this.state.name && this.state.team) {
             this.state.hubConnection
@@ -289,23 +311,23 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     };
 
     startManualReconnect = () => {
-        this.cleanupReconnectListeners();
+        if (this.manualReconnectTimer) {
+            clearTimeout(this.manualReconnectTimer);
+            this.manualReconnectTimer = null;
+        }
 
-        this.visibilityHandler = () => {
-            if (document.visibilityState === "visible") {
-                this.attemptReconnect();
-            }
-        };
-        document.addEventListener("visibilitychange", this.visibilityHandler);
-
-        // If page is already visible, try immediately
+        // If page is already visible, try immediately; otherwise onVisibilityChange will handle it
         if (document.visibilityState === "visible") {
             this.attemptReconnect();
         }
     };
 
     attemptReconnect = () => {
-        if (this.state.hubConnection.state === signalR.HubConnectionState.Connected) {
+        if (!this.state.hubConnection || this.state.hubConnection.state === signalR.HubConnectionState.Connected) {
+            return;
+        }
+        if (this.state.hubConnection.state !== signalR.HubConnectionState.Disconnected) {
+            // SignalR is already reconnecting on its own
             return;
         }
         this.setState({ connectionStatus: ConnectionStatus.Reconnecting });
@@ -313,7 +335,10 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             .start()
             .then(() => {
                 Logger.debug("Manual reconnect succeeded");
-                this.cleanupReconnectListeners();
+                if (this.manualReconnectTimer) {
+                    clearTimeout(this.manualReconnectTimer);
+                    this.manualReconnectTimer = null;
+                }
                 this.setState({ connectionStatus: ConnectionStatus.Connected });
                 this.reregisterWithGame();
             })
@@ -324,10 +349,6 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     };
 
     cleanupReconnectListeners = () => {
-        if (this.visibilityHandler) {
-            document.removeEventListener("visibilitychange", this.visibilityHandler);
-            this.visibilityHandler = null;
-        }
         if (this.manualReconnectTimer) {
             clearTimeout(this.manualReconnectTimer);
             this.manualReconnectTimer = null;
