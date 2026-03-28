@@ -71,7 +71,6 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
     teamTemp: string = "";
     nameTemp: string = "";
-    connectionCheckInterval: ReturnType<typeof setInterval> | null = null;
     isReconnecting: boolean = false;
     hiddenAt: number = 0;
 
@@ -125,179 +124,157 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         window.addEventListener("keydown", this.handleKeyDown);
         document.addEventListener("visibilitychange", this.onVisibilityChange);
 
-        const hubConnection: signalR.HubConnection = new signalR.HubConnectionBuilder().withUrl("/hub/game").build();
-
-        this.setState({ hubConnection }, () => {
-            this.state.hubConnection
-                .start()
-                .then(() => {
-                    console.log("Connection started!");
-
-                    if (window.location.hash.length == 7) {
-                        this.gameCodeTemp = window.location.hash.substr(1);
-                        this.setGameCode();
-                    }
-                })
-                .catch((_err) => console.log("Error while establishing connection :("));
-
-            this.state.hubConnection.on("updateUsers", (teams: { [key: string]: ITeam }) => {
-                Logger.debug("Update Users: " + JSON.stringify(teams));
-                this.setState({ teams: teams });
-            });
-
-            this.state.hubConnection.on("broadcastScores", (scores: { [key: string]: number }) => {
-                Logger.debug("Broadcast Scores: " + JSON.stringify(scores));
-                this.setState({ scores: scores });
-            });
-
-            this.state.hubConnection.on("assignWinner", (user: IPlayer, reactionTime: number) => {
-                Logger.debug("Winner Assigned " + JSON.stringify(user));
-
-                this.setState({
-                    buzzedInUser: user,
-                    buzzedInUserReactionTime: reactionTime,
-                });
-                // If I'm the winner, leave the buzzer at buzzed.
-                // If not the winner, show it as locked out.
-                if (this.state.hubConnection.connectionId == user.connectionId) {
-                    this.setState({ isWinner: true });
-                } else {
-                    this.setState({ buzzerLocked: true });
-                }
-
-                if (this.state.team == user.team) {
-                    this.setState({ isTeamWinner: true });
-                }
-            });
-
-            this.state.hubConnection.on("resetBuzzer", (_nick: string, _receivedMessage: string) => {
-                this.setState({
-                    buzzed: false,
-                    buzzerActive: false,
-                    buzzerLocked: false,
-                    buzzerEarlyClickLock: false,
-                    buzzedInUser: null,
-                    isWinner: false,
-                    isTeamWinner: false,
-                });
-            });
-
-            this.state.hubConnection.on("activateBuzzer", (_nick: string, _receivedMessage: string) => {
-                this.buzzerActivateTime = new Date();
-                Logger.debug("Buzzer activated at " + this.buzzerActivateTime.getTime());
-                if (!this.state.isTeamWinner) {
-                    this.setState({ buzzed: false });
-                    this.setState({ buzzerLocked: false });
-                    this.setState({ buzzedInUser: null });
-                }
-                this.setState({ buzzerActive: true });
-            });
-
-            this.state.hubConnection.on("startFinalJeffpardy", (scores: { [key: string]: number }) => {
-                Logger.debug("on startFinalJeffpardy", this.state.team);
-
-                // If not registered yet, bail
-                if (this.state.team == null) {
-                    return;
-                }
-
-                // Get the max wager for this team.
-                // If negative, then 0
-                const maxWager: number = Math.max(scores[this.state.team], 0);
-
-                this.setState({
-                    playerPageState: PlayerPageState.FinalJeffpardy,
-                    finalJeffpardyMaxWager: maxWager,
-                    finalJeffpardyScores: scores,
-                    scores: scores,
-                });
-
-                // If max wager is 0, just set it.
-                if (maxWager == 0) {
-                    this.finalJeffpardyWagerTemp = 0;
-                    this.submitFinalJeffpardyWager();
-                }
-            });
-
-            this.state.hubConnection.on("showFinalJeffpardyClue", () => {
-                this.finalJeffpardyClueShownTime = new Date();
-                Logger.debug("on showFinalJeffpardyClue");
-
-                // If not registered yet, bail
-                if (this.state.team == null) {
-                    return;
-                }
-
-                this.setState({
-                    playerPageState: PlayerPageState.FinalJeffpardy,
-                    finalJeffpardyWagerEnabled: false,
-                });
-            });
-
-            this.state.hubConnection.on("endFinalJeffpardy", () => {
-                Logger.debug("on endFinalJeffpardy");
-
-                // If not registered yet, bail
-                if (this.state.team == null) {
-                    return;
-                }
-
-                this.setState({
-                    playerPageState: PlayerPageState.FinalJeffpardy,
-                    finalJeffpardyWagerEnabled: false,
-                    finalJeffpardyAnswerEnabled: false,
-                });
-            });
-
-            this.state.hubConnection.on("wagerLockedIn", (connectionId: string) => {
-                Logger.debug("on wagerLockedIn", connectionId);
-                this.setState({
-                    lockedInPlayerIds: [...this.state.lockedInPlayerIds, connectionId],
-                });
-            });
-
-            this.state.hubConnection.onclose(() => {
-                Logger.debug("Connection closed");
-                this.setState({ connectionStatus: ConnectionStatus.Disconnected });
-            });
-
-            // Poll connection state every second and reconnect if needed
-            this.connectionCheckInterval = setInterval(() => this.checkConnection(), 1000);
+        this.buildAndStartConnection(() => {
+            if (window.location.hash.length == 7) {
+                this.gameCodeTemp = window.location.hash.substr(1);
+                this.setGameCode();
+            }
         });
     };
 
-    checkConnection = () => {
-        if (!this.state.hubConnection || this.isReconnecting) {
-            return;
-        }
+    buildAndStartConnection = (onFirstConnect?: () => void) => {
+        const hubConnection: signalR.HubConnection = new signalR.HubConnectionBuilder().withUrl("/hub/game").build();
 
-        const state = this.state.hubConnection.state;
+        this.registerHubHandlers(hubConnection);
 
-        if (state === signalR.HubConnectionState.Connected) {
-            if (this.state.connectionStatus !== ConnectionStatus.Connected) {
-                this.setState({ connectionStatus: ConnectionStatus.Connected });
-            }
-            return;
-        }
-
-        if (state === signalR.HubConnectionState.Disconnected) {
-            this.isReconnecting = true;
-            this.setState({ connectionStatus: ConnectionStatus.Reconnecting });
-            Logger.debug("Connection check: disconnected, attempting reconnect...");
-            this.state.hubConnection
+        this.setState({ hubConnection }, () => {
+            hubConnection
                 .start()
                 .then(() => {
-                    Logger.debug("Reconnect succeeded");
+                    Logger.debug("Connection started!");
                     this.isReconnecting = false;
                     this.setState({ connectionStatus: ConnectionStatus.Connected });
-                    this.reregisterWithGame();
+                    if (onFirstConnect) {
+                        onFirstConnect();
+                    }
                 })
                 .catch(() => {
-                    Logger.debug("Reconnect failed, will retry on next poll");
+                    Logger.debug("Connection start failed");
                     this.isReconnecting = false;
                     this.setState({ connectionStatus: ConnectionStatus.Disconnected });
                 });
-        }
+        });
+    };
+
+    registerHubHandlers = (hubConnection: signalR.HubConnection) => {
+        hubConnection.on("updateUsers", (teams: { [key: string]: ITeam }) => {
+            Logger.debug("Update Users: " + JSON.stringify(teams));
+            this.setState({ teams: teams });
+        });
+
+        hubConnection.on("broadcastScores", (scores: { [key: string]: number }) => {
+            Logger.debug("Broadcast Scores: " + JSON.stringify(scores));
+            this.setState({ scores: scores });
+        });
+
+        hubConnection.on("assignWinner", (user: IPlayer, reactionTime: number) => {
+            Logger.debug("Winner Assigned " + JSON.stringify(user));
+
+            this.setState({
+                buzzedInUser: user,
+                buzzedInUserReactionTime: reactionTime,
+            });
+            if (this.state.hubConnection.connectionId == user.connectionId) {
+                this.setState({ isWinner: true });
+            } else {
+                this.setState({ buzzerLocked: true });
+            }
+
+            if (this.state.team == user.team) {
+                this.setState({ isTeamWinner: true });
+            }
+        });
+
+        hubConnection.on("resetBuzzer", (_nick: string, _receivedMessage: string) => {
+            this.setState({
+                buzzed: false,
+                buzzerActive: false,
+                buzzerLocked: false,
+                buzzerEarlyClickLock: false,
+                buzzedInUser: null,
+                isWinner: false,
+                isTeamWinner: false,
+            });
+        });
+
+        hubConnection.on("activateBuzzer", (_nick: string, _receivedMessage: string) => {
+            this.buzzerActivateTime = new Date();
+            Logger.debug("Buzzer activated at " + this.buzzerActivateTime.getTime());
+            if (!this.state.isTeamWinner) {
+                this.setState({ buzzed: false });
+                this.setState({ buzzerLocked: false });
+                this.setState({ buzzedInUser: null });
+            }
+            this.setState({ buzzerActive: true });
+        });
+
+        hubConnection.on("startFinalJeffpardy", (scores: { [key: string]: number }) => {
+            Logger.debug("on startFinalJeffpardy", this.state.team);
+
+            // If not registered yet, bail
+            if (this.state.team == null) {
+                return;
+            }
+
+            // Get the max wager for this team.
+            // If negative, then 0
+            const maxWager: number = Math.max(scores[this.state.team], 0);
+
+            this.setState({
+                playerPageState: PlayerPageState.FinalJeffpardy,
+                finalJeffpardyMaxWager: maxWager,
+                finalJeffpardyScores: scores,
+                scores: scores,
+            });
+
+            // If max wager is 0, just set it.
+            if (maxWager == 0) {
+                this.finalJeffpardyWagerTemp = 0;
+                this.submitFinalJeffpardyWager();
+            }
+        });
+
+        hubConnection.on("showFinalJeffpardyClue", () => {
+            this.finalJeffpardyClueShownTime = new Date();
+            Logger.debug("on showFinalJeffpardyClue");
+
+            // If not registered yet, bail
+            if (this.state.team == null) {
+                return;
+            }
+
+            this.setState({
+                playerPageState: PlayerPageState.FinalJeffpardy,
+                finalJeffpardyWagerEnabled: false,
+            });
+        });
+
+        hubConnection.on("endFinalJeffpardy", () => {
+            Logger.debug("on endFinalJeffpardy");
+
+            // If not registered yet, bail
+            if (this.state.team == null) {
+                return;
+            }
+
+            this.setState({
+                playerPageState: PlayerPageState.FinalJeffpardy,
+                finalJeffpardyWagerEnabled: false,
+                finalJeffpardyAnswerEnabled: false,
+            });
+        });
+
+        hubConnection.on("wagerLockedIn", (connectionId: string) => {
+            Logger.debug("on wagerLockedIn", connectionId);
+            this.setState({
+                lockedInPlayerIds: [...this.state.lockedInPlayerIds, connectionId],
+            });
+        });
+
+        hubConnection.onclose(() => {
+            Logger.debug("Connection closed");
+            this.setState({ connectionStatus: ConnectionStatus.Disconnected });
+        });
     };
 
     onVisibilityChange = () => {
@@ -306,36 +283,26 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             return;
         }
 
-        // Page became visible — if we were hidden for more than 2s, force a fresh connection.
-        // We can't trust hubConnection.state after a mobile suspend; the OS kills the socket
-        // silently and SignalR never finds out.
+        // Page resumed — if hidden for more than 2s, throw away the old connection
+        // and build a completely new one. We cannot trust the old connection at all
+        // after a mobile suspend.
         const hiddenMs = this.hiddenAt ? Date.now() - this.hiddenAt : 0;
         this.hiddenAt = 0;
 
-        if (hiddenMs > 2000 && this.state.hubConnection && !this.isReconnecting) {
-            Logger.debug(`Page resumed after ${hiddenMs}ms — forcing reconnect`);
-            this.forceReconnect();
-        }
-    };
+        if (hiddenMs > 2000 && !this.isReconnecting) {
+            Logger.debug(`Page resumed after ${hiddenMs}ms — building fresh connection`);
+            this.isReconnecting = true;
+            this.setState({ connectionStatus: ConnectionStatus.Reconnecting });
 
-    forceReconnect = () => {
-        this.isReconnecting = true;
-        this.setState({ connectionStatus: ConnectionStatus.Reconnecting });
-        this.state.hubConnection
-            .stop()
-            .catch(() => {})
-            .then(() => this.state.hubConnection.start())
-            .then(() => {
-                Logger.debug("Force reconnect succeeded");
-                this.isReconnecting = false;
-                this.setState({ connectionStatus: ConnectionStatus.Connected });
+            // Fire-and-forget stop on the old connection
+            if (this.state.hubConnection) {
+                this.state.hubConnection.stop().catch(() => {});
+            }
+
+            this.buildAndStartConnection(() => {
                 this.reregisterWithGame();
-            })
-            .catch(() => {
-                Logger.debug("Force reconnect failed, poll will retry");
-                this.isReconnecting = false;
-                this.setState({ connectionStatus: ConnectionStatus.Disconnected });
             });
+        }
     };
 
     reregisterWithGame = () => {
@@ -466,10 +433,9 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     componentWillUnmount() {
         window.removeEventListener("keydown", this.handleKeyDown);
         document.removeEventListener("visibilitychange", this.onVisibilityChange);
-        if (this.connectionCheckInterval) {
-            clearInterval(this.connectionCheckInterval);
+        if (this.state.hubConnection) {
+            this.state.hubConnection.stop();
         }
-        this.state.hubConnection.stop();
     }
 
     public render() {
