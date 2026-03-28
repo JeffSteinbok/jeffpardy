@@ -8,6 +8,8 @@ import { TeamDictionary } from "../../Types";
 import * as QRCode from "qrcode.react";
 import { Attribution } from "../../components/attribution/Attribution";
 
+import { SpecialKey } from "../../utilities/Key";
+
 export interface IHostLobbyProps {
     teams: TeamDictionary;
     gameCode: string;
@@ -16,7 +18,15 @@ export interface IHostLobbyProps {
 
 /** Lobby screen shown after game setup, displaying the game code, player join link, and player list before the game starts. */
 export class HostLobby extends React.Component<IHostLobbyProps> {
+    private handleKeyDown = (event: KeyboardEvent) => {
+        if (event.key === SpecialKey.ENTER) {
+            this.props.onStartGame();
+        }
+    };
+
     componentDidMount() {
+        window.addEventListener("keydown", this.handleKeyDown);
+
         // Pre-cache all sound effects while in the lobby
         const sounds = [
             "/sounds/boardFill.mp3",
@@ -28,6 +38,10 @@ export class HostLobby extends React.Component<IHostLobbyProps> {
             const audio = new Audio(src);
             audio.load();
         });
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("keydown", this.handleKeyDown);
     }
 
     public render() {

@@ -23,6 +23,7 @@ enum GameBoardState {
     Intermission,
     FinalJeffpardy, // Category shown, waiting for wagers
     FinalJeffpardyClue, // Clue revealed, waiting for timer start
+    FinalJeffpardyTimerRunning, // Timer/music playing, no input accepted
     Completed,
 }
 
@@ -204,6 +205,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
     startFinalJeffpardyTimer = () => {
         if (this.state.gameBoardState == GameBoardState.FinalJeffpardyClue) {
             this.props.jeffpardyHostController.jeffpardyBoard.startFinalJeffpardyTimer();
+            this.setState({ gameBoardState: GameBoardState.FinalJeffpardyTimerRunning });
         }
     };
 

@@ -19,6 +19,7 @@ export class EndRoundDialog extends React.Component<IEndRoundDialogProps> {
                 onKeyDown={(e) => {
                     if (e.key === "Enter") {
                         e.preventDefault();
+                        this.props.onConfirm();
                     }
                 }}
                 PaperProps={{ className: "gameDialog" }}

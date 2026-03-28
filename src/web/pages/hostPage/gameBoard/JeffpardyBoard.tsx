@@ -89,6 +89,7 @@ export class JeffpardyBoard
     private boardFillSound: HTMLAudioElement = new Audio("/sounds/boardFill.mp3");
     private dailyDoubleSound: HTMLAudioElement = new Audio("/sounds/dailyDouble.mp3");
     private finalJeopardySound: HTMLAudioElement = new Audio("/sounds/finalJeopardy.mp3");
+    private timesUpSound: HTMLAudioElement = new Audio("/sounds/times-up.mp3");
 
     private getRoundLogoSrc = (): string => {
         const roundName = this.props.jeffpardyHostController.gameData.rounds[this.props.round].name;
@@ -142,6 +143,7 @@ export class JeffpardyBoard
         this.boardFillSound.load();
         this.dailyDoubleSound.load();
         this.finalJeopardySound.load();
+        this.timesUpSound.load();
 
         // Start board fill animation for round 1
         if (this.state.jeopardyBoardView === JeopardyBoardView.CategoryReveal && this.props.round === 0) {
@@ -196,6 +198,9 @@ export class JeffpardyBoard
 
         if (this.state.revealCategoryIndex === -1) {
             // Move from placeholder board to first category filmstrip
+            if (this.boardFillTimeout) clearTimeout(this.boardFillTimeout);
+            this.boardFillSound.pause();
+            this.boardFillSound.currentTime = 0;
             this.setState({ revealCategoryIndex: 0, revealShowingName: false });
             this.scheduleNameReveal();
         } else {
@@ -387,6 +392,7 @@ export class JeffpardyBoard
                     finalJeffpardyTimerActive: false,
                 });
             } else {
+                this.timesUpSound.play();
                 this.props.jeffpardyHostController.buzzerTimeout();
             }
         }
