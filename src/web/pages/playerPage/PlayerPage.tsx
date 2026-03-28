@@ -372,7 +372,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         } else {
             Logger.debug("Buzzer clicked when not active - applying lockout. Time:", new Date().getTime());
 
-            // If buzzer isn't active yet, apply a 1s (2000ms) lockout
+            // If buzzer isn't active yet, apply a 250ms lockout
             if (!this.state.buzzerActive) {
                 this.setState({ buzzerEarlyClickLock: true });
 
@@ -380,7 +380,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                 this.buzzerLockTimeout = setTimeout(() => {
                     Logger.debug("Lockout over. Time:", new Date().getTime());
                     this.setState({ buzzerEarlyClickLock: false });
-                }, 2000);
+                }, 250);
             }
         }
     };
