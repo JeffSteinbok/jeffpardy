@@ -70,6 +70,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
     teamTemp: string = "";
     nameTemp: string = "";
+    joinedViaHashCode: boolean = false;
     isReconnecting: boolean = false;
     hiddenAt: number = 0;
     toastTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -82,13 +83,16 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         const debugParam: string = urlParams.get("debugMode");
         Debug.SetFlags(Number.parseInt(debugParam, 16));
 
+        const hasHashCode = window.location.hash.length == 7;
+        this.joinedViaHashCode = hasHashCode;
+
         this.state = {
             gameCode: "",
             teams: {},
             hubConnection: null,
             name: null,
             team: null,
-            playerPageState: PlayerPageState.FrontPage,
+            playerPageState: hasHashCode ? PlayerPageState.Lobby : PlayerPageState.FrontPage,
             buzzerActive: false,
             buzzerEarlyClickLock: false,
             buzzerLocked: false,
@@ -127,6 +131,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
         this.buildAndStartConnection(() => {
             if (window.location.hash.length == 7) {
+                this.joinedViaHashCode = true;
                 this.gameCodeTemp = window.location.hash.substr(1);
                 this.setGameCode();
             }
@@ -343,12 +348,13 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
         this.state.hubConnection
             .invoke("connectPlayerLobby", this.gameCodeTemp)
-            .then(() =>
+            .then(() => {
+                window.location.hash = this.gameCodeTemp.toUpperCase();
                 this.setState({
                     gameCode: this.gameCodeTemp.toUpperCase(),
                     playerPageState: PlayerPageState.Lobby,
-                })
-            )
+                });
+            })
             .catch((err) => console.error(err));
     };
 
@@ -467,6 +473,16 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
         return (
             <div id="playerPage">
+                {this.state.playerPageState == PlayerPageState.FrontPage && (
+                    <button className="backButton" onClick={() => (window.location.href = "/")}>
+                        ← Back
+                    </button>
+                )}
+                {this.state.playerPageState == PlayerPageState.Lobby && (
+                    <button className="backButton" onClick={() => (window.location.href = "/player")}>
+                        ← Exit
+                    </button>
+                )}
                 {this.state.toastMessage && <div className="toast">{this.state.toastMessage}</div>}
                 {this.state.connectionStatus !== ConnectionStatus.Connected && (
                     <div className="connectionBanner">
