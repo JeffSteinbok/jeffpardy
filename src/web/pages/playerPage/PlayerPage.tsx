@@ -31,7 +31,6 @@ enum ConnectionStatus {
 export interface IPlayerPageState {
     gameCode: string;
     teams: TeamDictionary;
-    logMessages: string[];
     hubConnection: signalR.HubConnection;
     name: string;
     team: string;
@@ -73,6 +72,8 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     nameTemp: string = "";
     isReconnecting: boolean = false;
     hiddenAt: number = 0;
+    toastTimeout: ReturnType<typeof setTimeout> | null = null;
+    buzzerLockTimeout: ReturnType<typeof setTimeout> | null = null;
 
     constructor(props: IPlayerPageProps) {
         super(props);
@@ -84,7 +85,6 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         this.state = {
             gameCode: "",
             teams: {},
-            logMessages: [],
             hubConnection: null,
             name: null,
             team: null,
@@ -114,8 +114,9 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
     // Display a brief notification overlay that auto-dismisses after 3 seconds
     showToast = (message: string) => {
+        if (this.toastTimeout) clearTimeout(this.toastTimeout);
         this.setState({ toastMessage: message });
-        setTimeout(() => {
+        this.toastTimeout = setTimeout(() => {
             this.setState({ toastMessage: null });
         }, 3000);
     };
@@ -375,7 +376,8 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             if (!this.state.buzzerActive) {
                 this.setState({ buzzerEarlyClickLock: true });
 
-                setTimeout(() => {
+                if (this.buzzerLockTimeout) clearTimeout(this.buzzerLockTimeout);
+                this.buzzerLockTimeout = setTimeout(() => {
                     Logger.debug("Lockout over. Time:", new Date().getTime());
                     this.setState({ buzzerEarlyClickLock: false });
                 }, 2000);
@@ -423,7 +425,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     };
 
     handleKeyDown = (event: KeyboardEvent) => {
-        switch (event.keyCode) {
+        switch (event.key) {
             case SpecialKey.SPACE:
                 this.buzzIn();
                 break;
@@ -433,6 +435,8 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     componentWillUnmount() {
         window.removeEventListener("keydown", this.handleKeyDown);
         document.removeEventListener("visibilitychange", this.onVisibilityChange);
+        if (this.toastTimeout) clearTimeout(this.toastTimeout);
+        if (this.buzzerLockTimeout) clearTimeout(this.buzzerLockTimeout);
         if (this.state.hubConnection) {
             this.state.hubConnection.stop();
         }
@@ -471,7 +475,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                             : "Disconnected — waiting for network..."}
                     </div>
                 )}
-                <img src="/images/JeffpardyTitle.png" className="title" />
+                <img src="/images/JeffpardyTitle.png" className="title" alt="Jeffpardy" />
                 <div className="gameCode jeffpardy-label">{this.state.gameCode}</div>
 
                 {this.state.playerPageState == PlayerPageState.FrontPage && (
@@ -487,6 +491,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                 autoFocus
                                 type="text"
                                 maxLength={6}
+                                aria-label="Game code"
                                 onChange={(e) => {
                                     this.gameCodeTemp = e.target.value;
                                     this.setState({ gameCodeInputLength: e.target.value.length });
@@ -519,6 +524,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                                 type="text"
                                                 maxLength={10}
                                                 list="dataListTeam"
+                                                aria-label="Team name"
                                                 onChange={(e) => {
                                                     this.teamTemp = e.target.value;
                                                 }}
@@ -537,7 +543,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                             <input
                                                 type="text"
                                                 maxLength={25}
-                                                value={this.state.name}
+                                                aria-label="Player name"
                                                 onChange={(e) => {
                                                     this.nameTemp = e.target.value;
                                                 }}
@@ -570,6 +576,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                         Handicap:
                                         <select
                                             id="handicap"
+                                            aria-label="Buzzer handicap"
                                             onChange={(e) => (this.handicap = Number.parseInt(e.target.value, 10))}
                                         >
                                             <option value="0">0 ms</option>
@@ -617,6 +624,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                             type="number"
                                             min={0}
                                             max={this.state.finalJeffpardyMaxWager}
+                                            aria-label="Final Jeffpardy wager"
                                             onChange={(e) => {
                                                 this.finalJeffpardyWagerTemp = Number.parseInt(e.target.value, 10);
                                             }}
@@ -646,6 +654,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                                 <input
                                                     autoFocus
                                                     disabled={!this.state.finalJeffpardyAnswerEnabled}
+                                                    aria-label="Final Jeffpardy response"
                                                     onChange={(e) => {
                                                         this.finalJeffpardyAnswerTemp = e.target.value;
                                                     }}

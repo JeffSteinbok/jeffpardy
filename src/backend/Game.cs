@@ -1,5 +1,6 @@
 ﻿using Jeffpardy.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,8 +12,9 @@ namespace Jeffpardy
     /// Represents a game in progress.  
     /// Operations on this class may cause side-effects such as outgoing SignalR calls to other clients.
     /// </summary>
-    class Game
+    class Game : IDisposable
     {
+        private readonly object _lock = new();
         /// <summary>
         /// Unique code for the game
         /// </summary>
@@ -57,30 +59,33 @@ namespace Jeffpardy
         {
             get
             {
-                var buzzerTeams = this.players.Values
-                                            .GroupBy(x => x.Team)
-                                            .OrderBy(p => p.Key.ToString())
-                                            .ToDictionary(x => x.Key,
-                                                          x => new Team()
-                                                          {
-                                                              Name = x.Key,
-                                                              Players = x.OrderBy(o => o.Name).ToList()
-                                                          });
-
-                // Include permanent teams even if they have no connected players
-                foreach (var teamName in this.permanentTeamNames)
+                lock (_lock)
                 {
-                    if (!buzzerTeams.ContainsKey(teamName))
-                    {
-                        buzzerTeams[teamName] = new Team()
-                        {
-                            Name = teamName,
-                            Players = new List<Player>()
-                        };
-                    }
-                }
+                    var buzzerTeams = this.players.Values
+                                                .GroupBy(x => x.Team)
+                                                .OrderBy(p => p.Key.ToString())
+                                                .ToDictionary(x => x.Key,
+                                                              x => new Team()
+                                                              {
+                                                                  Name = x.Key,
+                                                                  Players = x.OrderBy(o => o.Name).ToList()
+                                                              });
 
-                return buzzerTeams;
+                    // Include permanent teams even if they have no connected players
+                    foreach (var teamName in this.permanentTeamNames)
+                    {
+                        if (!buzzerTeams.ContainsKey(teamName))
+                        {
+                            buzzerTeams[teamName] = new Team()
+                            {
+                                Name = teamName,
+                                Players = new List<Player>()
+                            };
+                        }
+                    }
+
+                    return buzzerTeams;
+                }
             }
         }
 
@@ -104,12 +109,28 @@ namespace Jeffpardy
             this.buzzerWindowTimer = new Timer(500);
             this.buzzerWindowTimer.Elapsed += async (sender, args) =>
             {
-                await this.AssignWinnerAsync();
+                try
+                {
+                    await this.AssignWinnerAsync();
+                }
+                catch (Exception)
+                {
+                    // Prevent unobserved exceptions from crashing the process.
+                }
             };
 
         }
 
-        public bool IsEmptyGame => this.connections.Count == 0;
+        public bool IsEmptyGame
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return this.connections.Count == 0;
+                }
+            }
+        }
 
         public async Task ConnectHostAsync(string connectionId)
         {
@@ -128,7 +149,7 @@ namespace Jeffpardy
         {
             await this.AddConnectionToGame(connectionId);
 
-            lock (this)
+            lock (_lock)
             {
                 this.players.Add(connectionId, new Player()
                 {
@@ -149,22 +170,25 @@ namespace Jeffpardy
 
         public async Task RemoveUserAsync(string connectionId)
         {
-            this.connections.Remove(connectionId);
-
-            if (this.players.ContainsKey(connectionId))
+            Player item;
+            lock (_lock)
             {
-                var item = this.players[connectionId];
+                this.connections.Remove(connectionId);
+
+                if (!this.players.TryGetValue(connectionId, out item))
+                {
+                    return;
+                }
 
                 this.players.Remove(item.ConnectionId);
-
-                await SendUserListToAllClientsAsync();
-
             }
+
+            await SendUserListToAllClientsAsync();
         }
 
         public async Task ResetBuzzerAsync()
         {
-            lock (this)
+            lock (_lock)
             {
                 this.buzzerWinnerTeams.Clear();
                 this.winningBuzzerUser = null;
@@ -176,7 +200,7 @@ namespace Jeffpardy
 
         public async Task ActivateBuzzerAsync()
         {
-            lock (this)
+            lock (_lock)
             {
                 this.winningBuzzerUser = null;
                 this.winningBuzzerTimeInMilliseconds = int.MaxValue;
@@ -187,19 +211,33 @@ namespace Jeffpardy
 
         public async Task AssignWinnerAsync()
         {
-            lock (this)
+            Player winner;
+            int winningTime;
+            lock (_lock)
             {
                 this.buzzerWindowTimer.Stop();
+
+                if (this.winningBuzzerUser == null)
+                {
+                    return;
+                }
+
                 this.buzzerWinnerTeams.Add(this.winningBuzzerUser.Team);
+                winner = this.winningBuzzerUser;
+                winningTime = this.winningBuzzerTimeInMilliseconds;
             }
-            await gameHubContext.Clients.Group(this.GameCode).SendAsync("assignWinner", this.winningBuzzerUser, this.winningBuzzerTimeInMilliseconds);
+            await gameHubContext.Clients.Group(this.GameCode).SendAsync("assignWinner", winner, winningTime);
         }
 
         public void BuzzIn(string connectionId, int timeInMilliseconds, int handicapInMilliseconds)
         {
-            lock (this)
+            lock (_lock)
             {
-                Player buzzerUser = players[connectionId];
+                if (!players.TryGetValue(connectionId, out Player buzzerUser))
+                {
+                    return;
+                }
+
                 if (this.buzzerWinnerTeams.Contains(buzzerUser.Team))
                 {
                     // This team already won this session and isn't eligible; ignore it.
@@ -228,15 +266,18 @@ namespace Jeffpardy
 
         public async Task StartRoundAsync(GameRound round)
         {
-            if (!this.gameStarted)
+            lock (_lock)
             {
-                this.gameStarted = true;
-            }
+                if (!this.gameStarted)
+                {
+                    this.gameStarted = true;
+                }
 
-            // Lock in all current teams as permanent
-            foreach (var player in this.players.Values)
-            {
-                this.permanentTeamNames.Add(player.Team);
+                // Lock in all current teams as permanent
+                foreach (var player in this.players.Values)
+                {
+                    this.permanentTeamNames.Add(player.Team);
+                }
             }
 
             await gameHubContext.Clients.Groups(this.hostGroupName).SendAsync("startRound", round);
@@ -259,8 +300,17 @@ namespace Jeffpardy
 
         public async Task SubmitWagerAsync(string connectionId, int wager)
         {
+            Player player;
+            lock (_lock)
+            {
+                if (!players.TryGetValue(connectionId, out player))
+                {
+                    return;
+                }
+            }
+
             await gameHubContext.Clients.Group(this.hostGroupName).SendAsync("submitWager",
-                                                                                players[connectionId], 
+                                                                                player, 
                                                                                 wager);
 
             // Notify all players that this player locked in their wager
@@ -269,8 +319,17 @@ namespace Jeffpardy
 
         public async Task SubmitAnswerAsync(string connectionId, string answer, int timeInMilliseconds)
         {
+            Player player;
+            lock (_lock)
+            {
+                if (!players.TryGetValue(connectionId, out player))
+                {
+                    return;
+                }
+            }
+
             await gameHubContext.Clients.Group(this.hostGroupName).SendAsync("submitAnswer",
-                                                                                players[connectionId],
+                                                                                player,
                                                                                 answer,
                                                                                 timeInMilliseconds);
         }
@@ -287,7 +346,10 @@ namespace Jeffpardy
 
         private async Task AddConnectionToGame(string connectionId)
         {
-            this.connections[connectionId] = true;
+            lock (_lock)
+            {
+                this.connections[connectionId] = true;
+            }
             await this.gameHubContext.Groups.AddToGroupAsync(connectionId, this.GameCode);
         }
 
@@ -301,6 +363,11 @@ namespace Jeffpardy
             await gameHubContext.Clients.Group(this.GameCode).SendAsync("endFinalJeffpardy");
         }
 
+        public void Dispose()
+        {
+            buzzerWindowTimer.Stop();
+            buzzerWindowTimer.Dispose();
+        }
 
     }
 

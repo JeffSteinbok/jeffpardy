@@ -72,7 +72,6 @@ export class JeffpardyBoard
     extends React.Component<IJeffpardyBoardProps, IJeffpardyBoardState>
     implements IJeffpardyBoard
 {
-    private contextMenuTarget: HTMLElement;
     private categories: ICategory = null;
     private timerHandle: ReturnType<typeof setInterval>;
     private timerDurationInSeconds: number;
@@ -80,6 +79,10 @@ export class JeffpardyBoard
     private dailyDoubleBetTemp: string;
     private revealNameTimeout: ReturnType<typeof setTimeout>;
     private boardFillTimeout: ReturnType<typeof setTimeout>;
+    private dailyDoubleRevealTimeout: ReturnType<typeof setTimeout>;
+    private finalCategoryTimeout: ReturnType<typeof setTimeout>;
+    private finalCategorySettlingTimeout: ReturnType<typeof setTimeout>;
+    private wagerErrorTimeout: ReturnType<typeof setTimeout>;
 
     // Pre-cache all sound effects
     private finalRevealSound: HTMLAudioElement = new Audio("/sounds/finalJeffpardyReveal.mp3");
@@ -148,6 +151,12 @@ export class JeffpardyBoard
 
     componentWillUnmount() {
         if (this.boardFillTimeout) clearTimeout(this.boardFillTimeout);
+        if (this.revealNameTimeout) clearTimeout(this.revealNameTimeout);
+        if (this.timerHandle) clearTimeout(this.timerHandle);
+        if (this.dailyDoubleRevealTimeout) clearTimeout(this.dailyDoubleRevealTimeout);
+        if (this.finalCategoryTimeout) clearTimeout(this.finalCategoryTimeout);
+        if (this.finalCategorySettlingTimeout) clearTimeout(this.finalCategorySettlingTimeout);
+        if (this.wagerErrorTimeout) clearTimeout(this.wagerErrorTimeout);
     }
 
     private startBoardFill = () => {
@@ -221,7 +230,7 @@ export class JeffpardyBoard
                 dailyDoubleRevealed: false,
             });
             // After the sound/animation plays, reveal the wager form
-            setTimeout(() => {
+            this.dailyDoubleRevealTimeout = setTimeout(() => {
                 this.setState({ dailyDoubleRevealed: true });
             }, 3000);
         } else {
@@ -287,13 +296,13 @@ export class JeffpardyBoard
                 finalCategoryRevealing: true,
                 finalCategorySettling: false,
             });
-            setTimeout(() => {
+            this.finalCategoryTimeout = setTimeout(() => {
                 // Transition from revealing → settling (ease-out)
                 this.setState({
                     finalCategoryRevealing: false,
                     finalCategorySettling: true,
                 });
-                setTimeout(() => {
+                this.finalCategorySettlingTimeout = setTimeout(() => {
                     // Animation complete — UI elements hidden during animation are now shown
                     this.setState({ finalCategorySettling: false });
                 }, 800);
@@ -333,7 +342,7 @@ export class JeffpardyBoard
         const ddBet = Number.parseInt(this.dailyDoubleBetTemp, 10);
         if (isNaN(ddBet) || ddBet > maxBet || ddBet < 0) {
             this.setState({ wagerError: "Please enter a wager between 0 and " + maxBet + "." });
-            setTimeout(() => {
+            this.wagerErrorTimeout = setTimeout(() => {
                 this.setState({ wagerError: null });
             }, 3000);
             return;

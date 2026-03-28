@@ -24,11 +24,16 @@ export class HostSignalRClient implements IHostSignalRClient {
     jeffpardyHostController: JeffpardyHostController;
     gameCode: string;
     hostCode: string;
+    private unloadHandler: () => void;
 
     constructor(jeffpardyHostController: JeffpardyHostController, gameCode: string, hostCode: string) {
         this.jeffpardyHostController = jeffpardyHostController;
         this.gameCode = gameCode;
         this.hostCode = hostCode;
+
+        this.unloadHandler = () => {
+            this.hubConnection.stop();
+        };
 
         this.hubConnection = new signalR.HubConnectionBuilder()
             .withUrl("/hub/game")
@@ -40,9 +45,7 @@ export class HostSignalRClient implements IHostSignalRClient {
             .start()
             .then(() => {
                 console.log("Connection started!");
-                window.addEventListener("unload", () => {
-                    this.hubConnection.stop();
-                });
+                window.addEventListener("unload", this.unloadHandler);
 
                 this.hubConnection.invoke("connectHost", this.gameCode, this.hostCode);
             })
@@ -110,5 +113,9 @@ export class HostSignalRClient implements IHostSignalRClient {
         Logger.debug("HostSignalRClient:endFinalJeffpardy");
 
         this.hubConnection.invoke("endFinalJeffpardy", this.gameCode).catch((err) => console.error(err));
+    };
+
+    public dispose = () => {
+        window.removeEventListener("unload", this.unloadHandler);
     };
 }

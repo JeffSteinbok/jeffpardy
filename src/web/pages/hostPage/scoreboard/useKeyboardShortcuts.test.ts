@@ -15,7 +15,7 @@ describe("createKeyboardHandler", () => {
         };
 
         const handler = createKeyboardHandler(actions);
-        handler({ keyCode: SpecialKey.SPACE } as KeyboardEvent);
+        handler({ key: SpecialKey.SPACE } as KeyboardEvent);
 
         expect(actions.onSpace).toHaveBeenCalledTimes(1);
         expect(actions.onActivateBuzzer).not.toHaveBeenCalled();
@@ -30,7 +30,7 @@ describe("createKeyboardHandler", () => {
         };
 
         const handler = createKeyboardHandler(actions);
-        handler({ keyCode: Key.A } as KeyboardEvent);
+        handler({ key: Key.A } as KeyboardEvent);
 
         expect(actions.onActivateBuzzer).toHaveBeenCalledTimes(1);
     });
@@ -44,7 +44,7 @@ describe("createKeyboardHandler", () => {
         };
 
         const handler = createKeyboardHandler(actions);
-        handler({ keyCode: Key.Z } as KeyboardEvent);
+        handler({ key: Key.Z } as KeyboardEvent);
 
         expect(actions.onCorrectResponse).toHaveBeenCalledTimes(1);
     });
@@ -58,7 +58,7 @@ describe("createKeyboardHandler", () => {
         };
 
         const handler = createKeyboardHandler(actions);
-        handler({ keyCode: Key.X } as KeyboardEvent);
+        handler({ key: Key.X } as KeyboardEvent);
 
         expect(actions.onIncorrectResponse).toHaveBeenCalledTimes(1);
     });
@@ -72,7 +72,7 @@ describe("createKeyboardHandler", () => {
         };
 
         const handler = createKeyboardHandler(actions);
-        handler({ keyCode: Key.B } as KeyboardEvent);
+        handler({ key: Key.B } as KeyboardEvent);
 
         expect(actions.onSpace).not.toHaveBeenCalled();
         expect(actions.onActivateBuzzer).not.toHaveBeenCalled();

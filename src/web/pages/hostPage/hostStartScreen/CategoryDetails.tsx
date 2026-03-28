@@ -132,7 +132,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                                                         {airDate.getMonth() +
                                                             1 +
                                                             "/" +
-                                                            airDate.getDay() +
+                                                            airDate.getDate() +
                                                             "/" +
                                                             airDate.getFullYear()}
                                                     </ListItemText>

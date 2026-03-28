@@ -1,18 +1,20 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Jeffpardy.Hubs
 {
     public class GameHub : Hub
     {
-        GameCache gameCache;
+        private readonly GameCache gameCache;
+        private readonly ILogger<GameHub> logger;
 
-        public GameHub(GameCache gameCache)
+        public GameHub(GameCache gameCache, ILogger<GameHub> logger)
         {
             this.gameCache = gameCache;
+            this.logger = logger;
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
@@ -21,7 +23,7 @@ namespace Jeffpardy.Hubs
             await base.OnDisconnectedAsync(exception);
         }
 
-        public async void ConnectHost(string gameCode, string hostCode)
+        public async Task ConnectHost(string gameCode, string hostCode)
         {
             try
             {
@@ -30,10 +32,10 @@ namespace Jeffpardy.Hubs
                 await this.gameCache.ConnectHostAsync(Context.ConnectionId, gameCode, hostCode);
             } catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                logger.LogError(ex, "Error in ConnectHost for game {GameCode}", gameCode);
             }
         }
-        public async void ConnectPlayerLobby(string gameCode)
+        public async Task ConnectPlayerLobby(string gameCode)
         {
             try
             {
@@ -42,11 +44,11 @@ namespace Jeffpardy.Hubs
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                logger.LogError(ex, "Error in ConnectPlayerLobby for game {GameCode}", gameCode);
             }
         }
 
-        public async void ConnectPlayer(string gameCode, string team, string name)
+        public async Task ConnectPlayer(string gameCode, string team, string name)
         {
             try
             {
@@ -57,11 +59,11 @@ namespace Jeffpardy.Hubs
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                logger.LogError(ex, "Error in ConnectPlayer for game {GameCode}", gameCode);
             }
         }
 
-        public async void ResetBuzzer(string gameCode)
+        public async Task ResetBuzzer(string gameCode)
         {
             try
             {
@@ -70,11 +72,11 @@ namespace Jeffpardy.Hubs
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                logger.LogError(ex, "Error in ResetBuzzer for game {GameCode}", gameCode);
             }
         }
 
-        public async void ActivateBuzzer(string gameCode)
+        public async Task ActivateBuzzer(string gameCode)
         {
             try
             {
@@ -83,7 +85,7 @@ namespace Jeffpardy.Hubs
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                logger.LogError(ex, "Error in ActivateBuzzer for game {GameCode}", gameCode);
             }
         }
 
@@ -96,11 +98,11 @@ namespace Jeffpardy.Hubs
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                logger.LogError(ex, "Error in BuzzIn for game {GameCode}", gameCode);
             }
         }
 
-        public async void StartRound(string gameCode, GameRound round)
+        public async Task StartRound(string gameCode, GameRound round)
         {
             try
             {
@@ -109,11 +111,11 @@ namespace Jeffpardy.Hubs
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                logger.LogError(ex, "Error in StartRound for game {GameCode}", gameCode);
             }
         }
 
-        public async void ShowClue(string gameCode, CategoryClue clue)
+        public async Task ShowClue(string gameCode, CategoryClue clue)
         {
             try
             {
@@ -122,7 +124,7 @@ namespace Jeffpardy.Hubs
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                logger.LogError(ex, "Error in ShowClue for game {GameCode}", gameCode);
             }
         }
 
@@ -135,11 +137,11 @@ namespace Jeffpardy.Hubs
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                logger.LogError(ex, "Error in BroadcastScores for game {GameCode}", gameCode);
             }
         }
 
-        public async void StartFinalJeffpardy(string gameCode, Dictionary<string, int> scores)
+        public async Task StartFinalJeffpardy(string gameCode, Dictionary<string, int> scores)
         {
             try {
                 if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
@@ -147,11 +149,11 @@ namespace Jeffpardy.Hubs
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                logger.LogError(ex, "Error in StartFinalJeffpardy for game {GameCode}", gameCode);
             }
         }
 
-        public async void SubmitWager(string gameCode, int wagerAmount)
+        public async Task SubmitWager(string gameCode, int wagerAmount)
         {
             try
             {
@@ -161,11 +163,11 @@ namespace Jeffpardy.Hubs
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                logger.LogError(ex, "Error in SubmitWager for game {GameCode}", gameCode);
             }
         }
 
-        public async void SubmitAnswer(string gameCode, string answer, int timeInMilliseconds)
+        public async Task SubmitAnswer(string gameCode, string answer, int timeInMilliseconds)
         {
             try
             {
@@ -174,11 +176,11 @@ namespace Jeffpardy.Hubs
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                logger.LogError(ex, "Error in SubmitAnswer for game {GameCode}", gameCode);
             }
         }
 
-        public async void ShowFinalJeffpardyClue(string gameCode)
+        public async Task ShowFinalJeffpardyClue(string gameCode)
         {
             try
             {
@@ -187,11 +189,11 @@ namespace Jeffpardy.Hubs
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                logger.LogError(ex, "Error in ShowFinalJeffpardyClue for game {GameCode}", gameCode);
             }
         }
 
-        public async void EndFinalJeffpardy(string gameCode)
+        public async Task EndFinalJeffpardy(string gameCode)
         {
             try
             {
@@ -200,7 +202,7 @@ namespace Jeffpardy.Hubs
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                logger.LogError(ex, "Error in EndFinalJeffpardy for game {GameCode}", gameCode);
             }
         }
 

@@ -13,7 +13,7 @@ export interface IKeyboardShortcutActions {
 /** Creates a keyboard event handler that maps scoreboard shortcut keys (Space, A, Z, X) to their respective game actions. */
 export function createKeyboardHandler(actions: IKeyboardShortcutActions): (event: KeyboardEvent) => void {
     return (event: KeyboardEvent) => {
-        switch (event.keyCode) {
+        switch (event.key.toLowerCase()) {
             case SpecialKey.SPACE:
                 actions.onSpace();
                 break;

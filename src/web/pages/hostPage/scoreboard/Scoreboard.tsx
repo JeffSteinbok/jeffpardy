@@ -35,9 +35,6 @@ export interface IScoreboardProps {
 }
 
 export interface IScoreboardState {
-    message: string;
-    users: IPlayer[];
-    logMessages: string[];
     buzzedInUser: IPlayer;
     gameBoardState: GameBoardState;
     activeClue: IClue;
@@ -73,9 +70,6 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         this.props.jeffpardyHostController.setScoreboard(this);
 
         this.state = {
-            message: "",
-            users: [],
-            logMessages: [],
             buzzedInUser: null,
             gameBoardState: GameBoardState.CategoryReveal,
             activeClue: null,

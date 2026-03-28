@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import * as React from "react";
-import { JeffpardyHostController } from "./JeffpardyHostController";
 import { Logger } from "../../utilities/Logger";
 import { PlayerList } from "../../components/playerList/PlayerList";
 import { TeamDictionary } from "../../Types";
@@ -17,14 +16,6 @@ export interface IHostLobbyProps {
 
 /** Lobby screen shown after game setup, displaying the game code, player join link, and player list before the game starts. */
 export class HostLobby extends React.Component<IHostLobbyProps> {
-    jeffpardyHostController: JeffpardyHostController;
-    gameCode: string;
-    customCategoryJSON: string;
-
-    constructor(props: IHostLobbyProps) {
-        super(props);
-    }
-
     componentDidMount() {
         // Pre-cache all sound effects while in the lobby
         const sounds = [
@@ -41,17 +32,12 @@ export class HostLobby extends React.Component<IHostLobbyProps> {
 
     public render() {
         Logger.debug("Lobby:render", this.props.teams);
-        const playerUri: string =
-            "https://" +
-            window.location.hostname +
-            (window.location.port != "" ? ":" + window.location.port : "") +
-            "/player#" +
-            this.props.gameCode;
+        const playerUri: string = window.location.origin + "/player#" + this.props.gameCode;
 
         return (
             <div className="hostStartPage">
                 <div className="titleContainer">
-                    <img src="/images/JeffpardyTitle.png" className="title" />
+                    <img src="/images/JeffpardyTitle.png" className="title" alt="Jeffpardy" />
                 </div>
                 <div className="gameCode jeffpardy-label">Game Code: {this.props.gameCode}</div>
                 Give the above game code to the players or give them this direct link:

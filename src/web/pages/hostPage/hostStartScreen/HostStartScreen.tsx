@@ -116,12 +116,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
         let finalAirDate: Date;
 
         const hostSecondaryWindowUri: string =
-            "https://" +
-            window.location.hostname +
-            (window.location.port != "" ? ":" + window.location.port : "") +
-            "/hostSecondary#" +
-            this.props.gameCode +
-            this.props.hostCode;
+            window.location.origin + "/hostSecondary#" + this.props.gameCode + this.props.hostCode;
 
         if (this.props.gameData != null) {
             finalCategory = this.props.gameData.finalJeffpardyCategory;
@@ -133,7 +128,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                 {this.state.viewMode == HostStartScreenViewMode.Normal && (
                     <div className="hostStartPage">
                         <div className="titleContainer">
-                            <img src="/images/JeffpardyTitle.png" className="title" />
+                            <img src="/images/JeffpardyTitle.png" className="title" alt="Jeffpardy" />
                         </div>
 
                         {this.props.gameData == null && <div>Finding some really great clues...</div>}
@@ -178,7 +173,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                                                     {airDate.getMonth() +
                                                                         1 +
                                                                         "/" +
-                                                                        airDate.getDay() +
+                                                                        airDate.getDate() +
                                                                         "/" +
                                                                         airDate.getFullYear()}
                                                                 </li>
@@ -214,7 +209,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                                     {finalAirDate.getMonth() +
                                                         1 +
                                                         "/" +
-                                                        finalAirDate.getDay() +
+                                                        finalAirDate.getDate() +
                                                         "/" +
                                                         finalAirDate.getFullYear()}
                                                 </li>

@@ -56,8 +56,6 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
     jeffpardyHostController: JeffpardyHostController;
     gameCode: string;
     hostCode: string;
-    customCategoryJSON: string;
-
     constructor(props: IHostPageProps) {
         super(props);
 
@@ -286,7 +284,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                 {(this.state.viewMode == HostPageViewMode.Game || this.state.viewMode == HostPageViewMode.End) && (
                     <div className="topPageNormal">
                         <div className="topSection jeffpardy-label">
-                            <img src="/images/JeffpardyTitle.png" className="title" />
+                            <img src="/images/JeffpardyTitle.png" className="title" alt="Jeffpardy" />
                             <div className="gameCode">Game Code: {this.gameCode}</div>
                         </div>
                         <div className="middleSection">
@@ -307,12 +305,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                                     controllingTeam={this.state.controllingTeam}
                                     hilightWinningTeams={this.state.viewMode == HostPageViewMode.End}
                                     hostSecondaryWindowUri={
-                                        "https://" +
-                                        window.location.hostname +
-                                        (window.location.port != "" ? ":" + window.location.port : "") +
-                                        "/hostSecondary#" +
-                                        this.gameCode +
-                                        this.hostCode
+                                        window.location.origin + "/hostSecondary#" + this.gameCode + this.hostCode
                                     }
                                 />
                             </div>
@@ -325,13 +318,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                                 </button>
                                 <div className="qrDrawerContent">
                                     <QRCode.QRCodeCanvas
-                                        value={
-                                            "https://" +
-                                            window.location.hostname +
-                                            (window.location.port != "" ? ":" + window.location.port : "") +
-                                            "/player#" +
-                                            this.gameCode
-                                        }
+                                        value={window.location.origin + "/player#" + this.gameCode}
                                         size={120}
                                         includeMargin={true}
                                     />

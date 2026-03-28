@@ -4,6 +4,7 @@
 import * as React from "react";
 import { Timer } from "./Timer";
 import { ICategory, IClue } from "../../../Types";
+import { sanitizeHtml } from "../../../utilities/sanitize";
 
 export interface IClueDisplayProps {
     activeCategory: ICategory;
@@ -25,13 +26,13 @@ export class ClueDisplay extends React.Component<IClueDisplayProps> {
                 <div
                     className="clue"
                     dangerouslySetInnerHTML={{
-                        __html: "<span>" + activeClue.clue + "</span>",
+                        __html: sanitizeHtml(activeClue.clue),
                     }}
                 ></div>
                 <div
                     className="question"
                     dangerouslySetInnerHTML={{
-                        __html: "<span>" + (showQuestion ? activeClue.question : "\u00A0") + "</span>",
+                        __html: sanitizeHtml(showQuestion ? activeClue.question : "\u00A0"),
                     }}
                 ></div>
                 <Timer percentageRemaining={timerPercentageRemaining}></Timer>

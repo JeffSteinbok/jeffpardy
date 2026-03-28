@@ -43,7 +43,7 @@ export class Debug {
     public static generateClue(): IClue {
         return {
             clue: LoremIpsum.generate(Math.floor(Math.random() * 8) + 2),
-            question: LoremIpsum.generate(Math.floor(Math.random() * 1) + 2),
+            question: LoremIpsum.generate(Math.floor(Math.random() * 5) + 2),
             value: 0,
             isAsked: false,
             isDailyDouble: false,
