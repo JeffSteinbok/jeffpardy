@@ -51,7 +51,7 @@ describe("HostLobby", () => {
 
     it("renders a Start Game button", () => {
         const { container } = render(<HostLobby teams={makeTeams()} gameCode="CODE" onStartGame={vi.fn()} />);
-        const button = container.querySelector("button");
+        const button = container.querySelector("button:not(.backButton)");
         expect(button).toBeInTheDocument();
         expect(button!.textContent).toBe("Start Game");
     });
@@ -59,7 +59,7 @@ describe("HostLobby", () => {
     it("clicking Start Game calls onStartGame callback", () => {
         const onStartGame = vi.fn();
         const { container } = render(<HostLobby teams={makeTeams()} gameCode="CODE" onStartGame={onStartGame} />);
-        const button = container.querySelector("button")!;
+        const button = container.querySelector("button:not(.backButton)")!;
         fireEvent.click(button);
         expect(onStartGame).toHaveBeenCalledTimes(1);
     });

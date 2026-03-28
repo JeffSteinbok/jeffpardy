@@ -48,12 +48,18 @@ export class DailyDoubleReveal extends React.Component<IDailyDoubleRevealProps> 
                                     onChange={(e) => {
                                         this.props.onWagerInputChange(e.target.value);
                                     }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "-" || e.key === ".") {
+                                            e.preventDefault();
+                                        } else if (e.key === "Enter") {
+                                            this.props.onSubmitWager(dailyDoubleMaxBet);
+                                        }
+                                    }}
                                 />
-                                {wagerError && <div className="wagerError">{wagerError}</div>}
                             </div>
                         </div>
                         <div className="wagerHint">Enter a value up to {dailyDoubleMaxBet}.</div>
-                        <p />
+                        <div className={"wagerError" + (wagerError ? " visible" : "")}>{wagerError || "\u00A0"}</div>
                         <button
                             onClick={() => {
                                 this.props.onSubmitWager(dailyDoubleMaxBet);

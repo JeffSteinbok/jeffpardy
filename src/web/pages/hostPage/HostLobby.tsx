@@ -14,6 +14,7 @@ export interface IHostLobbyProps {
     teams: TeamDictionary;
     gameCode: string;
     onStartGame: () => void;
+    onBack: () => void;
 }
 
 /** Lobby screen shown after game setup, displaying the game code, player join link, and player list before the game starts. */
@@ -50,6 +51,9 @@ export class HostLobby extends React.Component<IHostLobbyProps> {
 
         return (
             <div className="hostStartPage">
+                <button className="backButton" onClick={this.props.onBack}>
+                    ← Back
+                </button>
                 <div className="titleContainer">
                     <img src="/images/JeffpardyTitle.png" className="title" alt="Jeffpardy" />
                 </div>

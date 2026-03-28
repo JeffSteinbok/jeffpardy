@@ -272,7 +272,12 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                     />
                 )}
                 {this.state.viewMode == HostPageViewMode.Lobby && (
-                    <HostLobby teams={this.state.teams} gameCode={this.gameCode} onStartGame={this.startIntro} />
+                    <HostLobby
+                        teams={this.state.teams}
+                        gameCode={this.gameCode}
+                        onStartGame={this.startIntro}
+                        onBack={() => this.setState({ viewMode: HostPageViewMode.Start })}
+                    />
                 )}
                 {this.state.viewMode == HostPageViewMode.Intro && (
                     <div id="introVideo">

@@ -13,6 +13,7 @@ import { JeffpardyHostController } from "../JeffpardyHostController";
 import { CustomCategoryDialog } from "./CustomCategoryDialog";
 import { ExcelTemplateDialog } from "./ExcelTemplateDialog";
 import { parseGameDataFromTsv } from "./TsvCategoryParser";
+import { Snackbar, Alert } from "@mui/material";
 
 import * as QRCode from "qrcode.react";
 
@@ -38,6 +39,7 @@ export interface IHostStartScreenState {
     isCustomCategoryDialogOpen: boolean;
     isCustomCategoryTsvDialogOpen: boolean;
     isCategoryDetailsDialogOpen: boolean;
+    snackbarOpen: boolean;
 }
 
 /**
@@ -54,20 +56,19 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
             isCustomCategoryDialogOpen: false,
             isCustomCategoryTsvDialogOpen: false,
             isCategoryDetailsDialogOpen: false,
+            snackbarOpen: false,
         };
     }
 
     public loadCustomCategories = (json: string) => {
-        this.setState({ isCustomCategoryDialogOpen: false });
+        this.setState({ isCustomCategoryDialogOpen: false, snackbarOpen: true });
         this.props.onModifyGameData(JSON.parse(json));
-        alert("Please check the answer key to see if this loaded correctly.");
     };
 
     public loadCustomCategoriesFromExcelPaste = (tsv: string) => {
-        this.setState({ isCustomCategoryTsvDialogOpen: false });
+        this.setState({ isCustomCategoryTsvDialogOpen: false, snackbarOpen: true });
         const gameData = parseGameDataFromTsv(tsv);
         this.props.onModifyGameData(gameData);
-        alert("Please check the answer key to see if this loaded correctly.");
     };
 
     public updateSingleCategory = (category: ICategory) => {
@@ -127,6 +128,9 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
             <div>
                 {this.state.viewMode == HostStartScreenViewMode.Normal && (
                     <div className="hostStartPage">
+                        <button className="backButton" onClick={() => (window.location.href = "/")}>
+                            ← Back
+                        </button>
                         <div className="titleContainer">
                             <img src="/images/JeffpardyTitle.png" className="title" alt="Jeffpardy" />
                         </div>
@@ -315,6 +319,16 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                 {this.state.viewMode == HostStartScreenViewMode.AnswerKey && (
                     <AnswerKey gameData={this.props.gameData} onHide={this.hideAnswerKey} />
                 )}
+                <Snackbar
+                    open={this.state.snackbarOpen}
+                    autoHideDuration={5000}
+                    onClose={() => this.setState({ snackbarOpen: false })}
+                    anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                >
+                    <Alert onClose={() => this.setState({ snackbarOpen: false })} severity="info" variant="filled">
+                        Please check the answer key to see if this loaded correctly.
+                    </Alert>
+                </Snackbar>
             </div>
         );
     }

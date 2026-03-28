@@ -8,6 +8,8 @@ import { Logger } from "../../../utilities/Logger";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 import List from "@mui/material/List";
 import LinearProgress from "@mui/material/LinearProgress";
@@ -32,6 +34,7 @@ export interface ICategoryDetailsState {
     category: ICategory;
     categorySearchResults: ICategoryMetadata[];
     searchInProgress: boolean;
+    snackbarOpen: boolean;
 }
 
 /** Dialog for viewing and replacing a single game category, with random selection and archive search capabilities. */
@@ -45,6 +48,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
             category: this.props.category,
             categorySearchResults: null,
             searchInProgress: false,
+            snackbarOpen: false,
         };
     }
 
@@ -58,7 +62,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                 fullWidth
                 maxWidth="lg"
                 onClose={() => this.props.onCancel()}
-                PaperProps={{ className: "gameDialog", style: { height: "80vh" } }}
+                PaperProps={{ className: "gameDialog", style: { height: "90vh" } }}
             >
                 <DialogTitle>Category Details</DialogTitle>
                 <DialogContent>
@@ -82,7 +86,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                             <h2>Category Picker</h2>
 
                             <Stack direction="column" spacing={2}>
-                                <Box sx={{ height: 10 }}>{this.state.searchInProgress && <LinearProgress />}</Box>
+                                <Box sx={{ height: 4 }}>{this.state.searchInProgress && <LinearProgress />}</Box>
 
                                 <Stack direction="row" spacing={2}>
                                     <Button
@@ -95,21 +99,22 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                                 </Stack>
                                 <h3>Get Category by Topic</h3>
 
-                                <TextField
-                                    label="Search Term"
-                                    onChange={(event) => (this.categorySearchTerm = event.target.value)}
-                                    onKeyDown={(event) => {
-                                        if (event.key === "Enter") {
-                                            this.searchForCategory();
-                                        }
-                                    }}
-                                />
-
-                                <Stack direction="row" spacing={2}>
+                                <Stack direction="row" spacing={2} alignItems="center">
+                                    <TextField
+                                        label="Search Term"
+                                        sx={{ flex: 1 }}
+                                        onChange={(event) => (this.categorySearchTerm = event.target.value)}
+                                        onKeyDown={(event) => {
+                                            if (event.key === "Enter") {
+                                                this.searchForCategory();
+                                            }
+                                        }}
+                                    />
                                     <Button
                                         variant="contained"
                                         disabled={this.state.searchInProgress}
                                         onClick={this.searchForCategory}
+                                        sx={{ whiteSpace: "nowrap" }}
                                     >
                                         Search Jeopardy Archive
                                     </Button>
@@ -163,6 +168,17 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                         Save
                     </Button>
                 </DialogActions>
+                <Snackbar
+                    open={this.state.snackbarOpen}
+                    autoHideDuration={4000}
+                    onClose={() => this.setState({ snackbarOpen: false })}
+                    anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                    sx={{ zIndex: 9999 }}
+                >
+                    <Alert onClose={() => this.setState({ snackbarOpen: false })} severity="warning" variant="filled">
+                        Can&apos;t search local categories.
+                    </Alert>
+                </Snackbar>
             </Dialog>
         );
     }
@@ -226,7 +242,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
             wsam.executeApi(context);
         } else {
             // TODO
-            alert("Can't Search Local Categories");
+            this.setState({ snackbarOpen: true });
         }
     };
 
@@ -252,7 +268,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
             wsam.executeApi(context);
         } else {
             // TODO
-            alert("Can't Search Local Categories");
+            this.setState({ snackbarOpen: true });
         }
     };
 

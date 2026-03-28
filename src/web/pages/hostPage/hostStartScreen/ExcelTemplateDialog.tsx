@@ -46,7 +46,8 @@ export class ExcelTemplateDialog extends React.Component<IExcelTemplateDialogPro
                         label="Paste Excel content here."
                         fullWidth
                         multiline
-                        sx={{ flex: 1, mt: 1 }}
+                        minRows={12}
+                        sx={{ flex: 1, mt: 1, "& .MuiInputBase-root": { flex: 1, alignItems: "flex-start" } }}
                         onChange={(event) => this.setState({ tsv: event.target.value })}
                     />
                 </DialogContent>
