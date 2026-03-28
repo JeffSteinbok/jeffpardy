@@ -72,6 +72,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     teamTemp: string = "";
     nameTemp: string = "";
     manualReconnectTimer: ReturnType<typeof setTimeout> | null = null;
+    hiddenTimestamp: number | null = null;
 
     constructor(props: IPlayerPageProps) {
         super(props);
@@ -280,22 +281,36 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     };
 
     onVisibilityChange = () => {
-        if (document.visibilityState !== "visible" || !this.state.hubConnection) {
+        if (!this.state.hubConnection) {
             return;
         }
+
+        if (document.visibilityState === "hidden") {
+            this.hiddenTimestamp = Date.now();
+            return;
+        }
+
+        // Page became visible
+        const hiddenDuration = this.hiddenTimestamp ? Date.now() - this.hiddenTimestamp : 0;
+        this.hiddenTimestamp = null;
 
         const state = this.state.hubConnection.state;
-        if (state === signalR.HubConnectionState.Connected) {
+        Logger.debug(`Page visible after ${hiddenDuration}ms, connection state: ${state}`);
+
+        if (state === signalR.HubConnectionState.Disconnected) {
+            this.attemptReconnect();
             return;
         }
 
-        Logger.debug("Page became visible with connection in state: " + state);
-
-        if (state === signalR.HubConnectionState.Disconnected) {
-            // Connection is fully dead — start it fresh
-            this.attemptReconnect();
+        // If the page was hidden for more than 3 seconds, the socket is likely dead
+        // even if SignalR still reports Connected. Force a restart.
+        if (hiddenDuration > 3000 && state === signalR.HubConnectionState.Connected) {
+            Logger.debug("Forcing reconnect after prolonged hidden state");
+            this.state.hubConnection
+                .stop()
+                .then(() => this.attemptReconnect())
+                .catch(() => this.attemptReconnect());
         }
-        // If Reconnecting or Connecting, SignalR is already working on it — nothing extra needed.
     };
 
     reregisterWithGame = () => {
