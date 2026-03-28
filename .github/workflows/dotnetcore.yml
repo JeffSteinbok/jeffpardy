@@ -5,7 +5,7 @@ on:
     paths-ignore:
       - '*.md'
     branches:
-      - master
+      - main
 # CONFIGURATION
 # For help, go to https://github.com/Azure/Actions
 #
