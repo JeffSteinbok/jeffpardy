@@ -211,8 +211,8 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
                                 (i < this.state.currentTeamIndex
                                     ? " completed"
                                     : i === this.state.currentTeamIndex
-                                      ? " active"
-                                      : "")
+                                    ? " active"
+                                    : "")
                             }
                         />
                     ))}

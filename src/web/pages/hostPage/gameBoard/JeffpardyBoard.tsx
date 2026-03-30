@@ -536,7 +536,12 @@ export class JeffpardyBoard
                                                 <source src="/sounds/finalJeopardy.mp3" type="audio/mp3" />
                                             </audio>
                                         )}
-                                        <div className="clue" dangerouslySetInnerHTML={{ __html: sanitizeHtml(this.props.categories[0].clues[0].clue) }} />
+                                        <div
+                                            className="clue"
+                                            dangerouslySetInnerHTML={{
+                                                __html: sanitizeHtml(this.props.categories[0].clues[0].clue),
+                                            }}
+                                        />
                                         {!this.state.finalJeffpardyTimerActive && (
                                             <div className="categoryRevealHint jeffpardy-label">
                                                 Hit Space to Start Timer
@@ -548,7 +553,12 @@ export class JeffpardyBoard
                                 )}
                                 {this.state.jeopardyBoardView == JeopardyBoardView.FinalTally && (
                                     <div className="jeffpardyFinalTally">
-                                        <div className="clue" dangerouslySetInnerHTML={{ __html: sanitizeHtml(this.props.categories[0].clues[0].clue) }} />
+                                        <div
+                                            className="clue"
+                                            dangerouslySetInnerHTML={{
+                                                __html: sanitizeHtml(this.props.categories[0].clues[0].clue),
+                                            }}
+                                        />
                                         <FinalJeffpardyTally
                                             teams={this.props.teams}
                                             wagers={this.props.finalJeffpardyWagers}
