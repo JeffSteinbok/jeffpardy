@@ -258,7 +258,10 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                                                             <a
                                                                                 href="#"
                                                                                 onClick={(_e) => {
-                                                                                    this.showCategoryDetails(round, category);
+                                                                                    this.showCategoryDetails(
+                                                                                        round,
+                                                                                        category
+                                                                                    );
                                                                                 }}
                                                                             >
                                                                                 🔎
@@ -376,7 +379,9 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                 </div>
 
                                 <div className="flexGrowSpacer"></div>
-                                <Attribution showArchiveAttribution={this.props.jeffpardyHostController.hasStoredAccessCode()} />
+                                <Attribution
+                                    showArchiveAttribution={this.props.jeffpardyHostController.hasStoredAccessCode()}
+                                />
                                 {this.state.isCustomCategoryDialogOpen && (
                                     <CustomCategoryDialog
                                         gameData={this.props.gameData}
