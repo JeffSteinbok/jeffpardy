@@ -7,7 +7,7 @@
     <RootNamespace>Jeffpardy</RootNamespace>
     <Configurations>Debug;Release;DebugServerOnly</Configurations>
     <UserSecretsId>b808f0f8-3565-4c36-bfe8-e713ac91c711</UserSecretsId>
-    <DefaultItemExcludes>$(DefaultItemExcludes);Jeffpardy.Tests\**</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes);Jeffpardy.Tests\**;..\..\node_modules\**</DefaultItemExcludes>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.19.0" />

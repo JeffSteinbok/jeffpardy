@@ -18,6 +18,53 @@ interface ICustomCategoryDialogState {
     error: string;
 }
 
+const PLACEHOLDER_GAME_DATA = JSON.stringify(
+    {
+        rounds: [
+            {
+                id: 0,
+                categories: [
+                    {
+                        title: "Category 1",
+                        comment: "",
+                        airDate: "",
+                        clues: [
+                            { clue: "This is a clue", question: "What is the answer?" },
+                            { clue: "Another clue", question: "What is another answer?" },
+                            { clue: "Third clue", question: "What is the third answer?" },
+                            { clue: "Fourth clue", question: "What is the fourth answer?" },
+                            { clue: "Fifth clue", question: "What is the fifth answer?" },
+                        ],
+                    },
+                ],
+            },
+        ],
+        finalJeffpardyCategory: {
+            title: "Final Category",
+            comment: "",
+            airDate: "",
+            clues: [{ clue: "Final clue", question: "What is the final answer?" }],
+        },
+    },
+    null,
+    4
+);
+
+/** Strips engine-managed fields from game data for display/export. */
+function serializeGameData(gameData: IGameData): string {
+    return JSON.stringify(
+        gameData,
+        (key, value) => {
+            if (key == "isAsked") return undefined;
+            else if (key == "isDailyDouble") return undefined;
+            else if (key == "hasDailyDouble") return undefined;
+            else if (key == "value") return undefined;
+            else return value;
+        },
+        4
+    );
+}
+
 /** Dialog for loading custom game data by editing raw JSON with a CodeMirror editor. */
 export class CustomCategoryDialog extends React.Component<ICustomCategoryDialogProps, ICustomCategoryDialogState> {
     constructor(props: ICustomCategoryDialogProps) {
@@ -52,17 +99,9 @@ export class CustomCategoryDialog extends React.Component<ICustomCategoryDialogP
                             onClick={() => {
                                 const editorJson =
                                     this.state.json ||
-                                    JSON.stringify(
-                                        this.props.gameData,
-                                        (key, value) => {
-                                            if (key == "isAsked") return undefined;
-                                            else if (key == "isDailyDouble") return undefined;
-                                            else if (key == "hasDailyDouble") return undefined;
-                                            else if (key == "value") return undefined;
-                                            else return value;
-                                        },
-                                        4
-                                    );
+                                    (this.props.gameData
+                                        ? serializeGameData(this.props.gameData)
+                                        : PLACEHOLDER_GAME_DATA);
                                 const blob = new Blob([editorJson], { type: "application/json" });
                                 const url = URL.createObjectURL(blob);
                                 const a = document.createElement("a");
@@ -106,17 +145,7 @@ export class CustomCategoryDialog extends React.Component<ICustomCategoryDialogP
                     <JsonEditor
                         defaultValue={
                             this.state.loadedJson ||
-                            JSON.stringify(
-                                this.props.gameData,
-                                (key, value) => {
-                                    if (key == "isAsked") return undefined;
-                                    else if (key == "isDailyDouble") return undefined;
-                                    else if (key == "hasDailyDouble") return undefined;
-                                    else if (key == "value") return undefined;
-                                    else return value;
-                                },
-                                4
-                            )
+                            (this.props.gameData ? serializeGameData(this.props.gameData) : PLACEHOLDER_GAME_DATA)
                         }
                         onChange={(value) => this.setState({ json: value })}
                     />

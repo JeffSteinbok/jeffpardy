@@ -137,6 +137,10 @@ Add `?debugMode=<value>` to the host URL to enable debug flags. Values are hex a
 | `21E` | SkipIntro + LocalCategories + DD + FixedGameCode + SkipCategoryReveal | Full dev mode, no reveal |
 | `61E` | SkipIntro + LocalCategories + DD + FixedGameCode + FakeTeams + SkipCategoryReveal | Full dev mode with fake teams |
 
+## Custom Game Data
+
+You can paste your own game data JSON into the **Modify Game Data** dialog or load from a file. See [GameDataFormat.md](GameDataFormat.md) for the full format specification and examples. An Excel template is also available at `wwwroot/JeffpardyGameDataTemplate.xlsx`.
+
 ## Access Code
 
 Category API endpoints are gated behind an access code. The code can be provided via:
