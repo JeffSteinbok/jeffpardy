@@ -21,6 +21,7 @@ export interface IFinalJeffpardyTallyState {
     currentTeamIndex: number;
     isTallyCompleted: boolean;
     isTransitioning: boolean;
+    showResult: boolean;
 }
 
 interface ITallyPlayer {
@@ -95,11 +96,12 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
             currentTeamIndex: 0,
             isTallyCompleted: this.tallyTeams.length === 0,
             isTransitioning: false,
+            showResult: false,
         };
     }
 
     handleKeyDown = (event: KeyboardEvent) => {
-        if (this.state.isTransitioning || this.state.isTallyCompleted) return;
+        if (this.state.isTransitioning || this.state.isTallyCompleted || this.state.showResult) return;
 
         switch (event.key.toLowerCase()) {
             case SpecialKey.SPACE:
@@ -134,7 +136,7 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
     };
 
     processResponse = (isCorrect: boolean) => {
-        if (this.state.isTransitioning || this.state.isTallyCompleted) return;
+        if (this.state.isTransitioning || this.state.isTallyCompleted || this.state.showResult) return;
 
         const tallyTeam: ITallyTeam = this.tallyTeams[this.state.currentTeamIndex];
         const currentPlayers = tallyTeam.players;
@@ -157,25 +159,29 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
         tallyTeam.score = teamObject.score;
         this.props.onBroadcastScores();
 
+        // Show result briefly, then transition
+        this.setState({ showResult: true });
+
         const newTeamIndex = this.state.currentTeamIndex + 1;
 
-        if (newTeamIndex >= this.tallyTeams.length) {
-            this.setState({ isTallyCompleted: true });
-            // Short delay before ending so the last score is visible
-            setTimeout(() => {
-                this.props.onTallyCompleted();
-            }, 2000);
-        } else {
-            // Transition animation between teams
-            this.setState({ isTransitioning: true });
-            setTimeout(() => {
-                this.setState({
-                    currentTeamIndex: newTeamIndex,
-                    revealStep: 0,
-                    isTransitioning: false,
-                });
-            }, 800);
-        }
+        setTimeout(() => {
+            if (newTeamIndex >= this.tallyTeams.length) {
+                this.setState({ isTallyCompleted: true, showResult: false });
+                setTimeout(() => {
+                    this.props.onTallyCompleted();
+                }, 500);
+            } else {
+                this.setState({ isTransitioning: true });
+                setTimeout(() => {
+                    this.setState({
+                        currentTeamIndex: newTeamIndex,
+                        revealStep: 0,
+                        isTransitioning: false,
+                        showResult: false,
+                    });
+                }, 800);
+            }
+        }, 500);
     };
 
     public render() {
@@ -248,7 +254,7 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
                     </table>
 
                     <div className="tallyAction">
-                        {allRevealed && !this.state.isTallyCompleted && (
+                        {allRevealed && !this.state.showResult && !this.state.isTallyCompleted && (
                             <>
                                 <button className="tallyCorrect" onClick={this.correctResponse}>
                                     ✓ Correct
@@ -258,7 +264,7 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
                                 </button>
                             </>
                         )}
-                        {this.state.isTallyCompleted && (
+                        {(this.state.showResult || this.state.isTallyCompleted) && (
                             <span className={tallyTeam.isCorrect ? "resultCorrect" : "resultIncorrect"}>
                                 {tallyTeam.isCorrect ? "✓ Correct" : "✗ Incorrect"}
                             </span>
@@ -267,10 +273,10 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
                 </div>
 
                 <div className="postTally">
-                    {!this.state.isTallyCompleted && !allRevealed && (
+                    {!this.state.isTallyCompleted && !this.state.showResult && !allRevealed && (
                         <div className="categoryRevealHint">Hit Space to Reveal Responses</div>
                     )}
-                    {!this.state.isTallyCompleted && allRevealed && (
+                    {!this.state.isTallyCompleted && !this.state.showResult && allRevealed && (
                         <div className="categoryRevealHint">Press Z for Correct, X for Incorrect</div>
                     )}
                 </div>
