@@ -26,6 +26,7 @@ import { WebServerApiManager, IApiExecutionContext } from "../../../utilities/We
 export interface ICategoryDetailsProps {
     roundDescriptor: RoundDescriptor;
     category: ICategory;
+    accessCode: string;
     onSave: (category: ICategory) => void;
     onCancel: () => void;
 }
@@ -192,6 +193,10 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
         );
     }
 
+    private getAccessCodeHeaders(): Record<string, string> {
+        return { "X-Access-Code": this.props.accessCode ?? "" };
+    }
+
     public loadRandomCategory = () => {
         Logger.debug("CategoryDetails:loadRandomCategory");
 
@@ -201,6 +206,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
             const context: IApiExecutionContext = {
                 apiName: "/api/Categories/RandomCategory/" + this.props.roundDescriptor,
                 json: true,
+                headers: this.getAccessCodeHeaders(),
                 success: (results: ICategory) => {
                     this.setCategory(results);
                     this.setState({ searchInProgress: false });
@@ -238,6 +244,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                     "?index=" +
                     categoryMetadata.index,
                 json: true,
+                headers: this.getAccessCodeHeaders(),
                 success: (results: ICategory) => {
                     this.setCategory(results);
                     this.setState({ searchInProgress: false });
@@ -264,6 +271,7 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
             const context: IApiExecutionContext = {
                 apiName: "/api/CategoryMetadata/Search/" + this.props.roundDescriptor + "/" + this.categorySearchTerm,
                 json: true,
+                headers: this.getAccessCodeHeaders(),
                 success: (results: ICategoryMetadata[]) => {
                     this.setState({ categorySearchResults: results });
                     this.setState({ searchInProgress: false });

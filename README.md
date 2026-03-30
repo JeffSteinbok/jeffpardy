@@ -124,6 +124,7 @@ Add `?debugMode=<value>` to the host URL to enable debug flags. Values are hex a
 | FinalJeffpardy | 7 | 80 | Jump straight to Final Jeffpardy |
 | FastFinalJeffpardy | 8 | 100 | Shorten Final Jeffpardy timer |
 | SkipCategoryReveal | 9 | 200 | Skip the category reveal animation |
+| FakeTeams | 10 | 400 | Create 3 fake teams with 4 players each |
 
 ### Common Combinations
 
@@ -134,3 +135,25 @@ Add `?debugMode=<value>` to the host URL to enable debug flags. Values are hex a
 | `1E` | SkipIntro + LocalCategories + DD + FixedGameCode | Full dev mode with category reveal |
 | `46` | SkipIntro + LocalCategories + ShortTimers | Quick dev iteration |
 | `21E` | SkipIntro + LocalCategories + DD + FixedGameCode + SkipCategoryReveal | Full dev mode, no reveal |
+| `61E` | SkipIntro + LocalCategories + DD + FixedGameCode + FakeTeams + SkipCategoryReveal | Full dev mode with fake teams |
+
+## Access Code
+
+Category API endpoints are gated behind an access code. The code can be provided via:
+
+- **`X-Access-Code` header** — used by the frontend automatically
+- **`?accessCode=` query parameter** — useful for testing APIs directly in a browser
+
+Example: `https://localhost:5001/api/Categories/GameData?accessCode=buzzer123`
+
+### Configuration
+
+| Environment | How to set |
+|-------------|-----------|
+| **Local dev** | `dotnet user-secrets --project src/backend set "AccessCode" "yourcode"` |
+| **Azure App Service** | Add `AccessCode` app setting in Configuration |
+| **GitHub Actions** | Stored as `ACCESS_CODE` repository secret |
+
+If no `AccessCode` is configured on the server, only an empty string will be accepted (the header/param must still be present).
+
+On the host page, the access code is stored in a session cookie so it persists across page refreshes until the browser is closed.

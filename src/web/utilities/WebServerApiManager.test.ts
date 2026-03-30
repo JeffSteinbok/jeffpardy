@@ -26,7 +26,7 @@ describe("WebServerApiManager", () => {
             const manager = new WebServerApiManager();
             manager.executeApi(ctx);
 
-            expect(axios.get).toHaveBeenCalledWith("/api/test");
+            expect(axios.get).toHaveBeenCalledWith("/api/test", { headers: undefined });
         });
 
         it("calls success with response.data when json is true", async () => {
@@ -140,7 +140,7 @@ describe("WebServerApiManager", () => {
             const manager = new WebServerApiManager();
             manager.executePostApi(ctx, '{"key":"value"}');
 
-            expect(axios.post).toHaveBeenCalledWith("/api/create", '{"key":"value"}');
+            expect(axios.post).toHaveBeenCalledWith("/api/create", '{"key":"value"}', { headers: undefined });
         });
 
         it("calls success with response.data on post success", async () => {

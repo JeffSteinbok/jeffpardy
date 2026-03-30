@@ -19,10 +19,7 @@ export class Timer extends React.Component<ITimerProps> {
 
         return (
             <div className="timer">
-                <div
-                    className={`timerFill${isReset ? " noTransition" : ""}`}
-                    style={{ width: `${elapsedPercent}%` }}
-                />
+                <div className={`timerFill${isReset ? " noTransition" : ""}`} style={{ width: `${elapsedPercent}%` }} />
             </div>
         );
     }

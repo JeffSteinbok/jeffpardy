@@ -107,7 +107,10 @@ export class AnswerKey extends React.Component<IAnswerKeyProps> {
                     {finalAirDate.getMonth() + 1 + "/" + finalAirDate.getDate() + "/" + finalAirDate.getFullYear()}
                 </div>
                 <div className="clue" dangerouslySetInnerHTML={{ __html: sanitizeHtml(finalCategory.clues[0].clue) }} />
-                <div className="question" dangerouslySetInnerHTML={{ __html: sanitizeHtml(finalCategory.clues[0].question) }} />
+                <div
+                    className="question"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(finalCategory.clues[0].question) }}
+                />
             </div>
         );
     }
