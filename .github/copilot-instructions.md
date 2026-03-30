@@ -69,13 +69,13 @@ Always run these checks locally before pushing:
 npm run lint          # ESLint
 npm run format:check  # Prettier (fix with: npx prettier --write <files>)
 npm test              # Frontend tests (vitest)
-dotnet test src/backend/Jeffpardy.Tests -p:SkipFrontendBuild=true  # Backend tests (xUnit)
+dotnet test src/backend/Jeffpardy.Tests  # Backend tests (xUnit)
 ```
 
 ### Build Tasks Available
-- `dotnet build` - Build the project
+- `dotnet build src/backend` - Build the backend (does not trigger frontend build)
 - `dotnet publish` - Publish for deployment
-- `dotnet watch run` - Run with auto-rebuild
+- `dotnet watch run --project src/backend` - Run with auto-rebuild
 
 ## Project Structure Conventions
 

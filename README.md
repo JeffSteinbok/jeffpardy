@@ -49,15 +49,17 @@ The app will be available at the URL shown in the terminal output (typically `ht
 |---------|-------------|
 | `npm run build` | Development frontend build |
 | `npm run buildProd` | Production frontend build |
-| `dotnet build` | Build the backend |
+| `dotnet build src/backend` | Build the backend (does **not** trigger a frontend build) |
 | `dotnet run --project src/backend` | Run the server |
 | `dotnet watch run --project src/backend` | Run with auto-rebuild |
+
+> **Note:** Frontend and backend builds are fully decoupled. `dotnet build` never runs npm — build the frontend separately with `npm run build`.
 
 ## Testing
 
 ```bash
 npm test                                                       # Frontend tests (vitest)
-dotnet test src/backend/Jeffpardy.Tests -p:SkipFrontendBuild=true   # Backend tests (xUnit)
+dotnet test src/backend/Jeffpardy.Tests                              # Backend tests (xUnit)
 ```
 
 ## Linting & Formatting
@@ -77,12 +79,12 @@ Run all checks before pushing:
 npm run lint
 npm run format:check
 npm test
-dotnet test src/backend/Jeffpardy.Tests -p:SkipFrontendBuild=true
+dotnet test src/backend/Jeffpardy.Tests
 ```
 
 ## CI Pipeline
 
-GitHub Actions runs on every push to `master` and on PRs targeting `master`. It runs three parallel jobs:
+GitHub Actions runs on every push to `main` and on PRs targeting `main`. It runs three parallel jobs:
 
 1. **Backend Build & Test** — restores, builds, and tests the .NET project
 2. **Frontend Build & Test** — installs deps, builds with Vite, and runs vitest
@@ -106,7 +108,7 @@ wwwroot/                # Static web assets (Vite output goes to wwwroot/js/dist
 
 ## PR Workflow
 
-Always create a pull request to merge changes into `master`. PRs trigger the CI pipeline automatically.
+Always create a pull request to merge changes into `main`. PRs trigger the CI pipeline automatically.
 
 ## Debug Mode
 

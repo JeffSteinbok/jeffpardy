@@ -25,7 +25,17 @@ jobs:
 
       # Checkout the repo
       - uses: actions/checkout@v5
-      
+
+      # Setup Node.js and build frontend
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Build frontend
+        run: npm ci --legacy-peer-deps && npm run buildProd
+
       # Setup .NET Core SDK
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v5
@@ -36,7 +46,7 @@ jobs:
       - name: dotnet build and publish
         run: |
           dotnet build --configuration Release
-          dotnet publish src/backend/Jeffpardy.csproj -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp' 
+          dotnet publish src/backend/Jeffpardy.csproj -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
 
       # Deploy to Azure Web apps
       - name: 'Run Azure webapp deploy action using publish profile credentials'
