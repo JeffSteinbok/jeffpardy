@@ -320,6 +320,9 @@ export class JeffpardyHostController {
     }
 
     public setViewMode(viewMode: HostPageViewMode) {
+        if (viewMode === HostPageViewMode.End) {
+            this.recordGameComplete();
+        }
         this.hostPage.setViewMode(viewMode);
     }
 
@@ -408,5 +411,39 @@ export class JeffpardyHostController {
     public endFinalJeffpardy = () => {
         appInsights.trackEvent({ name: "EndGame" });
         this.hostSignalRClient.endFinalJeffpardy();
+    };
+
+    private recordGameComplete = () => {
+        if (!this.gameData) return;
+
+        const categories: Array<{ season: number; fileName: string; index: number }> = [];
+
+        this.gameData.rounds.forEach((round: IGameRound) => {
+            round.categories.forEach((cat: ICategory) => {
+                if (cat.fileName) {
+                    categories.push({ season: cat.season, fileName: cat.fileName, index: cat.index });
+                }
+            });
+        });
+
+        if (this.gameData.finalJeffpardyCategory?.fileName) {
+            const fj = this.gameData.finalJeffpardyCategory;
+            categories.push({ season: fj.season, fileName: fj.fileName, index: fj.index });
+        }
+
+        if (categories.length === 0) return;
+
+        const wsam = new WebServerApiManager();
+        wsam.executePostApi(
+            {
+                apiName: "/api/Categories/RecordGameComplete",
+                json: false,
+                success: (_data) => {},
+                error: (statusText, responseText) => {
+                    console.error("Failed to record game complete:", statusText, responseText);
+                },
+            },
+            JSON.stringify(categories)
+        );
     };
 }

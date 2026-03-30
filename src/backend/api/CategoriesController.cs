@@ -12,13 +12,15 @@ namespace Jeffpardy
     {
         private readonly ISeasonManifestCache _cache;
         private readonly ICategoryLoader _loader;
+        private readonly IUsedCategoryTracker _usedCategoryTracker;
 
         Random rand = new Random();
 
-        public CategoriesController(ISeasonManifestCache cache, ICategoryLoader loader)
+        public CategoriesController(ISeasonManifestCache cache, ICategoryLoader loader, IUsedCategoryTracker usedCategoryTracker)
         {
             _cache = cache;
             _loader = loader;
+            _usedCategoryTracker = usedCategoryTracker;
         }
 
         [Route("GameData")]
@@ -63,9 +65,10 @@ namespace Jeffpardy
                     break;
             }
 
-            int categoryIndex = rand.Next(0, categoryList.Count);
+            var available = await GetAvailableCategoriesAsync(categoryList, 1);
+            int categoryIndex = rand.Next(0, available.Count);
 
-            var category = await _loader.LoadCategoryAsync(categoryList[categoryIndex]);
+            var category = await _loader.LoadCategoryAsync(available[categoryIndex]);
 
             return category;
         }
@@ -79,22 +82,52 @@ namespace Jeffpardy
             return category;
         }
 
+        [Route("RecordGameComplete")]
+        [HttpPost]
+        public async Task<IActionResult> RecordGameComplete([FromBody] List<CategoryKey> categories)
+        {
+            if (categories == null || categories.Count == 0)
+            {
+                return BadRequest("No categories provided.");
+            }
+
+            var keys = categories
+                .Where(c => c != null && !string.IsNullOrEmpty(c.FileName))
+                .Select(c => $"{c.Season}/{c.FileName}/{c.Index}")
+                .ToList();
+
+            await _usedCategoryTracker.RecordUsedCategoriesAsync(keys);
+
+            return Ok();
+        }
 
         private async Task<Category[]> GetCategoriesAsync(IReadOnlyList<ManifestCategory> categoryList)
         {
-            int categoryCount = categoryList.Count;
-            int categorySegments = categoryCount / 6;
+            var available = await GetAvailableCategoriesAsync(categoryList, 6);
 
-            int startCategoryIndex = rand.Next(0, categorySegments) * 6;
+            var selected = available
+                .OrderBy(_ => rand.Next())
+                .Take(6)
+                .ToList();
 
-            List<ManifestCategory> manifestCategories = new List<ManifestCategory>();
+            return await LoadCategoriesAsync(selected);
+        }
 
-            for (int i = startCategoryIndex; i < startCategoryIndex + 6; i++)
+        private async Task<List<ManifestCategory>> GetAvailableCategoriesAsync(IReadOnlyList<ManifestCategory> categoryList, int minimumRequired)
+        {
+            var usedKeys = await _usedCategoryTracker.GetUsedCategoryKeysAsync();
+
+            var available = categoryList
+                .Where(c => !usedKeys.Contains(c.UniqueKey))
+                .ToList();
+
+            // Fall back to full list if not enough unused categories remain
+            if (available.Count < minimumRequired)
             {
-                manifestCategories.Add(categoryList[i]);
+                available = categoryList.ToList();
             }
 
-            return await LoadCategoriesAsync(manifestCategories);
+            return available;
         }
 
         private async Task<Category[]> LoadCategoriesAsync(List<ManifestCategory> manifestCategories)
@@ -108,9 +141,10 @@ namespace Jeffpardy
 
         private async Task<Category> FinalCategoryAndClueAsync(IReadOnlyList<ManifestCategory> categoryList)
         {
-            int categoryIndex = rand.Next(0, categoryList.Count);
+            var available = await GetAvailableCategoriesAsync(categoryList, 1);
+            int categoryIndex = rand.Next(0, available.Count);
 
-            ManifestCategory finalManifestCategory = categoryList[categoryIndex];
+            ManifestCategory finalManifestCategory = available[categoryIndex];
 
             var finalCategory = await _loader.LoadCategoryAsync(finalManifestCategory);
 

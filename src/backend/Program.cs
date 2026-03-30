@@ -27,12 +27,11 @@ if (builder.Environment.IsDevelopment())
     AzureBlobCategoryLoader.DevMode = true;
     AzureBlobCategoryLoader.DevConnectionString = builder.Configuration["BlobConnectionString"];
 }
-
-builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<ISeasonManifestCache>(SeasonManifestCache.Instance);
 builder.Services.AddSingleton<ICategoryLoader>(AzureBlobCategoryLoader.Instance);
+builder.Services.AddSingleton<IUsedCategoryTracker>(AzureBlobUsedCategoryTracker.Instance);
 builder.Services.AddSingleton<GameCache>();
 
 var app = builder.Build();
