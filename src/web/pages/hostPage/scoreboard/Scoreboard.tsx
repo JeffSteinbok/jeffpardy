@@ -289,6 +289,11 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
                 if (this.state.numResponses == this.teamCount || this.state.activeClue.isDailyDouble) {
                     this.showQuestion();
+                    // Clear buzzedInUser so the question screen doesn't show green for wrong answer
+                    this.setState({
+                        buzzedInUser: null,
+                        wrongTeams: wrongTeam ? [...this.state.wrongTeams, wrongTeam] : this.state.wrongTeams,
+                    });
                 } else {
                     this.setState({
                         gameBoardState: GameBoardState.ClueGiven,
