@@ -8,6 +8,7 @@ namespace Jeffpardy
 {
     [ApiController]
     [Route("api/CategoryMetadata")]
+    [ServiceFilter(typeof(AccessCodeFilter))]
     public class CategoryMetadataController : Controller
     {
         private readonly ISeasonManifestCache _cache;

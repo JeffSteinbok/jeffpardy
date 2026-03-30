@@ -45,11 +45,33 @@ export class JeffpardyHostController {
 
     hostSignalRClient: IHostSignalRClient;
 
+    accessCode: string = null;
+
     finalJeffpardyWagers: FinalJeffpardyWagerDictionary = {};
     finalJeffpardyAnswers: FinalJeffpardyAnswerDictionary = {};
 
     constructor(gameCode: string, hostCode: string) {
         this.hostSignalRClient = new HostSignalRClient(this, gameCode, hostCode);
+    }
+
+    private getAccessCodeHeaders(): Record<string, string> {
+        return { "X-Access-Code": this.accessCode ?? "" };
+    }
+
+    public validateAccessCode(code: string, onValid: () => void, onInvalid: () => void) {
+        const wsam: WebServerApiManager = new WebServerApiManager();
+        const context: IApiExecutionContext = {
+            apiName: "/api/Access/Validate",
+            json: true,
+            success: () => {
+                this.accessCode = code;
+                onValid();
+            },
+            error: () => {
+                onInvalid();
+            },
+        };
+        wsam.executePostApi(context, { code: code });
     }
 
     public loadGameData() {
@@ -59,6 +81,7 @@ export class JeffpardyHostController {
             const context: IApiExecutionContext = {
                 apiName: "/api/Categories/GameData",
                 json: true,
+                headers: this.getAccessCodeHeaders(),
                 success: (results: IGameData) => {
                     this.onGameDataLoaded(results);
                 },
@@ -99,6 +122,7 @@ export class JeffpardyHostController {
             const context: IApiExecutionContext = {
                 apiName: "/api/Categories/RandomCategory/" + roundDescriptor,
                 json: true,
+                headers: this.getAccessCodeHeaders(),
                 success: (results: ICategory) => {
                     if (existingRound != null) {
                         existingRound.categories[categoryIndex] = results;
@@ -161,6 +185,7 @@ export class JeffpardyHostController {
             const context: IApiExecutionContext = {
                 apiName: "/api/Categories/GameData",
                 json: true,
+                headers: this.getAccessCodeHeaders(),
                 success: (results: IGameData) => {
                     this.gameData.rounds[updateRoundId] = results.rounds[updateRoundId];
                     this.onGameDataLoaded(this.gameData);

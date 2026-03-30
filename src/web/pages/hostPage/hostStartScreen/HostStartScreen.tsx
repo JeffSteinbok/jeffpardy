@@ -40,6 +40,9 @@ export interface IHostStartScreenState {
     isCustomCategoryTsvDialogOpen: boolean;
     isCategoryDetailsDialogOpen: boolean;
     snackbarOpen: boolean;
+    accessCodeInput: string;
+    accessCodeError: boolean;
+    isLoadingGameData: boolean;
 }
 
 /**
@@ -57,6 +60,9 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
             isCustomCategoryTsvDialogOpen: false,
             isCategoryDetailsDialogOpen: false,
             snackbarOpen: false,
+            accessCodeInput: "",
+            accessCodeError: false,
+            isLoadingGameData: false,
         };
     }
 
@@ -114,6 +120,19 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
         this.props.onEnterLobby();
     };
 
+    public submitAccessCode = () => {
+        this.setState({ accessCodeError: false, isLoadingGameData: true });
+        this.props.jeffpardyHostController.validateAccessCode(
+            this.state.accessCodeInput,
+            () => {
+                this.props.jeffpardyHostController.loadGameData();
+            },
+            () => {
+                this.setState({ accessCodeError: true, isLoadingGameData: false });
+            }
+        );
+    };
+
     public render() {
         Logger.debug("HostStartScreen:render", this.props.gameData);
 
@@ -139,7 +158,69 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                             <img src="/images/JeffpardyTitle.png" className="title" alt="Jeffpardy" />
                         </div>
 
-                        {this.props.gameData == null && <div>Finding some really great clues...</div>}
+                        {this.props.gameData == null && !this.state.isLoadingGameData && (
+                            <div className="accessCodeContainer hostLobbyFadeIn">
+                                <div className="accessCodePrompt">
+                                    <h2>Enter Access Code</h2>
+                                    <div className="accessCodeInputGroup">
+                                        <input
+                                            type="text"
+                                            className="accessCodeInput"
+                                            placeholder="Access code"
+                                            value={this.state.accessCodeInput}
+                                            onChange={(e) =>
+                                                this.setState({ accessCodeInput: e.target.value, accessCodeError: false })
+                                            }
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") this.submitAccessCode();
+                                            }}
+                                            autoFocus
+                                        />
+                                        <button className="accessCodeSubmit" onClick={this.submitAccessCode}>
+                                            Load Game
+                                        </button>
+                                    </div>
+                                    {this.state.accessCodeError && (
+                                        <div className="accessCodeError">Invalid access code. Please try again.</div>
+                                    )}
+                                </div>
+                                <div className="accessCodeDivider">
+                                    <span>or create a custom game</span>
+                                </div>
+                                <div className="accessCodeCustomButtons">
+                                    <button
+                                        onClick={() => {
+                                            this.setState({ isCustomCategoryDialogOpen: true });
+                                        }}
+                                    >
+                                        Edit Game Data JSON
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            this.setState({ isCustomCategoryTsvDialogOpen: true });
+                                        }}
+                                    >
+                                        Use Excel Template
+                                    </button>
+                                </div>
+                                {this.state.isCustomCategoryDialogOpen && (
+                                    <CustomCategoryDialog
+                                        gameData={null}
+                                        onLoad={(json) => this.loadCustomCategories(json)}
+                                        onClose={() => this.setState({ isCustomCategoryDialogOpen: false })}
+                                    />
+                                )}
+                                {this.state.isCustomCategoryTsvDialogOpen && (
+                                    <ExcelTemplateDialog
+                                        onLoad={(tsv) => this.loadCustomCategoriesFromExcelPaste(tsv)}
+                                        onClose={() => this.setState({ isCustomCategoryTsvDialogOpen: false })}
+                                    />
+                                )}
+                            </div>
+                        )}
+                        {this.props.gameData == null && this.state.isLoadingGameData && (
+                            <div>Finding some really great clues...</div>
+                        )}
                         {this.props.gameData != null && (
                             <div className="gameDataLoaded hostLobbyFadeIn">
                                 <div className="categoryListContainer">
@@ -304,6 +385,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                     <CategoryDetails
                                         roundDescriptor={this.state.selectedCategoryRoundDescriptor}
                                         category={this.state.selectedCategory}
+                                        accessCode={this.props.jeffpardyHostController.accessCode}
                                         onSave={(category: ICategory) => {
                                             this.props.jeffpardyHostController.replaceSingleCategory(
                                                 this.state.selectedCategory,

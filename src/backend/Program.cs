@@ -34,6 +34,7 @@ builder.Services.AddSignalR();
 builder.Services.AddSingleton<ISeasonManifestCache>(SeasonManifestCache.Instance);
 builder.Services.AddSingleton<ICategoryLoader>(AzureBlobCategoryLoader.Instance);
 builder.Services.AddSingleton<GameCache>();
+builder.Services.AddScoped<AccessCodeFilter>();
 
 var app = builder.Build();
 

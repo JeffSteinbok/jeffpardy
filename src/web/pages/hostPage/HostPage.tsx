@@ -139,7 +139,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
     }
 
     public componentDidMount() {
-        this.jeffpardyHostController.loadGameData();
+        // Game data loading is now triggered by the access code prompt in HostStartScreen
     }
 
     public startIntro = () => {

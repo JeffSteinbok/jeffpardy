@@ -9,6 +9,7 @@ import axios, { AxiosResponse, AxiosError } from "axios";
 export interface IApiExecutionContext {
     apiName: string;
     json: boolean;
+    headers?: Record<string, string>;
     success: (data: unknown) => void;
     error: (statusText: string, responseText: string) => void;
 }
@@ -22,7 +23,7 @@ export class WebServerApiManager {
      * @param {IApiExecutionContext} apiExecutionContext Parameters for executing the api against the webserver.
      */
     public executeApi(apiExecutionContext: IApiExecutionContext) {
-        axios.get(apiExecutionContext.apiName).then(
+        axios.get(apiExecutionContext.apiName, { headers: apiExecutionContext.headers }).then(
             (response: AxiosResponse) => {
                 const result = response;
 
@@ -46,8 +47,8 @@ export class WebServerApiManager {
      * Call an API on the webserver
      * @param {IApiExecutionContext} apiExecutionContext Parameters for executing the api against the webserver.
      */
-    public executePostApi(apiExecutionContext: IApiExecutionContext, postBody: string) {
-        axios.post(apiExecutionContext.apiName, postBody).then(
+    public executePostApi(apiExecutionContext: IApiExecutionContext, postBody: unknown) {
+        axios.post(apiExecutionContext.apiName, postBody, { headers: apiExecutionContext.headers }).then(
             (response: AxiosResponse) => {
                 const result = response;
 

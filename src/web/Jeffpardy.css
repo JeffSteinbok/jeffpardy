@@ -407,6 +407,106 @@ div.hostStartPage div.categoryListContainer {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
+/* Access code prompt */
+div.hostStartPage div.accessCodeContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    width: 80%;
+    max-width: 500px;
+}
+
+div.hostStartPage div.accessCodePrompt {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    width: 100%;
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+div.hostStartPage div.accessCodePrompt h2 {
+    margin: 0 0 16px 0;
+    font-family: "jeffpardy", sans-serif;
+    font-size: 1.5em;
+    color: #ffcc00;
+}
+
+div.hostStartPage div.accessCodeInputGroup {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+div.hostStartPage input.accessCodeInput {
+    padding: 10px 16px;
+    font-size: 1.1em;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    outline: none;
+    width: 200px;
+}
+
+div.hostStartPage input.accessCodeInput::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+div.hostStartPage input.accessCodeInput:focus {
+    border-color: #ffcc00;
+}
+
+div.hostStartPage button.accessCodeSubmit {
+    padding: 10px 20px;
+    font-size: 1.1em;
+    cursor: pointer;
+}
+
+div.hostStartPage div.accessCodeError {
+    color: #ff6b6b;
+    margin-top: 12px;
+    font-size: 0.95em;
+}
+
+div.hostStartPage div.accessCodeDivider {
+    width: 100%;
+    text-align: center;
+    position: relative;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.95em;
+}
+
+div.hostStartPage div.accessCodeDivider::before,
+div.hostStartPage div.accessCodeDivider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 35%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+div.hostStartPage div.accessCodeDivider::before {
+    left: 0;
+}
+
+div.hostStartPage div.accessCodeDivider::after {
+    right: 0;
+}
+
+div.hostStartPage div.accessCodeCustomButtons {
+    display: flex;
+    gap: 12px;
+}
+
+div.hostStartPage div.accessCodeCustomButtons button {
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
 div.hostStartPage ul.categoryList {
     columns: 2;
     column-gap: 50px;
