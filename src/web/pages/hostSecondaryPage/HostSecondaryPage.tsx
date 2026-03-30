@@ -183,7 +183,7 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
                                 <span className="buzzerName">
                                     {attempt.player.name} ({attempt.player.team})
                                 </span>
-                                <span className="buzzerTime">{(attempt.time / 1000).toFixed(3)}s</span>
+                                <span className="buzzerTime">{attempt.time}ms</span>
                             </div>
                         ))}
                     </div>
