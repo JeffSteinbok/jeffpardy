@@ -50,12 +50,37 @@ export class JeffpardyHostController {
     finalJeffpardyWagers: FinalJeffpardyWagerDictionary = {};
     finalJeffpardyAnswers: FinalJeffpardyAnswerDictionary = {};
 
+    private static readonly ACCESS_CODE_COOKIE = "jeffpardy_access_code";
+
     constructor(gameCode: string, hostCode: string) {
         this.hostSignalRClient = new HostSignalRClient(this, gameCode, hostCode);
+        this.accessCode = this.getStoredAccessCode();
     }
 
     private getAccessCodeHeaders(): Record<string, string> {
         return { "X-Access-Code": this.accessCode ?? "" };
+    }
+
+    private saveAccessCodeCookie(code: string): void {
+        document.cookie = `${JeffpardyHostController.ACCESS_CODE_COOKIE}=${encodeURIComponent(
+            code
+        )};path=/;SameSite=Strict`;
+    }
+
+    private getStoredAccessCode(): string | null {
+        const match = document.cookie.match(
+            new RegExp(`(?:^|; )${JeffpardyHostController.ACCESS_CODE_COOKIE}=([^;]*)`)
+        );
+        return match ? decodeURIComponent(match[1]) : null;
+    }
+
+    public hasStoredAccessCode(): boolean {
+        return this.accessCode != null;
+    }
+
+    public clearAccessCode(): void {
+        this.accessCode = null;
+        document.cookie = `${JeffpardyHostController.ACCESS_CODE_COOKIE}=;path=/;SameSite=Strict;max-age=0`;
     }
 
     public validateAccessCode(code: string, onValid: () => void, onInvalid: () => void) {
@@ -65,6 +90,7 @@ export class JeffpardyHostController {
             json: true,
             success: () => {
                 this.accessCode = code;
+                this.saveAccessCodeCookie(code);
                 onValid();
             },
             error: () => {

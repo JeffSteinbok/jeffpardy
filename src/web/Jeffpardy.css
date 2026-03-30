@@ -413,15 +413,16 @@ div.hostStartPage div.accessCodeContainer {
     flex-direction: column;
     align-items: center;
     gap: 24px;
-    width: 80%;
-    max-width: 500px;
+    margin-top: 16px;
+    flex-grow: 1;
 }
 
 div.hostStartPage div.accessCodePrompt {
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 10px;
+    max-width: 500px;
     width: 100%;
-    padding: 24px;
+    padding: 24px 32px;
     background: rgba(0, 0, 0, 0.15);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     text-align: center;
@@ -431,7 +432,7 @@ div.hostStartPage div.accessCodePrompt h2 {
     margin: 0 0 16px 0;
     font-family: "jeffpardy", sans-serif;
     font-size: 1.5em;
-    color: #ffcc00;
+    color: white;
 }
 
 div.hostStartPage div.accessCodeInputGroup {
@@ -503,8 +504,9 @@ div.hostStartPage div.accessCodeCustomButtons {
 }
 
 div.hostStartPage div.accessCodeCustomButtons button {
-    padding: 10px 20px;
+    padding: 8px 16px;
     cursor: pointer;
+    font-size: 1.1rem;
 }
 
 div.hostStartPage ul.categoryList {
@@ -1434,13 +1436,25 @@ div#jeffpardyBoard ul.finalJeffpardyTally .tallyAction {
 }
 
 @keyframes tallySlideIn {
-    from { opacity: 0; transform: translateX(80px); }
-    to   { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(80px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 @keyframes tallySlideOut {
-    from { opacity: 1; transform: translateX(0); }
-    to   { opacity: 0; transform: translateX(-80px); }
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-80px);
+    }
 }
 
 .tallyTeamName {

@@ -19,7 +19,21 @@ namespace Jeffpardy
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            var providedCode = context.HttpContext.Request.Headers["X-Access-Code"].FirstOrDefault() ?? "";
+            var request = context.HttpContext.Request;
+
+            // Check header first, then query string
+            var headerValues = request.Headers["X-Access-Code"];
+            var providedCode = headerValues.Count > 0
+                ? (string)headerValues[0]
+                : request.Query.ContainsKey("accessCode")
+                    ? (string)request.Query["accessCode"]
+                    : null;
+
+            if (providedCode == null)
+            {
+                context.Result = new UnauthorizedObjectResult(new { error = "Missing access code" });
+                return;
+            }
 
             if (providedCode != _accessCode)
             {

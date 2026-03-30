@@ -62,7 +62,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
             snackbarOpen: false,
             accessCodeInput: "",
             accessCodeError: false,
-            isLoadingGameData: false,
+            isLoadingGameData: this.props.jeffpardyHostController.hasStoredAccessCode(),
         };
     }
 
@@ -158,18 +158,21 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                             <img src="/images/JeffpardyTitle.png" className="title" alt="Jeffpardy" />
                         </div>
 
-                        {this.props.gameData == null && !this.state.isLoadingGameData && (
+                        {this.props.gameData == null && !this.props.jeffpardyHostController.hasStoredAccessCode() && (
                             <div className="accessCodeContainer hostLobbyFadeIn">
                                 <div className="accessCodePrompt">
                                     <h2>Enter Access Code</h2>
                                     <div className="accessCodeInputGroup">
                                         <input
-                                            type="text"
+                                            type="password"
                                             className="accessCodeInput"
                                             placeholder="Access code"
                                             value={this.state.accessCodeInput}
                                             onChange={(e) =>
-                                                this.setState({ accessCodeInput: e.target.value, accessCodeError: false })
+                                                this.setState({
+                                                    accessCodeInput: e.target.value,
+                                                    accessCodeError: false,
+                                                })
                                             }
                                             onKeyDown={(e) => {
                                                 if (e.key === "Enter") this.submitAccessCode();
@@ -177,7 +180,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                             autoFocus
                                         />
                                         <button className="accessCodeSubmit" onClick={this.submitAccessCode}>
-                                            Load Game
+                                            Load Categories
                                         </button>
                                     </div>
                                     {this.state.accessCodeError && (
@@ -216,10 +219,12 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                         onClose={() => this.setState({ isCustomCategoryTsvDialogOpen: false })}
                                     />
                                 )}
+                                <div className="flexGrowSpacer"></div>
+                                <Attribution />
                             </div>
                         )}
-                        {this.props.gameData == null && this.state.isLoadingGameData && (
-                            <div>Finding some really great clues...</div>
+                        {this.props.gameData == null && this.props.jeffpardyHostController.hasStoredAccessCode() && (
+                            <div>Validating access code...</div>
                         )}
                         {this.props.gameData != null && (
                             <div className="gameDataLoaded hostLobbyFadeIn">
@@ -365,7 +370,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                 </div>
 
                                 <div className="flexGrowSpacer"></div>
-                                <Attribution />
+                                <Attribution showArchiveAttribution={true} />
                                 {this.state.isCustomCategoryDialogOpen && (
                                     <CustomCategoryDialog
                                         gameData={this.props.gameData}

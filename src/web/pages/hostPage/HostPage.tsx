@@ -139,7 +139,18 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
     }
 
     public componentDidMount() {
-        // Game data loading is now triggered by the access code prompt in HostStartScreen
+        if (this.jeffpardyHostController.hasStoredAccessCode()) {
+            this.jeffpardyHostController.validateAccessCode(
+                this.jeffpardyHostController.accessCode,
+                () => {
+                    this.jeffpardyHostController.loadGameData();
+                },
+                () => {
+                    this.jeffpardyHostController.clearAccessCode();
+                    this.forceUpdate();
+                }
+            );
+        }
     }
 
     public startIntro = () => {
