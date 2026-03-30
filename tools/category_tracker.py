@@ -15,7 +15,7 @@ from pathlib import Path
 
 _ONEDRIVE = os.environ.get("OneDrive", os.path.join(os.path.expanduser("~"), "OneDrive"))
 DEFAULT_GAMES_FOLDER = os.path.join(_ONEDRIVE, "JeffPardy", "Games")
-DEFAULT_CSV_PATH = os.path.join(_ONEDRIVE, "JeffPardy", "used_categories.csv")
+DEFAULT_CSV_PATH = os.path.join(_ONEDRIVE, "JeffPardy", "Games", "used_categories.csv")
 
 CSV_FIELDS = ["category", "air_date", "game_file", "round"]
 
