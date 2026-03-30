@@ -510,20 +510,6 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                         })}
                 </div>
 
-                {this.state.topBuzzers.length > 0 && (
-                    <div className="buzzerResults">
-                        {this.state.topBuzzers.map((attempt, i) => (
-                            <div key={i} className={"buzzerResult" + (i === 0 ? " buzzerWinner" : "")}>
-                                <span className="buzzerRank">{i === 0 ? "🏆" : i === 1 ? "🥈" : "🥉"}</span>
-                                <span className="buzzerName">
-                                    {attempt.player.name} ({attempt.player.team})
-                                </span>
-                                <span className="buzzerTime">{(attempt.time / 1000).toFixed(3)}s</span>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
                 {this.state.isTeamFixupDialogShown && (
                     <TeamFixupDialog
                         teams={this.props.teams}

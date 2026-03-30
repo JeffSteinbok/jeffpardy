@@ -2151,36 +2151,37 @@ div#scoreboard .scoreboardEntry .score.negative {
     color: #f44336;
 }
 
-div#scoreboard .buzzerResults {
+.buzzerResults {
     display: flex;
     flex-direction: column;
     gap: 2px;
-    padding: 4px 8px;
-    font-size: 0.75rem;
+    padding: 8px 12px;
+    font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.7);
+    margin-top: 8px;
 }
 
-div#scoreboard .buzzerResult {
+.buzzerResult {
     display: flex;
     align-items: center;
     gap: 6px;
 }
 
-div#scoreboard .buzzerResult.buzzerWinner {
+.buzzerResult.buzzerWinner {
     color: #4caf50;
     font-weight: bold;
 }
 
-div#scoreboard .buzzerResult .buzzerRank {
-    width: 18px;
+.buzzerResult .buzzerRank {
+    width: 22px;
     text-align: center;
 }
 
-div#scoreboard .buzzerResult .buzzerName {
+.buzzerResult .buzzerName {
     flex: 1;
 }
 
-div#scoreboard .buzzerResult .buzzerTime {
+.buzzerResult .buzzerTime {
     font-family: monospace;
 }
 

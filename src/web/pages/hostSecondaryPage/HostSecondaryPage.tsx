@@ -6,7 +6,7 @@ import { createRoot } from "react-dom/client";
 import "../../Jeffpardy.css";
 import * as signalR from "@microsoft/signalr";
 import { Logger } from "../../utilities/Logger";
-import { IClue } from "../../Types";
+import { IClue, IPlayer, IBuzzerAttempt } from "../../Types";
 import { sanitizeHtml } from "../../utilities/sanitize";
 import { Debug } from "../../utilities/Debug";
 
@@ -27,6 +27,7 @@ export interface IHostSecondaryPageState {
     hostCode: string;
     clue: IClue;
     round: IGameRound;
+    topBuzzers: IBuzzerAttempt[];
 }
 
 /**
@@ -47,6 +48,7 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
             clue: null,
             round: null,
             hubConnection: null,
+            topBuzzers: [],
         };
     }
 
@@ -99,7 +101,20 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
                 this.setState({
                     hostSecondardyPageState: HostSecondardyPageState.ShowClue,
                     clue: clue,
+                    topBuzzers: [],
                 });
+            });
+
+            this.state.hubConnection.on(
+                "assignWinner",
+                (_user: IPlayer, _winningTime: number, topBuzzers: IBuzzerAttempt[]) => {
+                    Logger.debug("on assignWinner", topBuzzers);
+                    this.setState({ topBuzzers: topBuzzers || [] });
+                }
+            );
+
+            this.state.hubConnection.on("resetBuzzer", () => {
+                this.setState({ topBuzzers: [] });
             });
         });
     };
@@ -150,8 +165,27 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
                 )}
                 {this.state.hostSecondardyPageState == HostSecondardyPageState.ShowClue && (
                     <div>
-                        <div className="clue" dangerouslySetInnerHTML={{ __html: sanitizeHtml(this.state.clue.clue) }} />
-                        <div className="question" dangerouslySetInnerHTML={{ __html: sanitizeHtml(this.state.clue.question) }} />
+                        <div
+                            className="clue"
+                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(this.state.clue.clue) }}
+                        />
+                        <div
+                            className="question"
+                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(this.state.clue.question) }}
+                        />
+                    </div>
+                )}
+                {this.state.topBuzzers.length > 0 && (
+                    <div className="buzzerResults">
+                        {this.state.topBuzzers.map((attempt, i) => (
+                            <div key={i} className={"buzzerResult" + (i === 0 ? " buzzerWinner" : "")}>
+                                <span className="buzzerRank">{i === 0 ? "🏆" : i === 1 ? "🥈" : "🥉"}</span>
+                                <span className="buzzerName">
+                                    {attempt.player.name} ({attempt.player.team})
+                                </span>
+                                <span className="buzzerTime">{(attempt.time / 1000).toFixed(3)}s</span>
+                            </div>
+                        ))}
                     </div>
                 )}
             </div>
