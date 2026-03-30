@@ -12,15 +12,16 @@ export interface IFinalJeffpardyTallyProps {
     wagers: FinalJeffpardyWagerDictionary;
     answers: FinalJeffpardyAnswerDictionary;
     onScoreChange: (team: ITeam, newScore: number) => void;
+    onBroadcastScores: () => void;
     onTallyCompleted: () => void;
 }
 
 export interface IFinalJeffpardyTallyState {
-    // revealStep: incremented by Space key; each press reveals one cell (wager or answer)
-    // in the current team's player table. Reset to 0 when moving to the next team.
     revealStep: number;
     currentTeamIndex: number;
     isTallyCompleted: boolean;
+    isTransitioning: boolean;
+    showResult: boolean;
 }
 
 interface ITallyPlayer {
@@ -37,20 +38,14 @@ interface ITallyTeam {
     isCorrect: boolean;
 }
 
-/** Manages the Final Jeffpardy tally phase, revealing team wagers and answers one-by-one and scoring correct/incorrect responses. */
+/** Manages the Final Jeffpardy tally phase, revealing one team at a time with slide-in animation. */
 export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyProps, IFinalJeffpardyTallyState> {
     tallyTeams: ITallyTeam[] = [];
-    isRevealBlocked: boolean = false;
 
     constructor(props: IFinalJeffpardyTallyProps) {
         super(props);
 
         Logger.debug("FinalJeffpardyTally:constructor", this.props.teams);
-
-        // Need to restructure the data to make it easier to render, and don't want to have
-        // to re-compute it at render.
-        // Teams have to go in order of current score, lowest to highest.
-        // Answers have to go in order of wager, lowest to highest; with ties going to quickest.
 
         for (const key in this.props.teams) {
             if (Object.prototype.hasOwnProperty.call(this.props.teams, key)) {
@@ -82,19 +77,11 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
                     }
                 });
                 tallyTeam.players.sort((a: ITallyPlayer, b: ITallyPlayer): number => {
-                    if (a.wager < b.wager) {
-                        return -1;
-                    } else if (a.wager > b.wager) {
-                        return 1;
-                    } else {
-                        if (a.responseTime > b.responseTime) {
-                            return -1;
-                        } else if (a.responseTime < b.responseTime) {
-                            return 1;
-                        } else {
-                            return 0;
-                        }
-                    }
+                    if (a.wager < b.wager) return -1;
+                    else if (a.wager > b.wager) return 1;
+                    else if (a.responseTime > b.responseTime) return -1;
+                    else if (a.responseTime < b.responseTime) return 1;
+                    return 0;
                 });
                 this.tallyTeams.push(tallyTeam);
             }
@@ -107,11 +94,15 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
         this.state = {
             revealStep: 0,
             currentTeamIndex: 0,
-            isTallyCompleted: this.tallyTeams.length > 0 ? false : true,
+            isTallyCompleted: this.tallyTeams.length === 0,
+            isTransitioning: false,
+            showResult: false,
         };
     }
 
     handleKeyDown = (event: KeyboardEvent) => {
+        if (this.state.isTransitioning || this.state.isTallyCompleted || this.state.showResult) return;
+
         switch (event.key.toLowerCase()) {
             case SpecialKey.SPACE:
                 Logger.debug("FinalJeffpardyTally:handleKeyDown", this.state.revealStep + 1);
@@ -145,11 +136,16 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
     };
 
     processResponse = (isCorrect: boolean) => {
+        if (this.state.isTransitioning || this.state.isTallyCompleted || this.state.showResult) return;
+
         const tallyTeam: ITallyTeam = this.tallyTeams[this.state.currentTeamIndex];
-        // Team score is adjusted by the highest individual wager on the team (players are sorted by wager asc)
-        let maxWager: number = 0;
-        if (tallyTeam.players.length > 0) {
-            maxWager = tallyTeam.players[tallyTeam.players.length - 1].wager;
+        const currentPlayers = tallyTeam.players;
+        const totalRevealSteps = currentPlayers.length * 2;
+        if (this.state.revealStep < totalRevealSteps) return;
+
+        let maxWager = 0;
+        if (currentPlayers.length > 0) {
+            maxWager = currentPlayers[currentPlayers.length - 1].wager;
         }
         const teamObject: ITeam = this.props.teams[tallyTeam.name];
         tallyTeam.isCorrect = isCorrect;
@@ -160,114 +156,128 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
         }
 
         this.props.onScoreChange(teamObject, teamObject.score + adjustment);
+        tallyTeam.score = teamObject.score;
+        this.props.onBroadcastScores();
 
-        const newTeamIndex: number = this.state.currentTeamIndex + 1;
+        // Show result briefly, then transition
+        this.setState({ showResult: true });
 
-        if (newTeamIndex >= this.tallyTeams.length) {
-            this.setState({
-                isTallyCompleted: true,
-            });
-            this.props.onTallyCompleted();
-        }
-        this.setState({
-            currentTeamIndex: newTeamIndex,
-            revealStep: 0,
-        });
+        const newTeamIndex = this.state.currentTeamIndex + 1;
+
+        setTimeout(() => {
+            if (newTeamIndex >= this.tallyTeams.length) {
+                this.setState({ isTallyCompleted: true, showResult: false });
+                setTimeout(() => {
+                    this.props.onTallyCompleted();
+                }, 500);
+            } else {
+                this.setState({ isTransitioning: true });
+                setTimeout(() => {
+                    this.setState({
+                        currentTeamIndex: newTeamIndex,
+                        revealStep: 0,
+                        isTransitioning: false,
+                        showResult: false,
+                    });
+                }, 800);
+            }
+        }, 500);
     };
 
     public render() {
         Logger.debug("FinalJeffpardyTally:render", this.props.teams);
 
-        // Counter reset per team during render; shouldRender() increments it so each
-        // wager and answer cell maps to a sequential Space-press step.
-        let revealCurrStep: number = 0;
-        // Tables are always in the DOM (for stable layout) but individual cells use
-        // visibility:hidden until their reveal step is reached.
-        const visibleStyle = {};
-        const hiddenStyle = { visibility: "hidden" };
+        if (this.tallyTeams.length === 0) return null;
+
+        const tallyTeam = this.tallyTeams[this.state.currentTeamIndex];
+        if (!tallyTeam) return null;
+
+        let revealCurrStep = 0;
+        const shouldRender = (): boolean => {
+            return ++revealCurrStep <= this.state.revealStep;
+        };
+
+        const totalRevealSteps = tallyTeam.players.length * 2;
+        const allRevealed = this.state.revealStep >= totalRevealSteps;
 
         return (
-            <div style={{ width: "100%", display: "flex", flexDirection: "column", flexGrow: 1 }}>
-                <ul className="finalJeffpardyTally">
-                    {this.tallyTeams.map((tallyTeam: ITallyTeam, index: number) => {
-                        // Returns true if this cell should be visible. Past teams always show;
-                        // current team reveals cells one-by-one via revealStep; future teams are hidden.
-                        const shouldRender = (): boolean => {
-                            if (this.state.currentTeamIndex > index) {
-                                return true;
-                            } else if (this.state.currentTeamIndex == index) {
-                                return ++revealCurrStep <= this.state.revealStep;
-                            } else {
-                                return false;
+            <div className="finalTallySingleTeam">
+                <div className="tallyProgress">
+                    {this.tallyTeams.map((_, i) => (
+                        <div
+                            key={i}
+                            className={
+                                "tallyProgressDot" +
+                                (i < this.state.currentTeamIndex
+                                    ? " completed"
+                                    : i === this.state.currentTeamIndex
+                                      ? " active"
+                                      : "")
                             }
-                        };
+                        />
+                    ))}
+                </div>
 
-                        return (
-                            <li key={index}>
-                                Team: {tallyTeam.name}
-                                <table style={this.state.currentTeamIndex >= index ? {} : { visibility: "hidden" }}>
-                                    <thead>
-                                        <tr>
-                                            <th className="player">Player</th>
-                                            <th className="wager">Wager</th>
-                                            <th className="response">Response</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {tallyTeam.players.map((player: ITallyPlayer, index: number) => {
-                                            return (
-                                                <tr key={index}>
-                                                    <td>{player.name}</td>
-                                                    <td>
-                                                        <div style={shouldRender() ? visibleStyle : hiddenStyle}>
-                                                            {player.wager}
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div style={shouldRender() ? visibleStyle : hiddenStyle}>
-                                                            {player.answer != null ? player.answer : "[BLANK]"}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                                <div className="tallyAction">
-                                    {/* Show correct/incorrect buttons only after all cells revealed (2 per player: wager + answer) */}
-                                    {this.state.currentTeamIndex == index &&
-                                        this.state.revealStep >= tallyTeam.players.length * 2 && (
-                                            <>
-                                                <button onClick={this.correctResponse} style={{ color: "#4caf50" }}>
-                                                    ✓
-                                                </button>
-                                                <button onClick={this.incorrectResponse} style={{ color: "#f44336" }}>
-                                                    ✗
-                                                </button>
-                                            </>
-                                        )}
-                                    {this.state.currentTeamIndex > index && (
-                                        <span>
-                                            {tallyTeam.isCorrect ? (
-                                                <span style={{ color: "#4caf50" }}>✓</span>
-                                            ) : (
-                                                <span style={{ color: "#f44336" }}>✗</span>
-                                            )}
-                                        </span>
-                                    )}
-                                </div>
-                            </li>
-                        );
-                    })}
-                </ul>
+                <div
+                    className={
+                        "tallyTeamCard" +
+                        (this.state.isTransitioning ? " slideOut" : " slideIn") +
+                        (this.state.isTallyCompleted ? " scored" : "")
+                    }
+                    key={this.state.currentTeamIndex}
+                >
+                    <div className="tallyTeamName">{tallyTeam.name}</div>
+
+                    <table className="tallyTeamTable">
+                        <thead>
+                            <tr>
+                                <th>Player</th>
+                                <th>Wager</th>
+                                <th>Response</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {tallyTeam.players.map((player: ITallyPlayer, index: number) => (
+                                <tr key={index}>
+                                    <td>{player.name}</td>
+                                    <td>
+                                        <div style={shouldRender() ? {} : { visibility: "hidden" }}>{player.wager}</div>
+                                    </td>
+                                    <td>
+                                        <div style={shouldRender() ? {} : { visibility: "hidden" }}>
+                                            {player.answer != null ? player.answer : "[BLANK]"}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+
+                    <div className="tallyAction">
+                        {allRevealed && !this.state.showResult && !this.state.isTallyCompleted && (
+                            <>
+                                <button className="tallyCorrect" onClick={this.correctResponse}>
+                                    ✓ Correct
+                                </button>
+                                <button className="tallyIncorrect" onClick={this.incorrectResponse}>
+                                    ✗ Incorrect
+                                </button>
+                            </>
+                        )}
+                        {(this.state.showResult || this.state.isTallyCompleted) && (
+                            <span className={tallyTeam.isCorrect ? "resultCorrect" : "resultIncorrect"}>
+                                {tallyTeam.isCorrect ? "✓ Correct" : "✗ Incorrect"}
+                            </span>
+                        )}
+                    </div>
+                </div>
+
                 <div className="postTally">
-                    {!this.state.isTallyCompleted && (
-                        <div className="categoryRevealHint">Hit Space to Reveal Responses</div>
+                    {!this.state.isTallyCompleted && !this.state.showResult && !allRevealed && (
+                        <div className="categoryRevealHint">HIT SPACE TO REVEAL RESPONSES</div>
                     )}
-                    {this.state.isTallyCompleted && (
-                        <div className="categoryRevealHint">
-                            Thank you for playing. Refresh your browser to start a new game.
-                        </div>
+                    {!this.state.isTallyCompleted && !this.state.showResult && allRevealed && (
+                        <div className="categoryRevealHint">Press Z for Correct, X for Incorrect</div>
                     )}
                 </div>
             </div>

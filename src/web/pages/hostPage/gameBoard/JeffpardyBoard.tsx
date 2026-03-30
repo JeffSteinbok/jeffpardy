@@ -16,6 +16,7 @@ import { CategoryReveal } from "./CategoryReveal";
 import { DailyDoubleReveal } from "./DailyDoubleReveal";
 import { ClueDisplay } from "./ClueDisplay";
 import { RoundIntermission } from "./RoundIntermission";
+import { EndGame } from "./EndGame";
 import { sanitizeHtml } from "../../../utilities/sanitize";
 
 export enum JeopardyBoardView {
@@ -28,6 +29,7 @@ export enum JeopardyBoardView {
     FinalCategory,
     FinalClue,
     FinalTally,
+    EndGame,
 }
 
 export interface IJeffpardyBoardProps {
@@ -284,11 +286,17 @@ export class JeffpardyBoard
 
         if (this.props.round < numRounds - 1) {
             this.props.jeffpardyHostController.startNewRound();
-            this.setState({
-                jeopardyBoardView: JeopardyBoardView.CategoryReveal,
-                revealCategoryIndex: -1,
-                revealShowingName: false,
-            });
+            if (Debug.IsFlagSet(DebugFlags.SkipCategoryReveal)) {
+                this.setState({
+                    jeopardyBoardView: JeopardyBoardView.Board,
+                });
+            } else {
+                this.setState({
+                    jeopardyBoardView: JeopardyBoardView.CategoryReveal,
+                    revealCategoryIndex: -1,
+                    revealShowingName: false,
+                });
+            }
         } else {
             // Final Jeffpardy category reveal animation: a chained setTimeout drives the
             // state machine: revealing (3s) → settling (0.8s) → idle.
@@ -403,6 +411,13 @@ export class JeffpardyBoard
     onTallyCompleted = () => {
         Logger.debug("JeffpardyBoard:onTallyCompleted");
         this.props.jeffpardyHostController.setViewMode(HostPageViewMode.End);
+        this.setState({
+            jeopardyBoardView: JeopardyBoardView.EndGame,
+        });
+    };
+
+    onBroadcastScores = () => {
+        this.props.jeffpardyHostController.broadcastScores();
     };
 
     private getDailyDoubleMaxBet = (): number => {
@@ -539,11 +554,15 @@ export class JeffpardyBoard
                                             wagers={this.props.finalJeffpardyWagers}
                                             answers={this.props.finalJeffpardyAnswers}
                                             onScoreChange={this.props.onScoreChange}
+                                            onBroadcastScores={this.onBroadcastScores}
                                             onTallyCompleted={this.onTallyCompleted}
                                         />
                                     </div>
                                 )}
                             </div>
+                        )}
+                        {this.state.jeopardyBoardView == JeopardyBoardView.EndGame && (
+                            <EndGame teams={this.props.teams} />
                         )}
                     </div>
                 </div>
