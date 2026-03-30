@@ -1111,14 +1111,33 @@ div#jeffpardyBoard div.jeffpardyFinalCategory {
     width: 100%;
 }
 
-div#jeffpardyBoard div.jeffpardyFinalClue,
-div#jeffpardyBoard div.jeffpardyFinalTally {
+div#jeffpardyBoard div.jeffpardyFinalClue {
     padding-top: 40px;
+    justify-content: center;
 }
 
-div#jeffpardyBoard div.jeffpardyFinalClue div.clue,
+div#jeffpardyBoard div.jeffpardyFinalTally {
+    padding-top: 0;
+}
+
+div#jeffpardyBoard div.jeffpardyFinalClue div.clue {
+    font-size: 3.5rem;
+}
+
 div#jeffpardyBoard div.jeffpardyFinalTally div.clue {
-    font-size: 3rem;
+    font-size: 1.6rem;
+    animation: clueShirink 0.6s ease-out forwards;
+}
+
+@keyframes clueShirink {
+    from {
+        font-size: 3.5rem;
+        padding-top: 30px;
+    }
+    to {
+        font-size: 1.6rem;
+        padding-top: 0;
+    }
 }
 
 div#jeffpardyBoard .finalTallyDivider {
@@ -1181,12 +1200,12 @@ ul.finalJeffpardyTally {
 
 ul.finalJeffpardySubmissionList li,
 ul.finalJeffpardyTally li {
-    flex: 0 0 calc(20% - 12px);
-    font-size: 1.2rem;
+    flex: 0 0 calc(14% - 10px);
+    font-size: 0.85rem;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    padding: 10px 14px;
+    border-radius: 6px;
+    padding: 7px 10px;
     text-align: center;
 }
 
@@ -1203,10 +1222,10 @@ ul.finalJeffpardyTally table {
 }
 
 ul.finalJeffpardySubmissionList .fjTeamName {
-    font-size: 1.2rem;
-    margin-bottom: 6px;
+    font-size: 0.85rem;
+    margin-bottom: 4px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-    padding-bottom: 6px;
+    padding-bottom: 4px;
 }
 
 ul.finalJeffpardySubmissionList .fjPlayer {
@@ -1260,6 +1279,210 @@ div#jeffpardyBoard ul.finalJeffpardyTally .tallyAction {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* --- Single-team tally (new) --- */
+
+.finalTallySingleTeam {
+    width: 100%;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+}
+
+.tallyProgress {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.tallyProgressDot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.tallyProgressDot.active {
+    background: var(--color-gold);
+    transform: scale(1.3);
+}
+
+.tallyProgressDot.completed {
+    background: rgba(241, 203, 169, 0.6);
+}
+
+.tallyTeamCard {
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 12px 28px;
+    width: 50%;
+    max-width: 550px;
+    text-align: center;
+}
+
+.tallyTeamCard.slideIn {
+    animation: tallySlideIn 0.5s ease-out;
+}
+
+.tallyTeamCard.slideOut {
+    animation: tallySlideOut 0.4s ease-in forwards;
+}
+
+@keyframes tallySlideIn {
+    from { opacity: 0; transform: translateX(80px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes tallySlideOut {
+    from { opacity: 1; transform: translateX(0); }
+    to   { opacity: 0; transform: translateX(-80px); }
+}
+
+.tallyTeamName {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--color-gold);
+    margin-bottom: 4px;
+}
+
+.tallyTeamTable {
+    width: 100%;
+    color: white;
+    border-spacing: 6px 2px;
+    font-size: 0.95rem;
+}
+
+.tallyTeamTable th {
+    font-weight: bold;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 6px;
+}
+
+.tallyTeamTable td {
+    padding: 2px 0;
+}
+
+.finalTallySingleTeam .tallyAction {
+    margin-top: 8px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    min-height: 30px;
+}
+
+div#jeffpardyBoard .finalTallySingleTeam .tallyAction button {
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 5px;
+    border: 1px solid;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.finalTallySingleTeam .tallyAction button:hover {
+    transform: scale(1.05);
+}
+
+.finalTallySingleTeam .tallyAction button.tallyCorrect {
+    color: #4caf50;
+    border-color: #4caf50;
+    background: rgba(76, 175, 80, 0.15);
+}
+
+.finalTallySingleTeam .tallyAction button.tallyIncorrect {
+    color: #f44336;
+    border-color: #f44336;
+    background: rgba(244, 67, 54, 0.15);
+}
+
+.finalTallySingleTeam .resultCorrect {
+    color: #4caf50;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.finalTallySingleTeam .resultIncorrect {
+    color: #f44336;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+/* --- EndGame screen --- */
+
+.jeffpardyEndGame {
+    width: 100%;
+    height: 100%;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-game-board);
+    animation: boardFadeIn 1s ease-out;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.endGameImage {
+    max-width: 700px;
+    width: 70%;
+    object-fit: contain;
+    margin-bottom: 40px;
+    filter: drop-shadow(0 0 20px rgba(241, 203, 169, 0.3));
+}
+
+.endGameScores {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.endGameTeamScore {
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 20px 30px;
+    text-align: center;
+    min-width: 160px;
+}
+
+.endGameTeamScore.winner {
+    border-color: #4caf50;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.endGameTeamName {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 8px;
+}
+
+.endGameTeamScore.winner .endGameTeamName {
+    color: #4caf50;
+}
+
+.endGameTeamPoints {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--color-gold);
+}
+
+.endGameHint {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 2px;
+    text-transform: uppercase;
 }
 
 /*----------------------------------------------------------------------------*/

@@ -47,34 +47,36 @@ function makeAnswers(): FinalJeffpardyAnswerDictionary {
 }
 
 describe("FinalJeffpardyTally", () => {
-    it("renders team names from props", () => {
+    it("renders the current team name", () => {
         const { container } = render(
             <FinalJeffpardyTally
                 teams={makeTeams()}
                 wagers={makeWagers()}
                 answers={makeAnswers()}
                 onScoreChange={vi.fn()}
+                onBroadcastScores={vi.fn()}
                 onTallyCompleted={vi.fn()}
             />
         );
-        const items = container.querySelectorAll(".finalJeffpardyTally li");
-        const text = Array.from(items).map((li) => li.textContent);
-        expect(text.some((t) => t.includes("Alpha"))).toBe(true);
-        expect(text.some((t) => t.includes("Beta"))).toBe(true);
+        // Lowest score team (Beta) shows first
+        const teamName = container.querySelector(".tallyTeamName");
+        expect(teamName).toBeInTheDocument();
+        expect(teamName!.textContent).toBe("Beta");
     });
 
-    it("renders teams as list items", () => {
+    it("shows one team at a time (single card)", () => {
         const { container } = render(
             <FinalJeffpardyTally
                 teams={makeTeams()}
                 wagers={makeWagers()}
                 answers={makeAnswers()}
                 onScoreChange={vi.fn()}
+                onBroadcastScores={vi.fn()}
                 onTallyCompleted={vi.fn()}
             />
         );
-        const items = container.querySelectorAll(".finalJeffpardyTally > li");
-        expect(items.length).toBe(2);
+        const cards = container.querySelectorAll(".tallyTeamCard");
+        expect(cards.length).toBe(1);
     });
 
     it('shows "Hit Space to Reveal Responses" hint initially', () => {
@@ -84,6 +86,7 @@ describe("FinalJeffpardyTally", () => {
                 wagers={makeWagers()}
                 answers={makeAnswers()}
                 onScoreChange={vi.fn()}
+                onBroadcastScores={vi.fn()}
                 onTallyCompleted={vi.fn()}
             />
         );
@@ -111,6 +114,7 @@ describe("FinalJeffpardyTally", () => {
                 wagers={wagers}
                 answers={answers}
                 onScoreChange={vi.fn()}
+                onBroadcastScores={vi.fn()}
                 onTallyCompleted={vi.fn()}
             />
         );
@@ -126,22 +130,22 @@ describe("FinalJeffpardyTally", () => {
 
         const buttons = container.querySelectorAll(".tallyAction button");
         expect(buttons.length).toBe(2);
-        expect(buttons[0].textContent).toBe("✓");
-        expect(buttons[1].textContent).toBe("✗");
+        expect(buttons[0].textContent).toBe("✓ Correct");
+        expect(buttons[1].textContent).toBe("✗ Incorrect");
     });
 
-    it("shows completed message when there are no teams", () => {
+    it("renders nothing when there are no teams", () => {
         const { container } = render(
             <FinalJeffpardyTally
                 teams={{}}
                 wagers={{}}
                 answers={{}}
                 onScoreChange={vi.fn()}
+                onBroadcastScores={vi.fn()}
                 onTallyCompleted={vi.fn()}
             />
         );
-        const hint = container.querySelector(".categoryRevealHint");
-        expect(hint).toBeInTheDocument();
-        expect(hint!.textContent).toContain("Thank you for playing");
+        const card = container.querySelector(".tallyTeamCard");
+        expect(card).toBeNull();
     });
 });

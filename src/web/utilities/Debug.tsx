@@ -73,15 +73,12 @@ export class Debug {
     }
 
     public static generateFinalCategory(): ICategory {
-        const clue = Debug.generateClue();
-        clue.clue = "<i>" + clue.clue + "</i>";
-        clue.question = "<i>" + clue.question + "</i>";
         return {
             title: LoremIpsum.generate(Math.floor(Math.random() * 2) + 1).toUpperCase(),
             airDate: "1994-01-21T00:11:00",
             comment: LoremIpsum.generate(Math.floor(Math.random() * 10) + 6),
             isAsked: false,
-            clues: [clue],
+            clues: [Debug.generateClue()],
             hasDailyDouble: false,
         };
     }
