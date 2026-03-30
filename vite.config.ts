@@ -4,6 +4,16 @@ import path from 'path';
 
 export default defineConfig({
     plugins: [react()],
+    server: {
+        port: 5173,
+        strictPort: true,
+        cors: true,
+        origin: 'http://localhost:5173',
+        hmr: {
+            clientPort: 5173,
+            protocol: 'ws',
+        },
+    },
     test: {
         environment: 'jsdom',
         globals: true,

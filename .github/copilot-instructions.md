@@ -59,8 +59,11 @@ npm run build
 # Production build  
 npm run buildProd
 
-# Run application with watch
-dotnet watch run
+# Development with HMR (two terminals)
+npm run dev                              # Vite dev server with HMR on :5173
+dotnet watch run --project src/backend   # Backend on :5000/:5001
+
+# Access app at http://localhost:5000 for HMR (not HTTPS)
 ```
 
 ### Pre-Push Checklist
@@ -73,6 +76,8 @@ dotnet test src/backend/Jeffpardy.Tests  # Backend tests (xUnit)
 ```
 
 ### Build Tasks Available
+- `npm run dev` - Vite dev server with HMR
+- `npm run dev:build` - Watch & rebuild frontend (no HMR)
 - `dotnet build src/backend` - Build the backend (does not trigger frontend build)
 - `dotnet publish` - Publish for deployment
 - `dotnet watch run --project src/backend` - Run with auto-rebuild

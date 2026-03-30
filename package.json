@@ -31,7 +31,8 @@
     "vitest": "^4.1.0"
   },
   "scripts": {
-    "dev": "vite build --mode development --watch",
+    "dev": "vite",
+    "dev:build": "vite build --mode development --watch",
     "build": "vite build",
     "buildProd": "vite build --mode production",
     "test": "vitest run",

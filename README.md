@@ -34,14 +34,20 @@ npm run build        # Build the frontend
 dotnet run --project src/backend   # Start the server
 ```
 
-For development with auto-rebuild:
+The app will be available at `https://localhost:5001`.
+
+### Development with Hot Module Replacement (HMR)
+
+For the best dev experience, run the Vite dev server alongside the backend. Frontend changes (TypeScript, CSS) update instantly in the browser without a full reload.
 
 ```bash
-npm run dev                          # Watch & rebuild frontend
-dotnet watch run --project src/backend   # Watch & rebuild backend (in a second terminal)
+npm run dev                          # Vite dev server with HMR (terminal 1)
+dotnet watch run --project src/backend   # Backend with auto-rebuild (terminal 2)
 ```
 
-The app will be available at the URL shown in the terminal output (typically `https://localhost:5001`).
+Access the app at `http://localhost:5000` (HTTP, not HTTPS) so the browser can load assets from the Vite dev server at `http://localhost:5173`.
+
+> **Tip:** If you don't need HMR, `npm run dev:build` does a watch-and-rebuild (like the old `npm run dev`). Use `https://localhost:5001` as usual.
 
 ## Build Commands
 
@@ -49,6 +55,8 @@ The app will be available at the URL shown in the terminal output (typically `ht
 |---------|-------------|
 | `npm run build` | Development frontend build |
 | `npm run buildProd` | Production frontend build |
+| `npm run dev` | Vite dev server with HMR |
+| `npm run dev:build` | Watch & rebuild frontend (no HMR) |
 | `dotnet build src/backend` | Build the backend (does **not** trigger a frontend build) |
 | `dotnet run --project src/backend` | Run the server |
 | `dotnet watch run --project src/backend` | Run with auto-rebuild |
