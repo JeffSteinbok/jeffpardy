@@ -249,6 +249,11 @@ export class JeffpardyHostController {
         this.gameData = gameData;
 
         this.hostPage.onGameDataLoaded(this.gameData);
+
+        // Inject fake teams for testing when FakeTeams debug flag is set
+        if (Debug.IsFlagSet(DebugFlags.FakeTeams)) {
+            this.updateUsers(Debug.generateFakeTeams());
+        }
     };
 
     public setCustomGameData(gameData: IGameData) {
@@ -389,6 +394,13 @@ export class JeffpardyHostController {
         this.controllingTeamChange(null);
         this.scoreboard.onStartFinalJeffpardy();
         this.hostPage.startFinalJeffpardy();
+
+        // Auto-populate fake wagers and answers for testing
+        if (Debug.IsFlagSet(DebugFlags.FakeTeams)) {
+            this.finalJeffpardyWagers = Debug.generateFakeWagers(this.teams);
+            this.finalJeffpardyAnswers = Debug.generateFakeAnswers(this.teams);
+            this.hostPage.onUpdateFinalJeffpardy(this.finalJeffpardyWagers, this.finalJeffpardyAnswers);
+        }
 
         const scores: { [key: string]: number } = {};
 
