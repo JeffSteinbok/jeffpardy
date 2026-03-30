@@ -880,6 +880,10 @@ div#jeffpardyBoard div.timer div.timerFill {
     border-radius: 0 0 4px 4px;
 }
 
+div#jeffpardyBoard div.timer div.timerFill.noTransition {
+    transition: none;
+}
+
 div#jeffpardyBoard div.jeffpardyActiveClue .dailyDouble {
     flex-grow: 1;
     background-color: var(--color-game-board);

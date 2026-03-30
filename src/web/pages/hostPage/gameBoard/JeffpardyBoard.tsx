@@ -16,6 +16,7 @@ import { CategoryReveal } from "./CategoryReveal";
 import { DailyDoubleReveal } from "./DailyDoubleReveal";
 import { ClueDisplay } from "./ClueDisplay";
 import { RoundIntermission } from "./RoundIntermission";
+import { sanitizeHtml } from "../../../utilities/sanitize";
 
 export enum JeopardyBoardView {
     Board,
@@ -267,16 +268,14 @@ export class JeffpardyBoard
             }
         }
 
-        let newBoardView: JeopardyBoardView = JeopardyBoardView.Board;
-        this.props.jeffpardyHostController.startIntermission();
         if (boardEmpty) {
-            newBoardView = JeopardyBoardView.Intermission;
+            this.props.jeffpardyHostController.startIntermission();
         }
 
         this.setState({
             activeClue: null,
             activeCategory: null,
-            jeopardyBoardView: newBoardView,
+            jeopardyBoardView: boardEmpty ? JeopardyBoardView.Intermission : JeopardyBoardView.Board,
         });
     };
 
@@ -393,7 +392,10 @@ export class JeffpardyBoard
                 });
             } else {
                 this.timesUpSound.play();
-                this.props.jeffpardyHostController.buzzerTimeout();
+                // Delay showing the answer until after the sound plays
+                setTimeout(() => {
+                    this.props.jeffpardyHostController.buzzerTimeout();
+                }, 750);
             }
         }
     };
@@ -519,7 +521,7 @@ export class JeffpardyBoard
                                                 <source src="/sounds/finalJeopardy.mp3" type="audio/mp3" />
                                             </audio>
                                         )}
-                                        <div className="clue">{this.props.categories[0].clues[0].clue}</div>
+                                        <div className="clue" dangerouslySetInnerHTML={{ __html: sanitizeHtml(this.props.categories[0].clues[0].clue) }} />
                                         {!this.state.finalJeffpardyTimerActive && (
                                             <div className="categoryRevealHint jeffpardy-label">
                                                 Hit Space to Start Timer
@@ -531,7 +533,7 @@ export class JeffpardyBoard
                                 )}
                                 {this.state.jeopardyBoardView == JeopardyBoardView.FinalTally && (
                                     <div className="jeffpardyFinalTally">
-                                        <div className="clue">{this.props.categories[0].clues[0].clue}</div>
+                                        <div className="clue" dangerouslySetInnerHTML={{ __html: sanitizeHtml(this.props.categories[0].clues[0].clue) }} />
                                         <FinalJeffpardyTally
                                             teams={this.props.teams}
                                             wagers={this.props.finalJeffpardyWagers}

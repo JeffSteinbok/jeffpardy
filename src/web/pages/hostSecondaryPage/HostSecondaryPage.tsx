@@ -7,6 +7,7 @@ import "../../Jeffpardy.css";
 import * as signalR from "@microsoft/signalr";
 import { Logger } from "../../utilities/Logger";
 import { IClue } from "../../Types";
+import { sanitizeHtml } from "../../utilities/sanitize";
 import { Debug } from "../../utilities/Debug";
 
 import { IGameRound } from "../hostPage/Types";
@@ -149,8 +150,8 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
                 )}
                 {this.state.hostSecondardyPageState == HostSecondardyPageState.ShowClue && (
                     <div>
-                        <div className="clue">{this.state.clue.clue}</div>
-                        <div className="question">{this.state.clue.question}</div>
+                        <div className="clue" dangerouslySetInnerHTML={{ __html: sanitizeHtml(this.state.clue.clue) }} />
+                        <div className="question" dangerouslySetInnerHTML={{ __html: sanitizeHtml(this.state.clue.question) }} />
                     </div>
                 )}
             </div>

@@ -51,29 +51,37 @@ export class Debug {
     }
 
     public static generateCategory(): ICategory {
+        const clues = [
+            Debug.generateClue(),
+            Debug.generateClue(),
+            Debug.generateClue(),
+            Debug.generateClue(),
+            Debug.generateClue(),
+        ];
+        // Wrap the second clue's text in <i> tags for testing HTML rendering
+        clues[1].clue = "<i>" + clues[1].clue + "</i>";
+        clues[1].question = "<i>" + clues[1].question + "</i>";
+
         return {
             title: LoremIpsum.generate(Math.floor(Math.random() * 2) + 1).toUpperCase(),
             airDate: "1994-01-21T00:11:00",
             comment: LoremIpsum.generate(Math.floor(Math.random() * 10) + 6),
             isAsked: false,
-            clues: [
-                Debug.generateClue(),
-                Debug.generateClue(),
-                Debug.generateClue(),
-                Debug.generateClue(),
-                Debug.generateClue(),
-            ],
+            clues: clues,
             hasDailyDouble: false,
         };
     }
 
     public static generateFinalCategory(): ICategory {
+        const clue = Debug.generateClue();
+        clue.clue = "<i>" + clue.clue + "</i>";
+        clue.question = "<i>" + clue.question + "</i>";
         return {
             title: LoremIpsum.generate(Math.floor(Math.random() * 2) + 1).toUpperCase(),
             airDate: "1994-01-21T00:11:00",
             comment: LoremIpsum.generate(Math.floor(Math.random() * 10) + 6),
             isAsked: false,
-            clues: [Debug.generateClue()],
+            clues: [clue],
             hasDailyDouble: false,
         };
     }
