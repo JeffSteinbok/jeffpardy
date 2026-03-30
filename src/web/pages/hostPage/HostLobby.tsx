@@ -15,6 +15,7 @@ export interface IHostLobbyProps {
     gameCode: string;
     onStartGame: () => void;
     onBack: () => void;
+    showArchiveAttribution?: boolean;
 }
 
 /** Lobby screen shown after game setup, displaying the game code, player join link, and player list before the game starts. */
@@ -74,7 +75,7 @@ export class HostLobby extends React.Component<IHostLobbyProps> {
                 </div>
                 <button onClick={this.props.onStartGame}>Start Game</button>
                 <div className="flexGrowSpacer"></div>
-                <Attribution />
+                <Attribution showArchiveAttribution={this.props.showArchiveAttribution} />
             </div>
         );
     }

@@ -189,6 +189,10 @@ div#startPage {
     align-items: center;
 }
 
+div#startPage .attribution {
+    padding-bottom: 10px;
+}
+
 div#startPage .startPageContent {
     display: flex;
     flex-direction: column;
@@ -199,6 +203,7 @@ div#startPage .startPageContent {
     z-index: 1;
     gap: 100px;
     padding: 40px;
+    animation: lobbyFadeIn 0.8s ease-out both;
 }
 
 div#startPage .titleContainer {
@@ -452,6 +457,10 @@ div.hostStartPage input.accessCodeInput {
     width: 200px;
 }
 
+div.hostStartPage input.accessCodeInput::-ms-reveal {
+    filter: invert(1);
+}
+
 div.hostStartPage input.accessCodeInput::placeholder {
     color: rgba(255, 255, 255, 0.4);
 }
@@ -485,7 +494,7 @@ div.hostStartPage div.accessCodeDivider::after {
     content: "";
     position: absolute;
     top: 50%;
-    width: 35%;
+    width: 40%;
     height: 1px;
     background: rgba(255, 255, 255, 0.2);
 }

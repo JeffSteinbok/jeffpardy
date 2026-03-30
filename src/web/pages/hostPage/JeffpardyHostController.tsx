@@ -251,14 +251,14 @@ export class JeffpardyHostController {
         if (!Debug.IsFlagSet(DebugFlags.DailyDouble00)) {
             for (let i: number = 0; i < gameData.rounds.length; i++) {
                 const round: IGameRound = gameData.rounds[i];
-                const numDDs = Math.pow(2, i);
+                const numDDs = Math.min(Math.pow(2, i), round.categories.length);
 
                 for (let dd: number = 0; dd < numDDs; dd++) {
                     let ddCat: number;
 
                     // Pick a category randomly
                     do {
-                        ddCat = Math.floor(Math.random() * 6);
+                        ddCat = Math.floor(Math.random() * round.categories.length);
                     } while (round.categories[ddCat].hasDailyDouble);
                     round.categories[ddCat].hasDailyDouble = true;
 

@@ -288,6 +288,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                         gameCode={this.gameCode}
                         onStartGame={this.startIntro}
                         onBack={() => this.setState({ viewMode: HostPageViewMode.Start })}
+                        showArchiveAttribution={this.jeffpardyHostController.hasStoredAccessCode()}
                     />
                 )}
                 {this.state.viewMode == HostPageViewMode.Intro && (

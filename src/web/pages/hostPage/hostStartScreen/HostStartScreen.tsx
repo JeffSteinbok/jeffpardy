@@ -67,12 +67,8 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
     }
 
     public loadCustomCategories = (json: string) => {
-        try {
-            this.props.onModifyGameData(JSON.parse(json));
-            this.setState({ isCustomCategoryDialogOpen: false, snackbarOpen: true });
-        } catch (e) {
-            alert("Failed to load game data: " + (e as Error).message);
-        }
+        this.props.onModifyGameData(JSON.parse(json));
+        this.setState({ isCustomCategoryDialogOpen: false, snackbarOpen: true });
     };
 
     public loadCustomCategoriesFromExcelPaste = (tsv: string) => {
@@ -233,36 +229,42 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                         {this.props.gameData.rounds.map((round, index) => {
                                             return (
                                                 <li key={index}>
-                                                    <a
-                                                        href="#"
-                                                        onClick={(_e) => {
-                                                            this.updateRound(round);
-                                                        }}
-                                                    >
-                                                        🔄
-                                                    </a>
+                                                    {this.props.jeffpardyHostController.hasStoredAccessCode() && (
+                                                        <a
+                                                            href="#"
+                                                            onClick={(_e) => {
+                                                                this.updateRound(round);
+                                                            }}
+                                                        >
+                                                            🔄
+                                                        </a>
+                                                    )}
                                                     {round.name}
                                                     <ul>
                                                         {round.categories.map((category, index) => {
                                                             const airDate: Date = new Date(category.airDate);
                                                             return (
                                                                 <li key={index}>
-                                                                    <a
-                                                                        href="#"
-                                                                        onClick={(_e) => {
-                                                                            this.updateSingleCategory(category);
-                                                                        }}
-                                                                    >
-                                                                        🔄
-                                                                    </a>
-                                                                    <a
-                                                                        href="#"
-                                                                        onClick={(_e) => {
-                                                                            this.showCategoryDetails(round, category);
-                                                                        }}
-                                                                    >
-                                                                        🔎
-                                                                    </a>
+                                                                    {this.props.jeffpardyHostController.hasStoredAccessCode() && (
+                                                                        <>
+                                                                            <a
+                                                                                href="#"
+                                                                                onClick={(_e) => {
+                                                                                    this.updateSingleCategory(category);
+                                                                                }}
+                                                                            >
+                                                                                🔄
+                                                                            </a>
+                                                                            <a
+                                                                                href="#"
+                                                                                onClick={(_e) => {
+                                                                                    this.showCategoryDetails(round, category);
+                                                                                }}
+                                                                            >
+                                                                                🔎
+                                                                            </a>
+                                                                        </>
+                                                                    )}
                                                                     {category.title} -{" "}
                                                                     {airDate.getMonth() +
                                                                         1 +
@@ -283,22 +285,26 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                             Final Jeffpardy
                                             <ul>
                                                 <li>
-                                                    <a
-                                                        href="#"
-                                                        onClick={(_e) => {
-                                                            this.updateSingleCategory(finalCategory);
-                                                        }}
-                                                    >
-                                                        🔄
-                                                    </a>
-                                                    <a
-                                                        href="#"
-                                                        onClick={(_e) => {
-                                                            this.showCategoryDetails(null, finalCategory);
-                                                        }}
-                                                    >
-                                                        🔎
-                                                    </a>
+                                                    {this.props.jeffpardyHostController.hasStoredAccessCode() && (
+                                                        <>
+                                                            <a
+                                                                href="#"
+                                                                onClick={(_e) => {
+                                                                    this.updateSingleCategory(finalCategory);
+                                                                }}
+                                                            >
+                                                                🔄
+                                                            </a>
+                                                            <a
+                                                                href="#"
+                                                                onClick={(_e) => {
+                                                                    this.showCategoryDetails(null, finalCategory);
+                                                                }}
+                                                            >
+                                                                🔎
+                                                            </a>
+                                                        </>
+                                                    )}
                                                     {finalCategory.title} -{" "}
                                                     {finalAirDate.getMonth() +
                                                         1 +
@@ -370,7 +376,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                 </div>
 
                                 <div className="flexGrowSpacer"></div>
-                                <Attribution showArchiveAttribution={true} />
+                                <Attribution showArchiveAttribution={this.props.jeffpardyHostController.hasStoredAccessCode()} />
                                 {this.state.isCustomCategoryDialogOpen && (
                                     <CustomCategoryDialog
                                         gameData={this.props.gameData}
