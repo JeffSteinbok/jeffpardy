@@ -4,7 +4,7 @@
 import { Logger } from "./Logger";
 import { IGameData, FinalJeffpardyWagerDictionary, FinalJeffpardyAnswerDictionary } from "../pages/hostPage/Types";
 import { LoremIpsum } from "./LoremIpsum";
-import { IClue, ICategory, IPlayer, ITeam, TeamDictionary } from "../Types";
+import { IClue, ICategory, IPlayer, TeamDictionary } from "../Types";
 
 export enum DebugFlags {
     None = 0,

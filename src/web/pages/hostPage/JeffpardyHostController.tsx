@@ -7,7 +7,7 @@ import { IScoreboard } from "./scoreboard/Scoreboard";
 import { WebServerApiManager, IApiExecutionContext } from "../../utilities/WebServerApiManager";
 import { IHostPage, HostPageViewMode } from "./HostPage";
 import { IHostSignalRClient, HostSignalRClient } from "./HostSignalRClient";
-import { IPlayer, TeamDictionary, ITeam } from "../../Types";
+import { IPlayer, IBuzzerAttempt, TeamDictionary, ITeam } from "../../Types";
 import { Debug, DebugFlags } from "../../utilities/Debug";
 import {
     RoundDescriptor,
@@ -322,11 +322,11 @@ export class JeffpardyHostController {
         this.hostSignalRClient.activateBuzzer();
     }
 
-    public assignBuzzedInUser(user: IPlayer) {
+    public assignBuzzedInUser(user: IPlayer, topBuzzers: IBuzzerAttempt[]) {
         // If the timer has expired, we have to not honor this...
         if (this.buzzerActive) {
             this.jeffpardyBoard.stopTimer();
-            this.scoreboard.onAssignBuzzedInUser(user);
+            this.scoreboard.onAssignBuzzedInUser(user, topBuzzers);
         }
     }
 

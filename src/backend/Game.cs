@@ -93,6 +93,11 @@ namespace Jeffpardy
         Player winningBuzzerUser;
 
         /// <summary>
+        /// All buzz attempts for the current buzzer window, sorted by time when sent.
+        /// </summary>
+        readonly List<(Player Player, int TimeInMilliseconds)> buzzerAttempts = new List<(Player, int)>();
+
+        /// <summary>
         /// List of all winners for this session.  A team can win only once per session.
         /// </summary>
         readonly List<string> buzzerWinnerTeams = new List<string>();
@@ -193,6 +198,7 @@ namespace Jeffpardy
                 this.buzzerWinnerTeams.Clear();
                 this.winningBuzzerUser = null;
                 this.winningBuzzerTimeInMilliseconds = int.MaxValue;
+                this.buzzerAttempts.Clear();
                 this.buzzerWindowTimer.Stop();
             }
             await gameHubContext.Clients.Group(this.GameCode).SendAsync("resetBuzzer");
@@ -204,6 +210,7 @@ namespace Jeffpardy
             {
                 this.winningBuzzerUser = null;
                 this.winningBuzzerTimeInMilliseconds = int.MaxValue;
+                this.buzzerAttempts.Clear();
                 this.buzzerWindowTimer.Stop();
             }
             await gameHubContext.Clients.Group(this.GameCode).SendAsync("activateBuzzer");
@@ -213,6 +220,7 @@ namespace Jeffpardy
         {
             Player winner;
             int winningTime;
+            object[] topBuzzers;
             lock (_lock)
             {
                 this.buzzerWindowTimer.Stop();
@@ -225,8 +233,15 @@ namespace Jeffpardy
                 this.buzzerWinnerTeams.Add(this.winningBuzzerUser.Team);
                 winner = this.winningBuzzerUser;
                 winningTime = this.winningBuzzerTimeInMilliseconds;
+
+                // Build top 3 buzzer attempts sorted by time
+                topBuzzers = this.buzzerAttempts
+                    .OrderBy(a => a.TimeInMilliseconds)
+                    .Take(3)
+                    .Select(a => (object)new { player = a.Player, time = a.TimeInMilliseconds })
+                    .ToArray();
             }
-            await gameHubContext.Clients.Group(this.GameCode).SendAsync("assignWinner", winner, winningTime);
+            await gameHubContext.Clients.Group(this.GameCode).SendAsync("assignWinner", winner, winningTime, topBuzzers);
         }
 
         public void BuzzIn(string connectionId, int timeInMilliseconds, int handicapInMilliseconds)
@@ -261,6 +276,8 @@ namespace Jeffpardy
                     this.winningBuzzerTimeInMilliseconds = timeInMilliseconds;
                     this.winningBuzzerUser = buzzerUser;
                 }
+
+                this.buzzerAttempts.Add((buzzerUser, timeInMilliseconds));
             }
         }
 

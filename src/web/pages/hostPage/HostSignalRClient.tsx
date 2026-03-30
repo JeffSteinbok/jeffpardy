@@ -4,7 +4,7 @@
 import * as signalR from "@microsoft/signalr";
 import { Logger } from "../../utilities/Logger";
 import { JeffpardyHostController } from "./JeffpardyHostController";
-import { IClue, IPlayer, TeamDictionary } from "../../Types";
+import { IClue, IPlayer, IBuzzerAttempt, TeamDictionary } from "../../Types";
 import { IGameRound } from "./Types";
 
 export interface IHostSignalRClient {
@@ -64,8 +64,8 @@ export class HostSignalRClient implements IHostSignalRClient {
             this.jeffpardyHostController.submitAnswer(user, answer, responseTime);
         });
 
-        this.hubConnection.on("assignWinner", (user: IPlayer) => {
-            this.jeffpardyHostController.assignBuzzedInUser(user);
+        this.hubConnection.on("assignWinner", (user: IPlayer, _winningTime: number, topBuzzers: IBuzzerAttempt[]) => {
+            this.jeffpardyHostController.assignBuzzedInUser(user, topBuzzers || []);
         });
     }
 

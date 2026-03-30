@@ -2151,6 +2151,39 @@ div#scoreboard .scoreboardEntry .score.negative {
     color: #f44336;
 }
 
+div#scoreboard .buzzerResults {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+div#scoreboard .buzzerResult {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+div#scoreboard .buzzerResult.buzzerWinner {
+    color: #4caf50;
+    font-weight: bold;
+}
+
+div#scoreboard .buzzerResult .buzzerRank {
+    width: 18px;
+    text-align: center;
+}
+
+div#scoreboard .buzzerResult .buzzerName {
+    flex: 1;
+}
+
+div#scoreboard .buzzerResult .buzzerTime {
+    font-family: monospace;
+}
+
 div.buzzerUserListView {
     display: flex;
     flex-direction: column;

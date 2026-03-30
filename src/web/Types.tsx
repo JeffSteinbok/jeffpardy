@@ -17,6 +17,11 @@ export interface ITeam {
 
 export type TeamDictionary = { [key: string]: ITeam };
 
+export interface IBuzzerAttempt {
+    player: IPlayer;
+    time: number;
+}
+
 export interface IClue {
     clue: string;
     question: string;

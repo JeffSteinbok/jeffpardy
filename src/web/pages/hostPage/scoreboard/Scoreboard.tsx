@@ -5,7 +5,7 @@ import * as React from "react";
 import { ScoreboardEntry, ScoreboardEntryBuzzerState } from "./ScoreboardEntry";
 import { Logger } from "../../../utilities/Logger";
 import { JeffpardyHostController } from "../JeffpardyHostController";
-import { IPlayer, TeamDictionary, ITeam } from "../../../Types";
+import { IPlayer, IBuzzerAttempt, TeamDictionary, ITeam } from "../../../Types";
 import { IClue } from "../../../Types";
 import { TeamFixupDialog } from "./TeamFixupDialog";
 import { EndRoundDialog } from "./EndRoundDialog";
@@ -37,6 +37,7 @@ export interface IScoreboardProps {
 
 export interface IScoreboardState {
     buzzedInUser: IPlayer;
+    topBuzzers: IBuzzerAttempt[];
     gameBoardState: GameBoardState;
     activeClue: IClue;
     dailyDoubleWager: number;
@@ -51,7 +52,7 @@ export interface IScoreboardState {
 export interface IScoreboard {
     onClueShown: (clue: IClue) => void;
     onBuzzerTimeout: () => void;
-    onAssignBuzzedInUser: (user: IPlayer) => void;
+    onAssignBuzzedInUser: (user: IPlayer, topBuzzers: IBuzzerAttempt[]) => void;
     onSetDailyDoubleWager: (wager: number) => void;
     onStartIntermission: () => void;
     onStartNormalRound: () => void;
@@ -72,6 +73,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
         this.state = {
             buzzedInUser: null,
+            topBuzzers: [],
             gameBoardState: GameBoardState.CategoryReveal,
             activeClue: null,
             dailyDoubleWager: 0,
@@ -110,10 +112,11 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
         });
     };
 
-    onAssignBuzzedInUser = (user: IPlayer) => {
+    onAssignBuzzedInUser = (user: IPlayer, topBuzzers: IBuzzerAttempt[]) => {
         this.setState({
             gameBoardState: GameBoardState.ClueAnswered,
             buzzedInUser: user,
+            topBuzzers: topBuzzers,
             numResponses: this.state.numResponses + 1,
         });
     };
@@ -182,6 +185,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
             this.setState({
                 gameBoardState: GameBoardState.Normal,
                 buzzedInUser: null,
+                topBuzzers: [],
                 wrongTeams: [],
             });
             this.resetBuzzer();
@@ -505,6 +509,20 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                             );
                         })}
                 </div>
+
+                {this.state.topBuzzers.length > 0 && (
+                    <div className="buzzerResults">
+                        {this.state.topBuzzers.map((attempt, i) => (
+                            <div key={i} className={"buzzerResult" + (i === 0 ? " buzzerWinner" : "")}>
+                                <span className="buzzerRank">{i === 0 ? "🏆" : i === 1 ? "🥈" : "🥉"}</span>
+                                <span className="buzzerName">
+                                    {attempt.player.name} ({attempt.player.team})
+                                </span>
+                                <span className="buzzerTime">{(attempt.time / 1000).toFixed(3)}s</span>
+                            </div>
+                        ))}
+                    </div>
+                )}
 
                 {this.state.isTeamFixupDialogShown && (
                     <TeamFixupDialog
