@@ -60,6 +60,14 @@ export class JsonEditor extends React.Component<IJsonEditorProps> {
         }
     }
 
+    componentDidUpdate(prevProps: IJsonEditorProps) {
+        if (this.props.defaultValue !== prevProps.defaultValue && this.view) {
+            this.view.dispatch({
+                changes: { from: 0, to: this.view.state.doc.length, insert: this.props.defaultValue },
+            });
+        }
+    }
+
     componentWillUnmount() {
         this.view?.destroy();
     }
