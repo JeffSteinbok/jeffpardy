@@ -249,11 +249,6 @@ export class JeffpardyHostController {
         this.gameData = gameData;
 
         this.hostPage.onGameDataLoaded(this.gameData);
-
-        // Inject fake teams for testing when FakeTeams debug flag is set
-        if (Debug.IsFlagSet(DebugFlags.FakeTeams)) {
-            this.updateUsers(Debug.generateFakeTeams());
-        }
     };
 
     public setCustomGameData(gameData: IGameData) {
@@ -262,6 +257,17 @@ export class JeffpardyHostController {
 
     public updateUsers(teams: TeamDictionary) {
         Logger.debug("JeffpardyHostController:updateUsers", teams);
+
+        // Merge fake teams when FakeTeams debug flag is set
+        if (Debug.IsFlagSet(DebugFlags.FakeTeams)) {
+            const fakeTeams = Debug.generateFakeTeams();
+            for (const key in fakeTeams) {
+                if (!Object.prototype.hasOwnProperty.call(teams, key)) {
+                    teams[key] = fakeTeams[key];
+                }
+            }
+        }
+
         let teamCount: number = 0;
 
         for (const key in teams) {
