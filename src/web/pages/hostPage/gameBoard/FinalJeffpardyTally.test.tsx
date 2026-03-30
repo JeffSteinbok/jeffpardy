@@ -79,7 +79,7 @@ describe("FinalJeffpardyTally", () => {
         expect(cards.length).toBe(1);
     });
 
-    it('shows "Hit Space to Reveal Responses" hint initially', () => {
+    it('shows "HIT SPACE TO REVEAL RESPONSES" hint initially', () => {
         const { container } = render(
             <FinalJeffpardyTally
                 teams={makeTeams()}
@@ -92,7 +92,7 @@ describe("FinalJeffpardyTally", () => {
         );
         const hint = container.querySelector(".categoryRevealHint");
         expect(hint).toBeInTheDocument();
-        expect(hint!.textContent).toBe("Hit Space to Reveal Responses");
+        expect(hint!.textContent).toBe("HIT SPACE TO REVEAL RESPONSES");
     });
 
     it("shows ✓ and ✗ buttons after enough reveals for the current team", () => {

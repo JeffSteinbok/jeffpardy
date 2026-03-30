@@ -274,7 +274,7 @@ export class FinalJeffpardyTally extends React.Component<IFinalJeffpardyTallyPro
 
                 <div className="postTally">
                     {!this.state.isTallyCompleted && !this.state.showResult && !allRevealed && (
-                        <div className="categoryRevealHint">Hit Space to Reveal Responses</div>
+                        <div className="categoryRevealHint">HIT SPACE TO REVEAL RESPONSES</div>
                     )}
                     {!this.state.isTallyCompleted && !this.state.showResult && allRevealed && (
                         <div className="categoryRevealHint">Press Z for Correct, X for Incorrect</div>

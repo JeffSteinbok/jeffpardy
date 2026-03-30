@@ -27,7 +27,7 @@ export enum DebugFlags {
 // Skip Intro & Local Categories:  6
 // Skip Intro & Local Categories & Quick Timers:  46
 // Skip Intro & Local Categories & DD:  1E
-// Full speed-run (all shortcuts + fake teams): 75E
+// Full speed-run (all shortcuts + fake teams): 7FE
 
 /** Utility class for managing debug flags and generating mock game data for local development and testing. */
 export class Debug {
