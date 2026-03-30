@@ -2355,7 +2355,6 @@ div#categoryDetails div#viewCategory li div.clue {
 
 div#categoryDetails div#viewCategory li div.question {
     padding: 4px 0 0 0;
-    font-style: italic;
     color: rgba(255, 255, 255, 0.7);
     font-size: 0.9rem;
 }

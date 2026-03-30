@@ -68,15 +68,23 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                 <DialogContent>
                     <div id="categoryDetails">
                         <div id="viewCategory">
-                            <h2>{this.state.category.title}</h2>
+                            <h2 style={{ marginBottom: 0 }}>{this.state.category.title}</h2>
+                            {this.state.category.airDate && (
+                                <div className="airDate" style={{ marginTop: "0.2em", marginBottom: "1em" }}>
+                                    {new Date(this.state.category.airDate).toLocaleDateString()}
+                                </div>
+                            )}
 
                             <ul className="clueList">
                                 {this.state.category.clues.map((clue, index) => {
                                     return (
                                         <li key={index}>
                                             <div className="value">{clue.value}</div>
-                                            <div className="clue">{clue.clue}</div>
-                                            <div className="question">{clue.question}</div>
+                                            <div className="clue" dangerouslySetInnerHTML={{ __html: clue.clue }} />
+                                            <div
+                                                className="question"
+                                                dangerouslySetInnerHTML={{ __html: clue.question }}
+                                            />
                                         </li>
                                     );
                                 })}
@@ -97,11 +105,12 @@ export class CategoryDetails extends React.Component<ICategoryDetailsProps, ICat
                                         Get Random Category
                                     </Button>
                                 </Stack>
-                                <h3>Get Category by Topic</h3>
+                                <h3 style={{ marginTop: "1.5em" }}>Get Category by Topic</h3>
 
                                 <Stack direction="row" spacing={2} alignItems="center">
                                     <TextField
                                         label="Search Term"
+                                        size="small"
                                         sx={{ flex: 1 }}
                                         onChange={(event) => (this.categorySearchTerm = event.target.value)}
                                         onKeyDown={(event) => {

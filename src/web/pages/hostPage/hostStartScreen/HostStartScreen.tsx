@@ -61,8 +61,12 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
     }
 
     public loadCustomCategories = (json: string) => {
-        this.setState({ isCustomCategoryDialogOpen: false, snackbarOpen: true });
-        this.props.onModifyGameData(JSON.parse(json));
+        try {
+            this.props.onModifyGameData(JSON.parse(json));
+            this.setState({ isCustomCategoryDialogOpen: false, snackbarOpen: true });
+        } catch (e) {
+            alert("Failed to load game data: " + (e as Error).message);
+        }
     };
 
     public loadCustomCategoriesFromExcelPaste = (tsv: string) => {
