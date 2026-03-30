@@ -1419,19 +1419,14 @@ div#jeffpardyBoard .finalTallySingleTeam .tallyAction button {
 .jeffpardyEndGame {
     width: 100%;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    position: relative;
     background-color: var(--color-game-board);
     animation: boardFadeIn 1s ease-out;
-    box-sizing: border-box;
     overflow: hidden;
 }
 
 .endGameImage {
-    width: 100%;
-    height: 100%;
+    display: block;
     object-fit: cover;
 }
 
@@ -1476,6 +1471,11 @@ div#jeffpardyBoard .finalTallySingleTeam .tallyAction button {
 }
 
 .endGameHint {
+    position: absolute;
+    bottom: 12px;
+    left: 0;
+    right: 0;
+    text-align: center;
     font-size: 1rem;
     color: rgba(255, 255, 255, 0.4);
     letter-spacing: 2px;
