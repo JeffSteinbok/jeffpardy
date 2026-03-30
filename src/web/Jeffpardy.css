@@ -2152,13 +2152,16 @@ div#scoreboard .scoreboardEntry .score.negative {
 }
 
 .buzzerResults {
+    position: fixed;
+    bottom: 12px;
+    left: 0;
+    right: 0;
     display: flex;
     flex-direction: column;
     gap: 2px;
     padding: 8px 12px;
     font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.7);
-    margin-top: 8px;
 }
 
 .buzzerResult {
