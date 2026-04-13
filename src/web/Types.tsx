@@ -38,6 +38,9 @@ export interface ICategory {
     clues: IClue[];
     isAsked: boolean;
     hasDailyDouble: boolean;
+    season: number;
+    fileName: string;
+    index: number;
 }
 
 export interface ICategoryMetadata {
