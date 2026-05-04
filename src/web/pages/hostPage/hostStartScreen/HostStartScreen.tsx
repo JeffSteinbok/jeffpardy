@@ -12,6 +12,7 @@ import { TeamDictionary } from "../../../Types";
 import { JeffpardyHostController } from "../JeffpardyHostController";
 import { CustomCategoryDialog } from "./CustomCategoryDialog";
 import { ExcelTemplateDialog } from "./ExcelTemplateDialog";
+import { CreateWithAIDialog } from "./CreateWithAIDialog";
 import { parseGameDataFromTsv } from "./TsvCategoryParser";
 import { Snackbar, Alert } from "@mui/material";
 
@@ -37,7 +38,9 @@ export interface IHostStartScreenState {
     selectedCategory: ICategory;
     selectedCategoryRoundDescriptor: RoundDescriptor;
     isCustomCategoryDialogOpen: boolean;
+    isCustomCategoryPasteMode: boolean;
     isCustomCategoryTsvDialogOpen: boolean;
+    isCreateWithAIDialogOpen: boolean;
     isCategoryDetailsDialogOpen: boolean;
     snackbarOpen: boolean;
     accessCodeInput: string;
@@ -57,7 +60,9 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
             selectedCategory: null,
             selectedCategoryRoundDescriptor: null,
             isCustomCategoryDialogOpen: false,
+            isCustomCategoryPasteMode: false,
             isCustomCategoryTsvDialogOpen: false,
+            isCreateWithAIDialogOpen: false,
             isCategoryDetailsDialogOpen: false,
             snackbarOpen: false,
             accessCodeInput: "",
@@ -68,7 +73,7 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
 
     public loadCustomCategories = (json: string) => {
         this.props.onModifyGameData(JSON.parse(json));
-        this.setState({ isCustomCategoryDialogOpen: false, snackbarOpen: true });
+        this.setState({ isCustomCategoryDialogOpen: false, isCustomCategoryPasteMode: false, snackbarOpen: true });
     };
 
     public loadCustomCategoriesFromExcelPaste = (tsv: string) => {
@@ -196,6 +201,13 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                     </button>
                                     <button
                                         onClick={() => {
+                                            this.setState({ isCreateWithAIDialogOpen: true });
+                                        }}
+                                    >
+                                        Create Game With AI
+                                    </button>
+                                    <button
+                                        onClick={() => {
                                             this.setState({ isCustomCategoryTsvDialogOpen: true });
                                         }}
                                     >
@@ -205,8 +217,26 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                 {this.state.isCustomCategoryDialogOpen && (
                                     <CustomCategoryDialog
                                         gameData={null}
+                                        pasteMode={this.state.isCustomCategoryPasteMode}
                                         onLoad={(json) => this.loadCustomCategories(json)}
-                                        onClose={() => this.setState({ isCustomCategoryDialogOpen: false })}
+                                        onClose={() =>
+                                            this.setState({
+                                                isCustomCategoryDialogOpen: false,
+                                                isCustomCategoryPasteMode: false,
+                                            })
+                                        }
+                                    />
+                                )}
+                                {this.state.isCreateWithAIDialogOpen && (
+                                    <CreateWithAIDialog
+                                        onComplete={() => {
+                                            this.setState({
+                                                isCreateWithAIDialogOpen: false,
+                                                isCustomCategoryDialogOpen: true,
+                                                isCustomCategoryPasteMode: true,
+                                            });
+                                        }}
+                                        onClose={() => this.setState({ isCreateWithAIDialogOpen: false })}
                                     />
                                 )}
                                 {this.state.isCustomCategoryTsvDialogOpen && (
@@ -332,6 +362,13 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                         </button>
                                         <button
                                             onClick={() => {
+                                                this.setState({ isCreateWithAIDialogOpen: true });
+                                            }}
+                                        >
+                                            Create Game With AI
+                                        </button>
+                                        <button
+                                            onClick={() => {
                                                 this.setState({ isCustomCategoryTsvDialogOpen: true });
                                             }}
                                         >
@@ -385,8 +422,27 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                 {this.state.isCustomCategoryDialogOpen && (
                                     <CustomCategoryDialog
                                         gameData={this.props.gameData}
+                                        pasteMode={this.state.isCustomCategoryPasteMode}
                                         onLoad={(json) => this.loadCustomCategories(json)}
-                                        onClose={() => this.setState({ isCustomCategoryDialogOpen: false })}
+                                        onClose={() =>
+                                            this.setState({
+                                                isCustomCategoryDialogOpen: false,
+                                                isCustomCategoryPasteMode: false,
+                                            })
+                                        }
+                                    />
+                                )}
+
+                                {this.state.isCreateWithAIDialogOpen && (
+                                    <CreateWithAIDialog
+                                        onComplete={() => {
+                                            this.setState({
+                                                isCreateWithAIDialogOpen: false,
+                                                isCustomCategoryDialogOpen: true,
+                                                isCustomCategoryPasteMode: true,
+                                            });
+                                        }}
+                                        onClose={() => this.setState({ isCreateWithAIDialogOpen: false })}
                                     />
                                 )}
 

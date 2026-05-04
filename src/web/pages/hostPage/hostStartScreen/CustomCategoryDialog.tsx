@@ -8,6 +8,7 @@ import { JsonEditor } from "../../../components/JsonEditor";
 
 export interface ICustomCategoryDialogProps {
     gameData: IGameData;
+    pasteMode?: boolean;
     onLoad: (json: string) => void;
     onClose: () => void;
 }
@@ -220,7 +221,9 @@ export class CustomCategoryDialog extends React.Component<ICustomCategoryDialogP
                 onClose={this.props.onClose}
                 PaperProps={{ className: "gameDialog", style: { height: "85vh" } }}
             >
-                <DialogTitle>Modify Game Data JSON</DialogTitle>
+                <DialogTitle>
+                    {this.props.pasteMode ? "Paste Game Data JSON or Load from File" : "Modify Game Data JSON"}
+                </DialogTitle>
                 <DialogContent
                     style={{
                         display: "flex",
@@ -231,26 +234,28 @@ export class CustomCategoryDialog extends React.Component<ICustomCategoryDialogP
                     }}
                 >
                     <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
-                        <Button
-                            variant="contained"
-                            size="small"
-                            onClick={() => {
-                                const editorJson =
-                                    this.state.json ||
-                                    (this.props.gameData
-                                        ? serializeGameData(this.props.gameData)
-                                        : PLACEHOLDER_GAME_DATA);
-                                const blob = new Blob([editorJson], { type: "application/json" });
-                                const url = URL.createObjectURL(blob);
-                                const a = document.createElement("a");
-                                a.href = url;
-                                a.download = "gamedata.json";
-                                a.click();
-                                URL.revokeObjectURL(url);
-                            }}
-                        >
-                            Save to File
-                        </Button>
+                        {!this.props.pasteMode && (
+                            <Button
+                                variant="contained"
+                                size="small"
+                                onClick={() => {
+                                    const editorJson =
+                                        this.state.json ||
+                                        (this.props.gameData
+                                            ? serializeGameData(this.props.gameData)
+                                            : PLACEHOLDER_GAME_DATA);
+                                    const blob = new Blob([editorJson], { type: "application/json" });
+                                    const url = URL.createObjectURL(blob);
+                                    const a = document.createElement("a");
+                                    a.href = url;
+                                    a.download = "gamedata.json";
+                                    a.click();
+                                    URL.revokeObjectURL(url);
+                                }}
+                            >
+                                Save to File
+                            </Button>
+                        )}
                         <Button
                             variant="contained"
                             size="small"
@@ -283,7 +288,11 @@ export class CustomCategoryDialog extends React.Component<ICustomCategoryDialogP
                     <JsonEditor
                         defaultValue={
                             this.state.loadedJson ||
-                            (this.props.gameData ? serializeGameData(this.props.gameData) : PLACEHOLDER_GAME_DATA)
+                            (this.props.pasteMode
+                                ? ""
+                                : this.props.gameData
+                                ? serializeGameData(this.props.gameData)
+                                : PLACEHOLDER_GAME_DATA)
                         }
                         onChange={(value) => this.setState({ json: value })}
                     />
