@@ -92,11 +92,14 @@ The output must be valid JSON matching this exact schema:
 }
 ```
 
-## Step 3: Deliver the File
+## Step 3: Deliver the Game
 
-- Output the complete JSON so the user can copy it or save it as a `.json` file.
-- If the tool environment supports file creation, save it as a `.json` file with a descriptive name based on the theme (e.g., `pop-culture-2025.json`, `team-trivia-night.json`).
-- After generating, ask the user if they'd like to review, tweak, or regenerate any categories or clues.
+Before outputting the final JSON, ask the user how they'd like to receive it:
+
+- **Copy to clipboard**: Output the JSON and copy it to the clipboard so they can paste it directly into Jeffpardy's "Edit Game Data JSON" editor. This is the recommended option for most users.
+- **Save to file**: Save the JSON as a `.json` file with a descriptive name based on the theme (e.g., `pop-culture-2025.json`, `team-trivia-night.json`).
+
+Whichever option they choose, also display the full JSON so they can review it. After generating, ask the user if they'd like to review, tweak, or regenerate any categories or clues.
 
 ## Tips for Great Games
 
