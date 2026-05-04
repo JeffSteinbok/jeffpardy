@@ -1,7 +1,7 @@
 # Jeffpardy
 
 <p align="center">
-  <img src="wwwroot/images/jeffpardyrounded.png" alt="Jeffpardy" width="200" />
+  <img src="wwwroot/images/jeffpardyrounded.png" alt="Jeffpardy" width="400" />
 </p>
 
 [![Health Check](https://github.com/JeffSteinbok/jeffpardy/actions/workflows/health-check.yml/badge.svg)](https://github.com/JeffSteinbok/jeffpardy/actions/workflows/health-check.yml)
