@@ -2,7 +2,9 @@
 
 [![Health Check](https://github.com/JeffSteinbok/jeffpardy/actions/workflows/health-check.yml/badge.svg)](https://github.com/JeffSteinbok/jeffpardy/actions/workflows/health-check.yml)
 
-A Jeopardy-style trivia gamebuilt with ASP.NET Core, React/TypeScript, and SignalR for real-time multiplayer gameplay. Game data is stored in Azure Blob Storage.
+> **Just want to play?** Check it out at [jeffpardy.azurewebsites.net](https://jeffpardy.azurewebsites.net) and use [GitHub Copilot](https://github.com/features/copilot) or [Claude](https://claude.ai) to build you a game!
+
+A Jeopardy-style trivia game built with ASP.NET Core, React/TypeScript, and SignalR for real-time multiplayer gameplay. Game data is stored in Azure Blob Storage.
 
 ## Prerequisites
 
