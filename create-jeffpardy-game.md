@@ -18,7 +18,7 @@ Start by asking the user what kinds of topics they'd enjoy. Prompt them with que
 
 Use their answers to come up with **12 unique, creative category titles** — 6 for the Jeffpardy Round and 6 for the Super Jeffpardy Round — plus **1 Final Jeffpardy category**. Categories should be fun and clever. Classic Jeopardy often uses wordplay, puns, or quotation marks in category names (e.g., `"FOR" WORDS`, `ANAGRAMMED DANCERS`, `BIG SCREEN BOXERS`). Feel free to get creative!
 
-Present the proposed categories to the user and ask if they'd like to swap any out before you generate the clues.
+Present the proposed categories to the user as a numbered list, grouped under "Jeffpardy Round" (1–6), "Super Jeffpardy Round" (7–12), and "Final Jeffpardy" (13). Use consistent formatting for both rounds. Ask if they'd like to swap any out before you generate the clues.
 
 ## Step 2: Generate the Game
 
