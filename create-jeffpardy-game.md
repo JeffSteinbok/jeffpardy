@@ -16,7 +16,7 @@ Start by asking the user what kinds of topics they'd enjoy. Prompt them with que
 - "Do you want a mix of easy and hard questions, or more of a challenge?"
 - "Any specific time period or theme you'd like the game to revolve around?"
 
-Use their answers to come up with **12 unique, creative category titles** — 6 for Round 1 and 6 for Round 2 — plus **1 Final Jeffpardy category**. Categories should be fun and clever. Classic Jeopardy often uses wordplay, puns, or quotation marks in category names (e.g., `"FOR" WORDS`, `ANAGRAMMED DANCERS`, `BIG SCREEN BOXERS`). Feel free to get creative!
+Use their answers to come up with **12 unique, creative category titles** — 6 for the Jeffpardy Round and 6 for the Super Jeffpardy Round — plus **1 Final Jeffpardy category**. Categories should be fun and clever. Classic Jeopardy often uses wordplay, puns, or quotation marks in category names (e.g., `"FOR" WORDS`, `ANAGRAMMED DANCERS`, `BIG SCREEN BOXERS`). Feel free to get creative!
 
 Present the proposed categories to the user and ask if they'd like to swap any out before you generate the clues.
 
@@ -26,11 +26,11 @@ Once the user approves the categories, generate the full game JSON. Follow these
 
 ### Structure Rules
 
-- The game has **2 rounds** plus a **Final Jeffpardy** category.
+- The game has **2 rounds** (Jeffpardy Round and Super Jeffpardy Round) plus a **Final Jeffpardy** category.
 - Each round has exactly **6 categories**.
 - Each category has exactly **5 clues**, ordered from easiest (top) to hardest (bottom).
 - Final Jeffpardy has exactly **1 clue**.
-- Round IDs are `0` (Round 1) and `1` (Round 2).
+- Round IDs are `0` (Jeffpardy Round) and `1` (Super Jeffpardy Round).
 
 ### Clue Rules
 
@@ -38,7 +38,7 @@ Once the user approves the categories, generate the full game JSON. Follow these
 - **"question"** is what the player says in response. This is the correct response, typically a person, place, thing, or phrase. Keep it concise.
 - Clues should be factually accurate. Do not invent fake facts.
 - Clues should progress in difficulty from clue 1 (easiest) to clue 5 (hardest) within each category.
-- Round 2 clues should generally be harder than Round 1 clues.
+- Super Jeffpardy Round clues should generally be harder than Jeffpardy Round clues.
 - Write clues in an engaging, Jeopardy-like style — informative, sometimes witty, with helpful context clues embedded in the phrasing.
 
 ### Field Rules
@@ -74,7 +74,7 @@ The output must be valid JSON matching this exact schema:
         {
             "id": 1,
             "categories": [
-                // 6 more categories for Round 2
+                // 6 more categories for Super Jeffpardy Round
             ]
         }
     ],
