@@ -1,5 +1,9 @@
 # Jeffpardy
 
+<p align="center">
+  <img src="wwwroot/images/jeffpardyrounded.png" alt="Jeffpardy" width="200" />
+</p>
+
 [![Health Check](https://github.com/JeffSteinbok/jeffpardy/actions/workflows/health-check.yml/badge.svg)](https://github.com/JeffSteinbok/jeffpardy/actions/workflows/health-check.yml)
 
 > 🎮 **Ready to play?** Head over to [jeffpardy.azurewebsites.net](https://jeffpardy.azurewebsites.net) and let [GitHub Copilot](https://github.com/features/copilot) or [Claude](https://claude.ai) whip up a custom game for you — no setup required! 🏆
