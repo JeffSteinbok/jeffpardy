@@ -49,7 +49,7 @@
     "@codemirror/theme-one-dark": "^6.1.3",
     "@codemirror/view": "^6.40.0",
     "@microsoft/applicationinsights-web": "^2.8.9",
-    "dompurify": "^3.3.3",
+    "dompurify": "^3.4.0",
     "jeffpardy": "file:"
   }
 }
