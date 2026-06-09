@@ -6,6 +6,10 @@ on:
       - '*.md'
     branches:
       - main
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
 # CONFIGURATION
 # For help, go to https://github.com/Azure/Actions
 #
