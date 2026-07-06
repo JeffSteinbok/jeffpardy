@@ -1946,6 +1946,7 @@ button#buzzer {
     border-radius: 50%;
     border: 3px solid rgba(255, 255, 255, 0.2);
     transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+    touch-action: manipulation;
 }
 
 button#buzzer div.reactionTime {
