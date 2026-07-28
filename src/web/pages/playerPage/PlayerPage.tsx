@@ -358,9 +358,9 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             .catch((err) => console.error(err));
     };
 
-    buzzIn = (e: React.MouseEvent | React.TouchEvent) => {
-        // Prevent touch events from also firing a redundant mousedown
-        if (e.type === "touchstart") {
+    buzzIn = (e?: React.PointerEvent) => {
+        // Prevent the browser from treating this as a text selection or context-menu gesture
+        if (e) {
             e.preventDefault();
         }
 
@@ -589,8 +589,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                     <button
                                         id="buzzer"
                                         className={buzzerClassName}
-                                        onMouseDown={this.buzzIn}
-                                        onTouchStart={this.buzzIn}
+                                        onPointerDown={this.buzzIn}
                                     >
                                         <div>{buzzerButtonText}</div>
                                         {showBuzzerReactionTime && (
