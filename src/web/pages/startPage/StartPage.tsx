@@ -20,12 +20,17 @@ export class StartPage extends React.Component {
                     <div className="titleContainer">
                         <img src="/images/JeffpardyTitle.png" className="startPageLogo" alt="Jeffpardy" />
                     </div>
-                    <div className="startPageButtons">
-                        <a href="/host" className="startPageButton jeffpardy-label">
-                            <span className="buttonLabel">Host a Game</span>
-                        </a>
-                        <a href="/player" className="startPageButton jeffpardy-label">
-                            <span className="buttonLabel">Join a Game</span>
+                    <div className="startPageActions">
+                        <div className="startPageButtons">
+                            <a href="/host" className="startPageButton jeffpardy-label">
+                                <span className="buttonLabel">Host a Game</span>
+                            </a>
+                            <a href="/player" className="startPageButton jeffpardy-label">
+                                <span className="buttonLabel">Join a Game</span>
+                            </a>
+                        </div>
+                        <a href="/HowToPlay" className="howToPlayLink jeffpardy-label">
+                            New here? How to Play &rarr;
                         </a>
                     </div>
                 </div>

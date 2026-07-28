@@ -38,4 +38,10 @@ describe("StartPage", () => {
         const link = within(container).getByRole("link", { name: "Join a Game" });
         expect(link).toHaveAttribute("href", "/player");
     });
+
+    it('has a "How to Play" link pointing to /HowToPlay', () => {
+        const { container } = render(<StartPage />);
+        const link = within(container).getByRole("link", { name: /How to Play/i });
+        expect(link).toHaveAttribute("href", "/HowToPlay");
+    });
 });

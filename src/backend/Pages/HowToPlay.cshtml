@@ -1,0 +1,79 @@
+@page
+@model Jeffpardy.Pages.HowToPlayModel
+@{
+    Layout = "";
+}
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="~/js/dist/assets/style.css" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <title>How to Play &ndash; Jeffpardy!</title>
+</head>
+
+<body>
+    <div id="howToPlayPage">
+        <div class="howToPlayContent">
+            <div class="howToPlayHeader">
+                <img src="/images/JeffpardyTitle.png" class="howToPlayLogo" alt="Jeffpardy" />
+                <h1 class="jeffpardy-label">How to Play</h1>
+            </div>
+
+            <p class="howToPlayIntro">
+                Jeffpardy is a Jeopardy-style trivia game you play together in the same room (or over a
+                video call). One person <strong>hosts</strong> on a shared screen while everyone else
+                <strong>joins</strong> from their phones to buzz in.
+            </p>
+
+            <section class="howToPlaySection">
+                <h2 class="jeffpardy-label">Hosting a Game</h2>
+                <ol>
+                    <li>On the home screen, choose <strong>Host a Game</strong>.</li>
+                    <li>
+                        Pick your questions. You can use a built-in category pack, or supply your own
+                        <strong>custom categories</strong> &mdash; paste tab-separated clues, download the
+                        Excel template, or edit the raw JSON directly in the editor.
+                    </li>
+                    <li>
+                        Share the game with players: send them to the <strong>Join a Game</strong> page and
+                        give them the game code shown on your screen.
+                    </li>
+                    <li>
+                        Once teams have joined, start the game. Click a dollar value to reveal a clue, read it
+                        aloud, and call on the first team that buzzes in. Mark their answer
+                        <strong>correct</strong> or <strong>incorrect</strong> to update the score.
+                    </li>
+                    <li>
+                        Watch for <strong>Daily Doubles</strong> (the buzzed-in team wagers first) and finish
+                        each game with <strong>Final Jeffpardy</strong>, where every team submits a secret
+                        wager and written answer.
+                    </li>
+                </ol>
+                <p class="howToPlayTip">
+                    Tip: open the <strong>secondary display</strong> on a projector or TV so players see the
+                    board while you keep the controls on your own screen.
+                </p>
+            </section>
+
+            <section class="howToPlaySection">
+                <h2 class="jeffpardy-label">Joining as a Player</h2>
+                <ol>
+                    <li>On the home screen, choose <strong>Join a Game</strong>.</li>
+                    <li>Enter the <strong>game code</strong> from the host's screen and your team name.</li>
+                    <li>
+                        When a clue is up, tap the big <strong>buzzer</strong> as fast as you can. The first
+                        team in gets to answer &mdash; the host decides if you're right.
+                    </li>
+                </ol>
+            </section>
+
+            <div class="howToPlayActions">
+                <a href="/host" class="startPageButton jeffpardy-label"><span class="buttonLabel">Host a Game</span></a>
+                <a href="/player" class="startPageButton jeffpardy-label"><span class="buttonLabel">Join a Game</span></a>
+            </div>
+
+            <a href="/" class="howToPlayBackLink jeffpardy-label">&larr; Back to home</a>
+        </div>
+    </div>
+</body>
