@@ -61,7 +61,7 @@ export interface IJeffpardyBoardState {
 export interface IJeffpardyBoard {
     showClue: (category: ICategory, clue: IClue) => void;
     showQuestion: () => void;
-    showBoard: () => void;
+    showBoard: () => boolean;
     startTimer: () => void;
     stopTimer: () => void;
     endRound: () => void;
@@ -259,7 +259,7 @@ export class JeffpardyBoard
         });
     };
 
-    public showBoard = () => {
+    public showBoard = (): boolean => {
         this.clearTimer();
 
         // Are all the clues used?
@@ -279,6 +279,10 @@ export class JeffpardyBoard
             activeCategory: null,
             jeopardyBoardView: boardEmpty ? JeopardyBoardView.Intermission : JeopardyBoardView.Board,
         });
+
+        // Report whether the round just ended (board emptied). The caller uses this to
+        // avoid overwriting the intermission state that startIntermission() just set.
+        return boardEmpty;
     };
 
     public startNewRound = () => {

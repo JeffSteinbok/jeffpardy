@@ -420,8 +420,8 @@ export class JeffpardyHostController {
         this.jeffpardyBoard.showQuestion();
     }
 
-    public showBoard = () => {
-        this.jeffpardyBoard.showBoard();
+    public showBoard = (): boolean => {
+        return this.jeffpardyBoard.showBoard();
     };
 
     public advanceCategoryReveal = () => {
