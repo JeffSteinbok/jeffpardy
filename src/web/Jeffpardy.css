@@ -2559,6 +2559,20 @@ div.buzzerUserListView .playerScoreTable .scoreCol.negative {
     color: #f44336;
 }
 
+div.buzzerUserListView .playerScoreTable tbody tr.winningTeam {
+    background-color: rgba(76, 175, 80, 0.18);
+    box-shadow: inset 0 0 0 2px #4caf50;
+}
+
+div.buzzerUserListView .playerScoreTable tbody tr.winningTeam .teamNameCol,
+div.buzzerUserListView .playerScoreTable tbody tr.winningTeam .scoreCol {
+    color: #7be07f;
+}
+
+div.buzzerUserListView .playerScoreTable .winnerCrown {
+    margin-right: 6px;
+}
+
 /* Phone responsive layout for player/buzzer page */
 @media (max-width: 600px) {
     div#playerPageMain {

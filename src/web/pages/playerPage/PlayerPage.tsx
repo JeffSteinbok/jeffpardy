@@ -51,6 +51,7 @@ export interface IPlayerPageState {
     finalJeffpardyAnswerEnabled: boolean;
     finalJeffpardyScores: { [key: string]: number };
     scores: { [key: string]: number };
+    gameOver: boolean;
     lockedInPlayerIds: string[];
     gameCodeInputLength: number;
     toastMessage: string; // Transient notification text; auto-clears after 3s via showToast
@@ -109,6 +110,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             finalJeffpardyAnswerEnabled: true,
             finalJeffpardyScores: null,
             scores: null,
+            gameOver: false,
             lockedInPlayerIds: [],
             gameCodeInputLength: 0,
             toastMessage: null,
@@ -171,6 +173,11 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         hubConnection.on("broadcastScores", (scores: { [key: string]: number }) => {
             Logger.debug("Broadcast Scores: " + JSON.stringify(scores));
             this.setState({ scores: scores });
+        });
+
+        hubConnection.on("endGame", (scores: { [key: string]: number }) => {
+            Logger.debug("Game Over: " + JSON.stringify(scores));
+            this.setState({ scores: scores, gameOver: true });
         });
 
         hubConnection.on("assignWinner", (user: IPlayer, reactionTime: number) => {
@@ -700,12 +707,19 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                         </div>
 
                         <div className="buzzerUserListView">
-                            <h1>{this.state.scores ? "Scores" : "Current Players"}</h1>
+                            <h1>
+                                {this.state.gameOver
+                                    ? "Final Scores"
+                                    : this.state.scores
+                                    ? "Scores"
+                                    : "Current Players"}
+                            </h1>
                             <div>
                                 <PlayerList
                                     teams={this.state.teams}
                                     scores={this.state.scores}
                                     lockedInPlayerIds={this.state.lockedInPlayerIds}
+                                    hilightWinner={this.state.gameOver}
                                 />
                             </div>
                         </div>

@@ -141,6 +141,19 @@ namespace Jeffpardy.Hubs
             }
         }
 
+        public async Task EndGame(string gameCode, Dictionary<string, int> scores)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
+                await gameCache.EndGameAsync(gameCode, scores);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error in EndGame for game {GameCode}", gameCode);
+            }
+        }
+
         public async Task StartFinalJeffpardy(string gameCode, Dictionary<string, int> scores)
         {
             try {

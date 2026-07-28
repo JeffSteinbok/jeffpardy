@@ -9,6 +9,7 @@ export interface IPlayerListProps {
     teams: TeamDictionary;
     scores?: { [key: string]: number };
     lockedInPlayerIds?: string[];
+    hilightWinner?: boolean;
 }
 
 /** Displays a list of teams and their players, optionally showing scores and locked-in indicators.
@@ -60,6 +61,16 @@ export class PlayerList extends React.Component<IPlayerListProps> {
     private renderScoreTable() {
         const teamNames = this.getSortedTeamNames();
 
+        // When highlighting the winner (end of game), find the top score so we can
+        // mark every team that achieved it (handles ties).
+        let topScore = Number.NEGATIVE_INFINITY;
+        if (this.props.hilightWinner) {
+            teamNames.forEach((teamName) => {
+                const score = this.props.scores[teamName] ?? 0;
+                if (score > topScore) topScore = score;
+            });
+        }
+
         return (
             <table className="playerScoreTable">
                 <thead>
@@ -71,14 +82,19 @@ export class PlayerList extends React.Component<IPlayerListProps> {
                 <tbody>
                     {teamNames.map((teamName) => {
                         const score = this.props.scores[teamName] ?? 0;
+                        const isWinner = this.props.hilightWinner && score == topScore;
                         return (
                             <tr
                                 key={teamName}
+                                className={isWinner ? "winningTeam" : ""}
                                 ref={(el) => {
                                     if (el) this.rowRefs.set(teamName, el);
                                 }}
                             >
-                                <td className="teamNameCol">{teamName}</td>
+                                <td className="teamNameCol">
+                                    {isWinner && <span className="winnerCrown">👑</span>}
+                                    {teamName}
+                                </td>
                                 <td className={"scoreCol" + (score < 0 ? " negative" : "")}>{score}</td>
                             </tr>
                         );

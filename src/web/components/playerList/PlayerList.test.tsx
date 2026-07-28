@@ -90,6 +90,29 @@ describe("PlayerList", () => {
             expect(teamNames).toEqual(["Beta", "Alpha"]);
         });
 
+        it("does not highlight any winner when hilightWinner is not set", () => {
+            const teams = makeTeams();
+            const scores = { Alpha: 100, Beta: 500 };
+            const { container } = render(<PlayerList teams={teams} scores={scores} />);
+            expect(container.querySelectorAll(".playerScoreTable tbody tr.winningTeam").length).toBe(0);
+        });
+
+        it("highlights the top-scoring team when hilightWinner is set", () => {
+            const teams = makeTeams();
+            const scores = { Alpha: 100, Beta: 500 };
+            const { container } = render(<PlayerList teams={teams} scores={scores} hilightWinner={true} />);
+            const winners = container.querySelectorAll(".playerScoreTable tbody tr.winningTeam");
+            expect(winners.length).toBe(1);
+            expect(winners[0].querySelector(".teamNameCol")!.textContent).toContain("Beta");
+        });
+
+        it("highlights all tied top-scoring teams when hilightWinner is set", () => {
+            const teams = makeTeams();
+            const scores = { Alpha: 500, Beta: 500 };
+            const { container } = render(<PlayerList teams={teams} scores={scores} hilightWinner={true} />);
+            expect(container.querySelectorAll(".playerScoreTable tbody tr.winningTeam").length).toBe(2);
+        });
+
         it("renders scores as plain numbers without commas or $", () => {
             const teams = makeTeams();
             const scores = { Alpha: 1234567, Beta: 500 };

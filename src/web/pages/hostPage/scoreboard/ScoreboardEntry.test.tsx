@@ -117,7 +117,7 @@ describe("ScoreboardEntry", () => {
         expect(entry.className).toContain("winningTeam");
     });
 
-    it("does not add extra classes when buzzerState is not Off even if isControllingTeam and isWinningTeam", () => {
+    it("does not add controllingTeam class when buzzerState is not Off, but still marks the winner", () => {
         const { container } = render(
             <ScoreboardEntry
                 teamName="Alpha"
@@ -130,6 +130,7 @@ describe("ScoreboardEntry", () => {
         );
         const entry = container.querySelector(".scoreboardEntry") as HTMLElement;
         expect(entry.className).not.toContain("controllingTeam");
-        expect(entry.className).not.toContain("winningTeam");
+        // The winner highlight is shown at end of game regardless of buzzer state.
+        expect(entry.className).toContain("winningTeam");
     });
 });

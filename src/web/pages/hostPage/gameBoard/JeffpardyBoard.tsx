@@ -415,6 +415,7 @@ export class JeffpardyBoard
     onTallyCompleted = () => {
         Logger.debug("JeffpardyBoard:onTallyCompleted");
         this.props.jeffpardyHostController.setViewMode(HostPageViewMode.End);
+        this.props.jeffpardyHostController.endGame();
         this.setState({
             jeopardyBoardView: JeopardyBoardView.EndGame,
         });
