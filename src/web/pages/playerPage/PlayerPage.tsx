@@ -586,11 +586,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                                         Click, touch or press SPACE to activate.
                                     </div>
 
-                                    <button
-                                        id="buzzer"
-                                        className={buzzerClassName}
-                                        onPointerDown={this.buzzIn}
-                                    >
+                                    <button id="buzzer" className={buzzerClassName} onPointerDown={this.buzzIn}>
                                         <div>{buzzerButtonText}</div>
                                         {showBuzzerReactionTime && (
                                             <div className="reactionTime">{this.state.reactionTime} ms</div>
