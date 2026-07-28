@@ -115,6 +115,13 @@ namespace Jeffpardy
             await game.BroadcastScoresAsync(scores);
         }
 
+        public async Task EndGameAsync(string gameCode, Dictionary<string, int> scores)
+        {
+            Game game = this.GetGame(gameCode);
+            if (game == null) return;
+            await game.EndGameAsync(scores);
+        }
+
         public async Task StartFinalJeffpardyAsync(string gameCode, Dictionary<string, int> scores)
         {
             Game game = this.GetGame(gameCode);

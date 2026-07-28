@@ -346,6 +346,14 @@ export class JeffpardyHostController {
         this.hostSignalRClient.broadcastScores(scores);
     };
 
+    public endGame = () => {
+        const scores: { [key: string]: number } = {};
+        Object.keys(this.teams).forEach((teamName) => {
+            scores[teamName] = this.teams[teamName].score;
+        });
+        this.hostSignalRClient.endGame(scores);
+    };
+
     public submitWager(user: IPlayer, wager: number) {
         // TODO:  Something to stop a wager from being entered twice, or after the clue is shown
         // Or, take this all out of the controller

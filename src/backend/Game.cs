@@ -310,6 +310,11 @@ namespace Jeffpardy
             await gameHubContext.Clients.Group(this.GameCode).SendAsync("broadcastScores", scores);
         }
 
+        public async Task EndGameAsync(Dictionary<string, int> scores)
+        {
+            await gameHubContext.Clients.Group(this.GameCode).SendAsync("endGame", scores);
+        }
+
         public async Task StartFinalJeffpardyAsync(Dictionary<string, int> scores)
         {
             await gameHubContext.Clients.Group(this.GameCode).SendAsync("startFinalJeffpardy", scores);

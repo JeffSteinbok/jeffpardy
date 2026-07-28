@@ -44,7 +44,7 @@ export class ScoreboardEntry extends React.Component<IScoreboardEntryProps> {
             scoreboardEntryClass += " controllingTeam";
         }
 
-        if (this.props.buzzerState == ScoreboardEntryBuzzerState.Off && this.props.isWinningTeam) {
+        if (this.props.isWinningTeam) {
             scoreboardEntryClass += " winningTeam";
         }
 
