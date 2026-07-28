@@ -93,6 +93,14 @@ namespace Jeffpardy
         Player winningBuzzerUser;
 
         /// <summary>
+        /// Whether the buzzer is currently open for buzz-ins. Buzzes are only
+        /// accepted while this is true. It is closed once a winner is assigned
+        /// or the host moves on (resets the buzzer), so a late buzz arriving
+        /// after the host has shown the answer is ignored.
+        /// </summary>
+        bool isBuzzerActive = false;
+
+        /// <summary>
         /// All buzz attempts for the current buzzer window, sorted by time when sent.
         /// </summary>
         readonly List<(Player Player, int TimeInMilliseconds)> buzzerAttempts = new List<(Player, int)>();
@@ -200,6 +208,7 @@ namespace Jeffpardy
                 this.winningBuzzerTimeInMilliseconds = int.MaxValue;
                 this.buzzerAttempts.Clear();
                 this.buzzerWindowTimer.Stop();
+                this.isBuzzerActive = false;
             }
             await gameHubContext.Clients.Group(this.GameCode).SendAsync("resetBuzzer");
         }
@@ -212,6 +221,7 @@ namespace Jeffpardy
                 this.winningBuzzerTimeInMilliseconds = int.MaxValue;
                 this.buzzerAttempts.Clear();
                 this.buzzerWindowTimer.Stop();
+                this.isBuzzerActive = true;
             }
             await gameHubContext.Clients.Group(this.GameCode).SendAsync("activateBuzzer");
         }
@@ -229,6 +239,10 @@ namespace Jeffpardy
                 {
                     return;
                 }
+
+                // Close the buzzer once a winner is assigned so late buzzes
+                // (or buzzes after the host moves on) are not accepted.
+                this.isBuzzerActive = false;
 
                 this.buzzerWinnerTeams.Add(this.winningBuzzerUser.Team);
                 winner = this.winningBuzzerUser;
@@ -249,6 +263,15 @@ namespace Jeffpardy
             lock (_lock)
             {
                 if (!players.TryGetValue(connectionId, out Player buzzerUser))
+                {
+                    return;
+                }
+
+                // Ignore buzzes once the buzzer has closed (winner assigned or the
+                // host moved on and reset the buzzer). Without this, a late buzz
+                // would restart the buzzer window and broadcast a stale winner that
+                // leaves players stuck showing "buzzed in".
+                if (!this.isBuzzerActive)
                 {
                     return;
                 }
