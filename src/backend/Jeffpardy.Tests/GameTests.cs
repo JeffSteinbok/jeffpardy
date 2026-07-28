@@ -144,6 +144,31 @@ namespace Jeffpardy.Tests
         }
 
         [Fact]
+        public async Task RemoveUserAsync_StaleConnectionAfterReconnect_KeepsReclaimedPlayer()
+        {
+            var game = CreateGame();
+            await game.ConnectPlayerAsync("conn1", "TeamA", "Alice", "pid-alice");
+
+            // Alice reconnects under a new connection with the same durable id.
+            await game.ConnectPlayerAsync("conn1-new", "TeamA", "Alice", "pid-alice");
+
+            // The old connection's disconnect fires late; it must NOT evict the
+            // player, since the slot now belongs to the newer connection.
+            await game.RemoveUserAsync("conn1");
+
+            await game.ActivateBuzzerAsync();
+            game.BuzzIn("conn1-new", 100, 0, "pid-alice");
+            await game.AssignWinnerAsync();
+
+            _mockGroupProxy.Verify(c => c.SendCoreAsync(
+                "assignWinner",
+                It.Is<object?[]>(args =>
+                    args.Length >= 2 &&
+                    ((Player)args[0]!).Name == "Alice"),
+                It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
         public async Task BuzzIn_FirstBuzzer_StartsTimer()
         {
             var game = CreateGame();
@@ -173,6 +198,33 @@ namespace Jeffpardy.Tests
                 It.Is<object?[]>(args =>
                     args.Length >= 2 &&
                     ((Player)args[0]!).Name == "Bob"),
+                It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task BuzzIn_AfterReconnectWithSamePlayerId_IsAttributedToPlayer()
+        {
+            var game = CreateGame();
+            // Initial connection with a durable player id.
+            await game.ConnectPlayerAsync("conn1", "TeamA", "Alice", "pid-alice");
+            await game.ConnectPlayerAsync("conn2", "TeamB", "Bob", "pid-bob");
+
+            // Alice reconnects: same durable player id, new SignalR connection id.
+            await game.ConnectPlayerAsync("conn1-new", "TeamA", "Alice", "pid-alice");
+
+            await game.ActivateBuzzerAsync();
+            // Buzz arrives on the new connection but carries the durable player id.
+            game.BuzzIn("conn1-new", 100, 0, "pid-alice");
+            game.BuzzIn("conn2", 200, 0, "pid-bob");
+
+            await game.AssignWinnerAsync();
+
+            _mockGroupProxy.Verify(c => c.SendCoreAsync(
+                "assignWinner",
+                It.Is<object?[]>(args =>
+                    args.Length >= 2 &&
+                    ((Player)args[0]!).Name == "Alice" &&
+                    ((Player)args[0]!).ConnectionId == "conn1-new"),
                 It.IsAny<CancellationToken>()), Times.Once);
         }
 

@@ -36,9 +36,18 @@ namespace Jeffpardy
         private readonly IHubContext<GameHub> gameHubContext;
 
         /// <summary>
-        /// Players in the game; by connection Id
+        /// Players in the game, keyed by their durable PlayerId (stable across
+        /// reconnects). For older clients that don't supply a PlayerId, the
+        /// connection id is used as the key.
         /// </summary>
         readonly Dictionary<string, Player> players = new Dictionary<string, Player>();
+
+        /// <summary>
+        /// Maps a live SignalR connection id to the durable PlayerId that owns
+        /// it. Used to resolve the player for buzz/answer messages that arrive
+        /// by connection when the client doesn't (yet) supply a PlayerId.
+        /// </summary>
+        readonly Dictionary<string, string> connectionToPlayerId = new Dictionary<string, string>();
 
         /// <summary>
         /// Dictionary of SignalR connections.  Needed to track when we can remove this game from memory.
@@ -166,18 +175,39 @@ namespace Jeffpardy
             await this.SendUserListAsync(connectionId);
         }
 
-        public async Task ConnectPlayerAsync(string connectionId, string team, string name)
+        public async Task ConnectPlayerAsync(string connectionId, string team, string name, string playerId = null)
         {
             await this.AddConnectionToGame(connectionId);
 
+            // Fall back to the connection id as the identity for older clients
+            // that don't supply a durable PlayerId.
+            if (string.IsNullOrEmpty(playerId))
+            {
+                playerId = connectionId;
+            }
+
             lock (_lock)
             {
-                this.players.Add(connectionId, new Player()
+                this.connectionToPlayerId[connectionId] = playerId;
+
+                if (this.players.TryGetValue(playerId, out Player existing))
                 {
-                    ConnectionId = connectionId,
-                    Team = team,
-                    Name = name
-                });
+                    // Reconnect: reclaim the existing slot, updating the live
+                    // connection id (and name/team in case they changed).
+                    existing.ConnectionId = connectionId;
+                    existing.Team = team;
+                    existing.Name = name;
+                }
+                else
+                {
+                    this.players.Add(playerId, new Player()
+                    {
+                        PlayerId = playerId,
+                        ConnectionId = connectionId,
+                        Team = team,
+                        Name = name
+                    });
+                }
 
                 // If the game has already started, lock in this team as permanent too
                 if (this.gameStarted)
@@ -189,19 +219,53 @@ namespace Jeffpardy
             await this.SendUserListToAllClientsAsync();
         }
 
+        /// <summary>
+        /// Resolves the durable PlayerId for an incoming message. Prefers an
+        /// explicit PlayerId sent by the client, then the connection→player map,
+        /// then the connection id itself. Caller must hold <see cref="_lock"/>.
+        /// </summary>
+        private Player ResolvePlayer(string connectionId, string playerId)
+        {
+            if (!string.IsNullOrEmpty(playerId) && this.players.TryGetValue(playerId, out Player byPlayerId))
+            {
+                // Keep the live connection id fresh so the player object stays current.
+                byPlayerId.ConnectionId = connectionId;
+                return byPlayerId;
+            }
+
+            if (this.connectionToPlayerId.TryGetValue(connectionId, out string mappedPlayerId) &&
+                this.players.TryGetValue(mappedPlayerId, out Player byConnection))
+            {
+                return byConnection;
+            }
+
+            this.players.TryGetValue(connectionId, out Player byRawConnection);
+            return byRawConnection;
+        }
+
         public async Task RemoveUserAsync(string connectionId)
         {
-            Player item;
             lock (_lock)
             {
                 this.connections.Remove(connectionId);
 
-                if (!this.players.TryGetValue(connectionId, out item))
+                // Drop the connection→player mapping, but keep the player's
+                // durable slot so a reconnect (with the same PlayerId) reclaims
+                // it and in-flight buzzes/answers are still attributed. Only
+                // remove the slot if this connection still owns it (i.e. the
+                // player hasn't already reconnected under a new connection).
+                if (this.connectionToPlayerId.TryGetValue(connectionId, out string playerId))
                 {
-                    return;
-                }
+                    this.connectionToPlayerId.Remove(connectionId);
 
-                this.players.Remove(item.ConnectionId);
+                    if (this.players.TryGetValue(playerId, out Player player) &&
+                        player.ConnectionId == connectionId)
+                    {
+                        // The player has gone offline without reconnecting yet.
+                        // Leave the slot in place so they can reclaim it; just
+                        // refresh the user list.
+                    }
+                }
             }
 
             await SendUserListToAllClientsAsync();
@@ -291,11 +355,12 @@ namespace Jeffpardy
             await gameHubContext.Clients.Group(this.GameCode).SendAsync("assignWinner", winner, winningTime, topBuzzers);
         }
 
-        public void BuzzIn(string connectionId, int timeInMilliseconds, int handicapInMilliseconds)
+        public void BuzzIn(string connectionId, int timeInMilliseconds, int handicapInMilliseconds, string playerId = null)
         {
             lock (_lock)
             {
-                if (!players.TryGetValue(connectionId, out Player buzzerUser))
+                Player buzzerUser = this.ResolvePlayer(connectionId, playerId);
+                if (buzzerUser == null)
                 {
                     return;
                 }
@@ -376,12 +441,13 @@ namespace Jeffpardy
             await gameHubContext.Clients.Group(this.GameCode).SendAsync("startFinalJeffpardy", scores);
         }
 
-        public async Task<bool> SubmitWagerAsync(string connectionId, int wager)
+        public async Task<bool> SubmitWagerAsync(string connectionId, int wager, string playerId = null)
         {
             Player player;
             lock (_lock)
             {
-                if (!players.TryGetValue(connectionId, out player))
+                player = this.ResolvePlayer(connectionId, playerId);
+                if (player == null)
                 {
                     return false;
                 }
@@ -392,16 +458,17 @@ namespace Jeffpardy
                                                                                 wager);
 
             // Notify all players that this player locked in their wager
-            await gameHubContext.Clients.Group(this.GameCode).SendAsync("wagerLockedIn", connectionId);
+            await gameHubContext.Clients.Group(this.GameCode).SendAsync("wagerLockedIn", player.ConnectionId);
             return true;
         }
 
-        public async Task<bool> SubmitAnswerAsync(string connectionId, string answer, int timeInMilliseconds)
+        public async Task<bool> SubmitAnswerAsync(string connectionId, string answer, int timeInMilliseconds, string playerId = null)
         {
             Player player;
             lock (_lock)
             {
-                if (!players.TryGetValue(connectionId, out player))
+                player = this.ResolvePlayer(connectionId, playerId);
+                if (player == null)
                 {
                     return false;
                 }
