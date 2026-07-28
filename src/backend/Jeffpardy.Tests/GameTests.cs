@@ -149,6 +149,7 @@ namespace Jeffpardy.Tests
             var game = CreateGame();
             await game.ConnectPlayerAsync("conn1", "TeamA", "Alice");
 
+            await game.ActivateBuzzerAsync();
             game.BuzzIn("conn1", 100, 0);
 
             // No exception means timer started successfully
@@ -161,6 +162,7 @@ namespace Jeffpardy.Tests
             await game.ConnectPlayerAsync("conn1", "TeamA", "Alice");
             await game.ConnectPlayerAsync("conn2", "TeamB", "Bob");
 
+            await game.ActivateBuzzerAsync();
             game.BuzzIn("conn1", 200, 0);
             game.BuzzIn("conn2", 100, 0);
 
@@ -182,6 +184,7 @@ namespace Jeffpardy.Tests
             await game.ConnectPlayerAsync("conn2", "TeamB", "Bob");
 
             // First round: TeamA wins
+            await game.ActivateBuzzerAsync();
             game.BuzzIn("conn1", 100, 0);
             await game.AssignWinnerAsync();
 
@@ -209,6 +212,7 @@ namespace Jeffpardy.Tests
             await game.ConnectPlayerAsync("conn2", "TeamB", "Bob");
 
             // Alice buzzes at 200ms with -100 handicap (should be ignored, time stays 200)
+            await game.ActivateBuzzerAsync();
             game.BuzzIn("conn1", 200, -100);
             // Bob buzzes at 150ms with 0 handicap
             game.BuzzIn("conn2", 150, 0);
@@ -232,6 +236,7 @@ namespace Jeffpardy.Tests
             await game.ConnectPlayerAsync("conn1", "TeamA", "Alice");
             await game.ConnectPlayerAsync("conn2", "TeamB", "Bob");
 
+            await game.ActivateBuzzerAsync();
             game.BuzzIn("conn1", baseTime, handicap);
             game.BuzzIn("conn2", expectedEffectiveTime + 1, 0);
 
@@ -270,6 +275,7 @@ namespace Jeffpardy.Tests
             await game.ConnectPlayerAsync("conn2", "TeamB", "Bob");
 
             // TeamA wins
+            await game.ActivateBuzzerAsync();
             game.BuzzIn("conn1", 100, 0);
             await game.AssignWinnerAsync();
 
@@ -282,6 +288,7 @@ namespace Jeffpardy.Tests
                 It.IsAny<CancellationToken>()), Times.Once);
 
             // After reset, TeamA should be able to buzz in again (not skipped)
+            await game.ActivateBuzzerAsync();
             game.BuzzIn("conn1", 100, 0);
             await game.AssignWinnerAsync();
 
@@ -292,6 +299,27 @@ namespace Jeffpardy.Tests
                     args.Length >= 2 &&
                     ((Player)args[0]!).Name == "Alice"),
                 It.IsAny<CancellationToken>()), Times.Exactly(2));
+        }
+
+        [Fact]
+        public async Task BuzzIn_AfterBuzzerClosed_DoesNotAssignWinner()
+        {
+            var game = CreateGame();
+            await game.ConnectPlayerAsync("conn1", "TeamA", "Alice");
+
+            // Host has moved on / shown the answer: buzzer was reset (closed).
+            await game.ActivateBuzzerAsync();
+            await game.ResetBuzzerAsync();
+
+            // A late buzz arrives after the host moved on.
+            game.BuzzIn("conn1", 100, 0);
+            await game.AssignWinnerAsync();
+
+            // No winner should be broadcast for the late buzz.
+            _mockGroupProxy.Verify(c => c.SendCoreAsync(
+                "assignWinner",
+                It.IsAny<object?[]>(),
+                It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
