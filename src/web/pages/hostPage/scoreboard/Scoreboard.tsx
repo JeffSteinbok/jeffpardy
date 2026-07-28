@@ -181,12 +181,15 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
 
     showBoard = () => {
         if (this.state.gameBoardState == GameBoardState.Question) {
-            this.props.jeffpardyHostController.showBoard();
+            // If the board just emptied, showBoard() synchronously triggered
+            // startIntermission(), which set gameBoardState to Intermission.
+            // In that case we must NOT overwrite it with Normal.
+            const boardEmpty = this.props.jeffpardyHostController.showBoard();
             this.setState({
-                gameBoardState: GameBoardState.Normal,
                 buzzedInUser: null,
                 topBuzzers: [],
                 wrongTeams: [],
+                ...(boardEmpty ? {} : { gameBoardState: GameBoardState.Normal }),
             });
             this.resetBuzzer();
         }
