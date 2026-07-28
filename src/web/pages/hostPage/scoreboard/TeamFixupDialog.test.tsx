@@ -120,4 +120,46 @@ describe("TeamFixupDialog", () => {
         expect(document.body.textContent).toContain("Adjust Control");
         expect(document.body.textContent).toContain("Scores");
     });
+
+    it("updates the team score and notifies onScoresChanged when a score is edited", () => {
+        const teams = makeTeams();
+        const onScoresChanged = vi.fn();
+        const { baseElement } = render(
+            <TeamFixupDialog
+                teams={teams}
+                controllingTeam={teams["Alpha"]}
+                jeffpardyHostController={makeMockController()}
+                onControllingUserClear={vi.fn()}
+                onScoresChanged={onScoresChanged}
+                onClose={vi.fn()}
+            />
+        );
+
+        const scoreInputs = baseElement.querySelectorAll(".teamFixupScore") as NodeListOf<HTMLInputElement>;
+        fireEvent.change(scoreInputs[0], { target: { value: "550" } });
+
+        expect(teams["Alpha"].score).toBe(550);
+        expect(onScoresChanged).toHaveBeenCalled();
+    });
+
+    it("ignores non-numeric score input without changing the score", () => {
+        const teams = makeTeams();
+        const onScoresChanged = vi.fn();
+        const { baseElement } = render(
+            <TeamFixupDialog
+                teams={teams}
+                controllingTeam={teams["Alpha"]}
+                jeffpardyHostController={makeMockController()}
+                onControllingUserClear={vi.fn()}
+                onScoresChanged={onScoresChanged}
+                onClose={vi.fn()}
+            />
+        );
+
+        const scoreInputs = baseElement.querySelectorAll(".teamFixupScore") as NodeListOf<HTMLInputElement>;
+        fireEvent.change(scoreInputs[0], { target: { value: "abc" } });
+
+        expect(teams["Alpha"].score).toBe(100);
+        expect(onScoresChanged).not.toHaveBeenCalled();
+    });
 });

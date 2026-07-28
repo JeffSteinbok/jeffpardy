@@ -43,14 +43,14 @@ namespace Jeffpardy
             await game.ConnectPlayerLobbyAsync(connectionId);
         }
 
-        public async Task ConnectPlayerAsync(string connectionId, string gameCode, string team, string name)
+        public async Task ConnectPlayerAsync(string connectionId, string gameCode, string team, string name, string playerId = null)
         {
             Game game = this.GetGame(gameCode);
             if (game == null) return;
 
             connectionToGameDictionary[connectionId] = gameCode;
             
-            await game.ConnectPlayerAsync(connectionId, team, name);
+            await game.ConnectPlayerAsync(connectionId, team, name, playerId);
         }
 
         public async Task RemoveUserAsync(string connectionId)
@@ -88,11 +88,11 @@ namespace Jeffpardy
             await game.ActivateBuzzerAsync();
         }
 
-        public void BuzzIn(string gameCode, string connectionId, int timeInMilliseconds, int handicapInMilliseconds)
+        public void BuzzIn(string gameCode, string connectionId, int timeInMilliseconds, int handicapInMilliseconds, string playerId = null)
         {
             Game game = this.GetGame(gameCode);
             if (game == null) return;
-            game.BuzzIn(connectionId, timeInMilliseconds, handicapInMilliseconds);
+            game.BuzzIn(connectionId, timeInMilliseconds, handicapInMilliseconds, playerId);
         }
         public async Task StartRoundAsync(string gameCode, GameRound round)
         {
@@ -131,18 +131,18 @@ namespace Jeffpardy
             await game.StartFinalJeffpardyAsync(scores);
         }
 
-        public async Task SubmitWagerAsync(string gameCode, string connectionId, int wager)
+        public async Task<bool> SubmitWagerAsync(string gameCode, string connectionId, int wager, string playerId = null)
         {
             Game game = this.GetGame(gameCode);
-            if (game == null) return;
-            await game.SubmitWagerAsync(connectionId, wager);
+            if (game == null) return false;
+            return await game.SubmitWagerAsync(connectionId, wager, playerId);
         }
 
-        public async Task SubmitAnswerAsync(string gameCode, string connectionId, string answer, int timeInMilliseconds)
+        public async Task<bool> SubmitAnswerAsync(string gameCode, string connectionId, string answer, int timeInMilliseconds, string playerId = null)
         {
             Game game = this.GetGame(gameCode);
-            if (game == null) return;
-            await game.SubmitAnswerAsync(connectionId, answer, timeInMilliseconds);
+            if (game == null) return false;
+            return await game.SubmitAnswerAsync(connectionId, answer, timeInMilliseconds, playerId);
         }
 
         public async Task ShowFinalJeffpardyClueAsync(string gameCode)

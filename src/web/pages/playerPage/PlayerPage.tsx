@@ -127,6 +127,25 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         }, 3000);
     };
 
+    // Returns a durable, per-game player identity persisted in localStorage. This lets the
+    // server re-associate a player with their slot after a reconnect (which changes the SignalR
+    // connection id), so in-flight buzzes/answers aren't silently dropped.
+    getPlayerId = (gameCode: string): string => {
+        if (!gameCode) return null;
+        const key = "jeffpardy:playerId:" + gameCode.toUpperCase();
+        try {
+            let playerId = window.localStorage.getItem(key);
+            if (!playerId) {
+                playerId = crypto.randomUUID();
+                window.localStorage.setItem(key, playerId);
+            }
+            return playerId;
+        } catch {
+            // localStorage unavailable (e.g. private mode); fall back to no durable id.
+            return null;
+        }
+    };
+
     componentDidMount = () => {
         window.addEventListener("keydown", this.handleKeyDown);
         document.addEventListener("visibilitychange", this.onVisibilityChange);
@@ -321,7 +340,13 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     reregisterWithGame = () => {
         if (this.state.gameCode && this.state.name && this.state.team) {
             this.state.hubConnection
-                .invoke("connectPlayer", this.state.gameCode, this.state.team, this.state.name)
+                .invoke(
+                    "connectPlayer",
+                    this.state.gameCode,
+                    this.state.team,
+                    this.state.name,
+                    this.getPlayerId(this.state.gameCode)
+                )
                 .catch((err) => console.error("Failed to re-register player:", err));
         } else if (this.state.gameCode) {
             this.state.hubConnection
@@ -342,7 +367,13 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
         });
 
         this.state.hubConnection
-            .invoke("connectPlayer", this.state.gameCode, this.teamTemp, this.nameTemp)
+            .invoke(
+                "connectPlayer",
+                this.state.gameCode,
+                this.teamTemp,
+                this.nameTemp,
+                this.getPlayerId(this.state.gameCode)
+            )
             .then(() => this.setState({ playerPageState: PlayerPageState.Buzzer }))
             .catch((err) => console.error(err));
     };
@@ -381,7 +412,13 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             const reactionTime: number = new Date().getTime() - this.buzzerActivateTime.getTime();
 
             this.state.hubConnection
-                .invoke("buzzIn", this.state.gameCode, reactionTime, this.handicap)
+                .invoke(
+                    "buzzIn",
+                    this.state.gameCode,
+                    reactionTime,
+                    this.handicap,
+                    this.getPlayerId(this.state.gameCode)
+                )
                 .catch((err) => console.error(err));
             this.setState({
                 buzzed: true,
@@ -411,7 +448,12 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                 return;
             } else {
                 this.state.hubConnection
-                    .invoke("submitWager", this.state.gameCode, this.finalJeffpardyWagerTemp)
+                    .invoke(
+                        "submitWager",
+                        this.state.gameCode,
+                        this.finalJeffpardyWagerTemp,
+                        this.getPlayerId(this.state.gameCode)
+                    )
                     .catch((err) => console.error(err));
 
                 this.setState({
@@ -432,7 +474,13 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             const reactionTime: number = new Date().getTime() - this.finalJeffpardyClueShownTime.getTime();
 
             this.state.hubConnection
-                .invoke("submitAnswer", this.state.gameCode, this.finalJeffpardyAnswerTemp, reactionTime)
+                .invoke(
+                    "submitAnswer",
+                    this.state.gameCode,
+                    this.finalJeffpardyAnswerTemp,
+                    reactionTime,
+                    this.getPlayerId(this.state.gameCode)
+                )
                 .catch((err) => console.error(err));
 
             this.setState({

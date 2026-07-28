@@ -48,14 +48,14 @@ namespace Jeffpardy.Hubs
             }
         }
 
-        public async Task ConnectPlayer(string gameCode, string team, string name)
+        public async Task ConnectPlayer(string gameCode, string team, string name, string playerId = null)
         {
             try
             {
                 if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
                 if (string.IsNullOrEmpty(team)) { throw new ArgumentNullException("team"); }
                 if (string.IsNullOrEmpty(name)) { throw new ArgumentNullException("name"); }
-                await this.gameCache.ConnectPlayerAsync(Context.ConnectionId, gameCode, team, name);
+                await this.gameCache.ConnectPlayerAsync(Context.ConnectionId, gameCode, team, name, playerId);
             }
             catch (Exception ex)
             {
@@ -89,12 +89,12 @@ namespace Jeffpardy.Hubs
             }
         }
 
-        public void BuzzIn(string gameCode, int timeInMillisenconds, int handicapInMilliseconds)
+        public void BuzzIn(string gameCode, int timeInMillisenconds, int handicapInMilliseconds, string playerId = null)
         {
             try
             {
                 if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
-                gameCache.BuzzIn(gameCode, Context.ConnectionId, timeInMillisenconds, handicapInMilliseconds);
+                gameCache.BuzzIn(gameCode, Context.ConnectionId, timeInMillisenconds, handicapInMilliseconds, playerId);
             }
             catch (Exception ex)
             {
@@ -166,13 +166,18 @@ namespace Jeffpardy.Hubs
             }
         }
 
-        public async Task SubmitWager(string gameCode, int wagerAmount)
+        public async Task SubmitWager(string gameCode, int wagerAmount, string playerId = null)
         {
             try
             {
                 if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
-                await gameCache.SubmitWagerAsync(gameCode, Context.ConnectionId, wagerAmount);
-
+                bool recorded = await gameCache.SubmitWagerAsync(gameCode, Context.ConnectionId, wagerAmount, playerId);
+                if (!recorded)
+                {
+                    logger.LogWarning(
+                        "SubmitWager dropped for game {GameCode}: no player found for connection {ConnectionId} (likely a reconnect changed the connection id).",
+                        gameCode, Context.ConnectionId);
+                }
             }
             catch (Exception ex)
             {
@@ -180,12 +185,18 @@ namespace Jeffpardy.Hubs
             }
         }
 
-        public async Task SubmitAnswer(string gameCode, string answer, int timeInMilliseconds)
+        public async Task SubmitAnswer(string gameCode, string answer, int timeInMilliseconds, string playerId = null)
         {
             try
             {
                 if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
-                await gameCache.SubmitAnswerAsync(gameCode, Context.ConnectionId, answer, timeInMilliseconds);
+                bool recorded = await gameCache.SubmitAnswerAsync(gameCode, Context.ConnectionId, answer, timeInMilliseconds, playerId);
+                if (!recorded)
+                {
+                    logger.LogWarning(
+                        "SubmitAnswer dropped for game {GameCode}: no player found for connection {ConnectionId} (likely a reconnect changed the connection id).",
+                        gameCode, Context.ConnectionId);
+                }
             }
             catch (Exception ex)
             {
