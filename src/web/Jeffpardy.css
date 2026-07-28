@@ -254,6 +254,148 @@ div#startPage .startPageButton:active {
     transform: translateY(0) scale(0.98);
 }
 
+div#startPage .startPageActions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    position: relative;
+    z-index: 1;
+}
+
+div#startPage .howToPlayLink,
+#howToPlayPage .howToPlayBackLink {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    opacity: 0.85;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-gold) 40%, transparent);
+    padding-bottom: 2px;
+    transition: opacity 0.2s ease;
+}
+
+div#startPage .howToPlayLink:hover,
+#howToPlayPage .howToPlayBackLink:hover {
+    opacity: 1;
+}
+
+/* How to Play Guide */
+/* --------------------------------------------------*/
+#howToPlayPage {
+    position: relative;
+    min-height: 100%;
+    color: white;
+    background: radial-gradient(
+        ellipse at center,
+        color-mix(in srgb, var(--color-game-board), white 8%) 0%,
+        color-mix(in srgb, var(--color-game-board), black 30%) 100%
+    );
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+#howToPlayPage .howToPlayContent {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    width: 100%;
+}
+
+#howToPlayPage .howToPlayHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+#howToPlayPage .howToPlayLogo {
+    max-height: 90px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 40px rgba(0, 0, 0, 0.6));
+}
+
+#howToPlayPage h1 {
+    font-size: 2.6rem;
+    margin: 0;
+}
+
+#howToPlayPage h2 {
+    font-size: 1.6rem;
+    margin: 0 0 12px 0;
+    color: var(--color-gold);
+}
+
+#howToPlayPage .howToPlayIntro {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    text-align: center;
+    margin: 0 0 32px 0;
+}
+
+#howToPlayPage .howToPlaySection {
+    background: linear-gradient(135deg, #1a2a6c 0%, #0a1540 100%);
+    border: 1px solid color-mix(in srgb, var(--color-gold) 25%, transparent);
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+}
+
+#howToPlayPage .howToPlaySection ol {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin: 0;
+    padding-left: 22px;
+}
+
+#howToPlayPage .howToPlaySection li {
+    margin-bottom: 10px;
+}
+
+#howToPlayPage .howToPlayTip {
+    margin: 16px 0 0 0;
+    font-size: 1rem;
+    font-style: italic;
+    opacity: 0.9;
+}
+
+#howToPlayPage .howToPlayActions {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 8px 0 28px 0;
+}
+
+#howToPlayPage .howToPlayActions .startPageButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 40px;
+    border-radius: 16px;
+    text-decoration: none;
+    color: white;
+    font-size: 1.4rem;
+    min-width: 200px;
+    background: linear-gradient(135deg, #1a2a6c 0%, #0a1540 100%);
+    border: 1px solid color-mix(in srgb, var(--color-gold) 30%, transparent);
+    letter-spacing: 0.05em;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#howToPlayPage .howToPlayActions .startPageButton:hover {
+    transform: translateY(-4px) scale(1.05);
+}
+
+#howToPlayPage .howToPlayBackLink {
+    display: block;
+    text-align: center;
+}
+
 div#startPage div.linkList {
     padding-top: 100px;
 }
