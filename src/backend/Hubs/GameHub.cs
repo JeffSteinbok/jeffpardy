@@ -171,8 +171,13 @@ namespace Jeffpardy.Hubs
             try
             {
                 if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
-                await gameCache.SubmitWagerAsync(gameCode, Context.ConnectionId, wagerAmount);
-
+                bool recorded = await gameCache.SubmitWagerAsync(gameCode, Context.ConnectionId, wagerAmount);
+                if (!recorded)
+                {
+                    logger.LogWarning(
+                        "SubmitWager dropped for game {GameCode}: no player found for connection {ConnectionId} (likely a reconnect changed the connection id).",
+                        gameCode, Context.ConnectionId);
+                }
             }
             catch (Exception ex)
             {
@@ -185,7 +190,13 @@ namespace Jeffpardy.Hubs
             try
             {
                 if (string.IsNullOrEmpty(gameCode)) { throw new ArgumentNullException("gameCode"); }
-                await gameCache.SubmitAnswerAsync(gameCode, Context.ConnectionId, answer, timeInMilliseconds);
+                bool recorded = await gameCache.SubmitAnswerAsync(gameCode, Context.ConnectionId, answer, timeInMilliseconds);
+                if (!recorded)
+                {
+                    logger.LogWarning(
+                        "SubmitAnswer dropped for game {GameCode}: no player found for connection {ConnectionId} (likely a reconnect changed the connection id).",
+                        gameCode, Context.ConnectionId);
+                }
             }
             catch (Exception ex)
             {

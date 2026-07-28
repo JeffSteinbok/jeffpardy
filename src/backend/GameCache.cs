@@ -131,18 +131,18 @@ namespace Jeffpardy
             await game.StartFinalJeffpardyAsync(scores);
         }
 
-        public async Task SubmitWagerAsync(string gameCode, string connectionId, int wager)
+        public async Task<bool> SubmitWagerAsync(string gameCode, string connectionId, int wager)
         {
             Game game = this.GetGame(gameCode);
-            if (game == null) return;
-            await game.SubmitWagerAsync(connectionId, wager);
+            if (game == null) return false;
+            return await game.SubmitWagerAsync(connectionId, wager);
         }
 
-        public async Task SubmitAnswerAsync(string gameCode, string connectionId, string answer, int timeInMilliseconds)
+        public async Task<bool> SubmitAnswerAsync(string gameCode, string connectionId, string answer, int timeInMilliseconds)
         {
             Game game = this.GetGame(gameCode);
-            if (game == null) return;
-            await game.SubmitAnswerAsync(connectionId, answer, timeInMilliseconds);
+            if (game == null) return false;
+            return await game.SubmitAnswerAsync(connectionId, answer, timeInMilliseconds);
         }
 
         public async Task ShowFinalJeffpardyClueAsync(string gameCode)

@@ -32,6 +32,7 @@ export interface IScoreboardProps {
     teams: TeamDictionary;
     controllingTeam: ITeam;
     hilightWinningTeams: boolean;
+    isGameOver: boolean;
     hostSecondaryWindowUri: string;
 }
 
@@ -419,6 +420,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                         <div>
                             <button
                                 disabled={
+                                    !this.props.isGameOver &&
                                     this.state.gameBoardState != GameBoardState.Normal &&
                                     this.state.gameBoardState != GameBoardState.Intermission &&
                                     this.state.gameBoardState != GameBoardState.FinalJeffpardy
@@ -519,6 +521,12 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                         controllingTeam={this.props.controllingTeam}
                         jeffpardyHostController={this.props.jeffpardyHostController}
                         onControllingUserClear={() => this.setState({ controllingUser: null })}
+                        onScoresChanged={() => {
+                            // Re-render so the winning-team green border tracks
+                            // score edits live, and push the new scores to players.
+                            this.props.jeffpardyHostController.broadcastScores();
+                            this.forceUpdate();
+                        }}
                         onClose={() => {
                             this.props.jeffpardyHostController.broadcastScores();
                             this.setState({ isTeamFixupDialogShown: false });

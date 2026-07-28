@@ -11,6 +11,7 @@ export interface ITeamFixupDialogProps {
     controllingTeam: ITeam;
     jeffpardyHostController: JeffpardyHostController;
     onControllingUserClear: () => void;
+    onScoresChanged?: () => void;
     onClose: () => void;
 }
 
@@ -62,7 +63,13 @@ export class TeamFixupDialog extends React.Component<ITeamFixupDialogProps> {
                                         className="teamFixupScore"
                                         aria-label={`Score for ${teamName}`}
                                         defaultValue={teams[teamName].score}
-                                        onChange={(e) => (teams[teamName].score = Number.parseInt(e.target.value, 10))}
+                                        onChange={(e) => {
+                                            const newScore = Number.parseInt(e.target.value, 10);
+                                            if (!Number.isNaN(newScore)) {
+                                                teams[teamName].score = newScore;
+                                                this.props.onScoresChanged?.();
+                                            }
+                                        }}
                                     />
                                 </div>
                             );

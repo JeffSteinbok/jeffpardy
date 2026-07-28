@@ -321,6 +321,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                                     teams={this.state.teams}
                                     controllingTeam={this.state.controllingTeam}
                                     hilightWinningTeams={this.state.viewMode == HostPageViewMode.End}
+                                    isGameOver={this.state.viewMode == HostPageViewMode.End}
                                     hostSecondaryWindowUri={
                                         window.location.origin + "/hostSecondary#" + this.gameCode + this.hostCode
                                     }

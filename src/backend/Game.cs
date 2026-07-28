@@ -101,6 +101,14 @@ namespace Jeffpardy
         bool isBuzzerActive = false;
 
         /// <summary>
+        /// Monotonically increasing token identifying the current buzzer window.
+        /// Incremented every time the buzzer is activated or reset so that a
+        /// winner computed for an old window can be detected and dropped instead
+        /// of being broadcast after the host has already moved on.
+        /// </summary>
+        int buzzerGeneration = 0;
+
+        /// <summary>
         /// All buzz attempts for the current buzzer window, sorted by time when sent.
         /// </summary>
         readonly List<(Player Player, int TimeInMilliseconds)> buzzerAttempts = new List<(Player, int)>();
@@ -209,6 +217,7 @@ namespace Jeffpardy
                 this.buzzerAttempts.Clear();
                 this.buzzerWindowTimer.Stop();
                 this.isBuzzerActive = false;
+                this.buzzerGeneration++;
             }
             await gameHubContext.Clients.Group(this.GameCode).SendAsync("resetBuzzer");
         }
@@ -222,6 +231,7 @@ namespace Jeffpardy
                 this.buzzerAttempts.Clear();
                 this.buzzerWindowTimer.Stop();
                 this.isBuzzerActive = true;
+                this.buzzerGeneration++;
             }
             await gameHubContext.Clients.Group(this.GameCode).SendAsync("activateBuzzer");
         }
@@ -231,6 +241,7 @@ namespace Jeffpardy
             Player winner;
             int winningTime;
             object[] topBuzzers;
+            int generation;
             lock (_lock)
             {
                 this.buzzerWindowTimer.Stop();
@@ -240,9 +251,17 @@ namespace Jeffpardy
                     return;
                 }
 
+                // If the buzzer has already been closed (the host moved on or
+                // reset it), don't broadcast a stale winner.
+                if (!this.isBuzzerActive)
+                {
+                    return;
+                }
+
                 // Close the buzzer once a winner is assigned so late buzzes
                 // (or buzzes after the host moves on) are not accepted.
                 this.isBuzzerActive = false;
+                generation = this.buzzerGeneration;
 
                 this.buzzerWinnerTeams.Add(this.winningBuzzerUser.Team);
                 winner = this.winningBuzzerUser;
@@ -255,6 +274,20 @@ namespace Jeffpardy
                     .Select(a => (object)new { player = a.Player, time = a.TimeInMilliseconds })
                     .ToArray();
             }
+
+            // The winner was computed above and the lock released. If the host
+            // reset or re-activated the buzzer in the meantime, the generation
+            // will have changed; dropping the broadcast prevents a stale
+            // "assignWinner" from arriving after "resetBuzzer" and leaving the
+            // host stuck showing a buzzed-in player after the answer is shown.
+            lock (_lock)
+            {
+                if (generation != this.buzzerGeneration)
+                {
+                    return;
+                }
+            }
+
             await gameHubContext.Clients.Group(this.GameCode).SendAsync("assignWinner", winner, winningTime, topBuzzers);
         }
 
@@ -343,14 +376,14 @@ namespace Jeffpardy
             await gameHubContext.Clients.Group(this.GameCode).SendAsync("startFinalJeffpardy", scores);
         }
 
-        public async Task SubmitWagerAsync(string connectionId, int wager)
+        public async Task<bool> SubmitWagerAsync(string connectionId, int wager)
         {
             Player player;
             lock (_lock)
             {
                 if (!players.TryGetValue(connectionId, out player))
                 {
-                    return;
+                    return false;
                 }
             }
 
@@ -360,16 +393,17 @@ namespace Jeffpardy
 
             // Notify all players that this player locked in their wager
             await gameHubContext.Clients.Group(this.GameCode).SendAsync("wagerLockedIn", connectionId);
+            return true;
         }
 
-        public async Task SubmitAnswerAsync(string connectionId, string answer, int timeInMilliseconds)
+        public async Task<bool> SubmitAnswerAsync(string connectionId, string answer, int timeInMilliseconds)
         {
             Player player;
             lock (_lock)
             {
                 if (!players.TryGetValue(connectionId, out player))
                 {
-                    return;
+                    return false;
                 }
             }
 
@@ -377,6 +411,7 @@ namespace Jeffpardy
                                                                                 player,
                                                                                 answer,
                                                                                 timeInMilliseconds);
+            return true;
         }
 
         private async Task SendUserListAsync(string connectionId)
