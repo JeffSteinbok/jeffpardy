@@ -14,6 +14,9 @@ export default defineConfig({
         emptyOutDir: true,
         sourcemap: true,
         cssCodeSplit: false,
+        // host.js is ~255KB gzipped and only loaded by the game host (once per
+        // session), so the default 500KB warning is noise. See issue #82.
+        chunkSizeWarningLimit: 900,
         rollupOptions: {
             input: {
                 index: path.resolve(__dirname, 'src/web/pages/startPage/StartPage.tsx'),
