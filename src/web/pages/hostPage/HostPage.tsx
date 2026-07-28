@@ -227,8 +227,19 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
     public onUpdateTeams = (teams: TeamDictionary) => {
         Logger.debug("HostPage:onUpdateTeams", teams);
 
+        // updateUsers replaces the teams dictionary with fresh team objects
+        // (scores are copied onto them in the controller). Our stored
+        // controllingTeam still points at the OLD object, whose score is now
+        // frozen. Re-point it to the new object of the same name so derived
+        // values like the Daily Double max wager read the live score.
+        let controllingTeam = this.state.controllingTeam;
+        if (controllingTeam != null && teams[controllingTeam.name] != null) {
+            controllingTeam = teams[controllingTeam.name];
+        }
+
         this.setState({
             teams: teams,
+            controllingTeam: controllingTeam,
         });
     };
 
