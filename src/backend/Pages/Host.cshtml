@@ -7,6 +7,22 @@
     <head>
         <link rel="stylesheet" href="~/js/dist/assets/style.css" />
         <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+
+        @* Prefetch gameplay assets during idle time (e.g. while in the lobby) so that *@
+        @* images and sounds are already cached when they are needed mid-game. This avoids *@
+        @* visible/audible lag on slow connections. *@
+        <link rel="prefetch" as="image" href="~/images/DailyDouble.jpg" />
+        <link rel="prefetch" as="image" href="~/images/EndGame.png" />
+        <link rel="prefetch" as="image" href="~/images/FinalJeffpardy.png" />
+        <link rel="prefetch" as="image" href="~/images/Jeffpardy.png" />
+        <link rel="prefetch" as="image" href="~/images/JeffpardyTitle.png" />
+        <link rel="prefetch" as="image" href="~/images/SuperJeffpardy.png" />
+        <link rel="prefetch" as="audio" href="~/sounds/boardFill.mp3" />
+        <link rel="prefetch" as="audio" href="~/sounds/dailyDouble.mp3" />
+        <link rel="prefetch" as="audio" href="~/sounds/finalJeffpardyReveal.mp3" />
+        <link rel="prefetch" as="audio" href="~/sounds/finalJeopardy.mp3" />
+        <link rel="prefetch" as="audio" href="~/sounds/times-up.mp3" />
+
         <title>Jeffpardy!</title>
     </head>
 
