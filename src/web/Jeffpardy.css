@@ -283,7 +283,7 @@ div#startPage .howToPlayLink:hover,
 /* --------------------------------------------------*/
 #howToPlayPage {
     position: relative;
-    min-height: 100%;
+    height: 100%;
     color: white;
     background: radial-gradient(
         ellipse at center,
