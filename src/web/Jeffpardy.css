@@ -1485,7 +1485,10 @@ ul.finalJeffpardySubmissionList .fjPlayer {
     display: flex;
     justify-content: space-between;
     font-size: 0.85rem;
-    padding: 2px 0;
+    padding: 2px 6px;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
 ul.finalJeffpardySubmissionList .fjPlayerStatus {
@@ -1495,8 +1498,13 @@ ul.finalJeffpardySubmissionList .fjPlayerStatus {
     letter-spacing: 0.05em;
 }
 
+ul.finalJeffpardySubmissionList .fjPlayer.received {
+    border-color: #4caf50;
+    background-color: rgba(76, 175, 80, 0.12);
+}
+
 ul.finalJeffpardySubmissionList .fjPlayer.received .fjPlayerStatus {
-    color: var(--color-gold);
+    color: #7be07f;
     opacity: 1;
 }
 
