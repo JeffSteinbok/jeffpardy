@@ -229,6 +229,8 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                 buzzerLocked: false,
                 buzzerEarlyClickLock: false,
                 buzzedInUser: null,
+                buzzedInUserReactionTime: 0,
+                reactionTime: 0,
                 isWinner: false,
                 isTeamWinner: false,
             });
@@ -241,6 +243,8 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
                 this.setState({ buzzed: false });
                 this.setState({ buzzerLocked: false });
                 this.setState({ buzzedInUser: null });
+                this.setState({ buzzedInUserReactionTime: 0 });
+                this.setState({ reactionTime: 0 });
             }
             this.setState({ buzzerActive: true });
         });
