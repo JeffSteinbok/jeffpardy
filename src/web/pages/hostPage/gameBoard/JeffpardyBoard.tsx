@@ -403,6 +403,11 @@ export class JeffpardyBoard
                     finalJeffpardyTimerActive: false,
                 });
             } else {
+                // Stop honoring buzzes the instant the timer ends. The answer
+                // reveal below is still delayed so the "time's up" sound can
+                // play, but buzzerActive must flip now so a late in-flight buzz
+                // can't light up the host after the clue window closed.
+                this.props.jeffpardyHostController.buzzerActive = false;
                 this.timesUpSound.play();
                 // Delay showing the answer until after the sound plays
                 setTimeout(() => {

@@ -119,6 +119,61 @@ namespace Jeffpardy.Tests
         }
 
         [Fact]
+        public async Task ConnectPlayerAsync_ReconnectDuringFinal_ReplaysFinalJeffpardy()
+        {
+            var game = CreateGame();
+            await game.ConnectPlayerAsync("conn1", "TeamA", "Alice", "pid-alice");
+
+            // Host advances into Final Jeffpardy while the player is connected.
+            await game.StartFinalJeffpardyAsync(new Dictionary<string, int> { ["TeamA"] = 1200 });
+
+            _mockSingleClientProxy.Invocations.Clear();
+
+            // Player reconnects (new connection id, same durable player id). They
+            // must be caught up to Final Jeffpardy rather than left on the buzzer.
+            await game.ConnectPlayerAsync("conn1-new", "TeamA", "Alice", "pid-alice");
+
+            _mockSingleClientProxy.Verify(c => c.SendCoreAsync(
+                "startFinalJeffpardy",
+                It.IsAny<object?[]>(),
+                It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task ConnectPlayerAsync_ReconnectAfterGameOver_ReplaysEndGame()
+        {
+            var game = CreateGame();
+            await game.ConnectPlayerAsync("conn1", "TeamA", "Alice", "pid-alice");
+            await game.EndGameAsync(new Dictionary<string, int> { ["TeamA"] = 3400 });
+
+            _mockSingleClientProxy.Invocations.Clear();
+
+            await game.ConnectPlayerAsync("conn1-new", "TeamA", "Alice", "pid-alice");
+
+            _mockSingleClientProxy.Verify(c => c.SendCoreAsync(
+                "endGame",
+                It.IsAny<object?[]>(),
+                It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task ConnectPlayerAsync_DuringRound_DoesNotReplayPhase()
+        {
+            var game = CreateGame();
+            await game.StartRoundAsync(new GameRound());
+
+            _mockSingleClientProxy.Invocations.Clear();
+
+            await game.ConnectPlayerAsync("conn1", "TeamA", "Alice", "pid-alice");
+
+            // Round play needs no catch-up; the buzzer screen is already correct.
+            _mockSingleClientProxy.Verify(c => c.SendCoreAsync(
+                It.IsAny<string>(),
+                It.IsAny<object?[]>(),
+                It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
         public async Task RemoveUserAsync_RemovesPlayer_SendsUserList()
         {
             var game = CreateGame();
