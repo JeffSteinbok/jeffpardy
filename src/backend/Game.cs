@@ -60,6 +60,30 @@ namespace Jeffpardy
         bool gameStarted = false;
 
         /// <summary>
+        /// High-level phase the game is currently in. Tracked so a player who
+        /// (re)connects can be caught up to the right screen even if they missed
+        /// the broadcast that advanced the phase (e.g. reconnecting during the
+        /// transition into Final Jeffpardy).
+        /// </summary>
+        private enum GamePhase
+        {
+            Lobby,
+            Round,
+            FinalJeffpardyWager,
+            FinalJeffpardyClue,
+            FinalJeffpardyEnded,
+            GameOver,
+        }
+
+        GamePhase currentPhase = GamePhase.Lobby;
+
+        /// <summary>
+        /// The most recent scores broadcast for the game. Sent to a reconnecting
+        /// player so Final Jeffpardy max wagers and the end screen are correct.
+        /// </summary>
+        Dictionary<string, int> latestScores = new Dictionary<string, int>();
+
+        /// <summary>
         /// Team names that are locked in once the game starts. These persist even if all players disconnect.
         /// </summary>
         readonly HashSet<string> permanentTeamNames = new HashSet<string>();
@@ -217,6 +241,52 @@ namespace Jeffpardy
             }
 
             await this.SendUserListToAllClientsAsync();
+
+            // Catch the (re)connecting player up to the current phase in case they
+            // missed the broadcast that advanced it (e.g. they were disconnected
+            // during the transition into Final Jeffpardy and would otherwise be
+            // stuck on the buzzer screen).
+            await this.SendPhaseSyncAsync(connectionId);
+        }
+
+        /// <summary>
+        /// Replays the message(s) needed to move a single (re)connecting player's
+        /// UI to the game's current phase. Uses the same client events the normal
+        /// flow uses, so the player lands exactly where everyone else already is.
+        /// </summary>
+        private async Task SendPhaseSyncAsync(string connectionId)
+        {
+            GamePhase phase;
+            Dictionary<string, int> scores;
+            lock (_lock)
+            {
+                phase = this.currentPhase;
+                scores = new Dictionary<string, int>(this.latestScores);
+            }
+
+            var client = gameHubContext.Clients.Client(connectionId);
+            switch (phase)
+            {
+                case GamePhase.FinalJeffpardyWager:
+                    await client.SendAsync("startFinalJeffpardy", scores);
+                    break;
+                case GamePhase.FinalJeffpardyClue:
+                    await client.SendAsync("startFinalJeffpardy", scores);
+                    await client.SendAsync("showFinalJeffpardyClue");
+                    break;
+                case GamePhase.FinalJeffpardyEnded:
+                    await client.SendAsync("startFinalJeffpardy", scores);
+                    await client.SendAsync("showFinalJeffpardyClue");
+                    await client.SendAsync("endFinalJeffpardy");
+                    break;
+                case GamePhase.GameOver:
+                    await client.SendAsync("endGame", scores);
+                    break;
+                default:
+                    // Lobby / Round: the player's existing screen (front page,
+                    // lobby, or buzzer) is already correct; nothing to replay.
+                    break;
+            }
         }
 
         /// <summary>
@@ -411,6 +481,8 @@ namespace Jeffpardy
                     this.gameStarted = true;
                 }
 
+                this.currentPhase = GamePhase.Round;
+
                 // Lock in all current teams as permanent
                 foreach (var player in this.players.Values)
                 {
@@ -428,16 +500,30 @@ namespace Jeffpardy
 
         public async Task BroadcastScoresAsync(Dictionary<string, int> scores)
         {
+            lock (_lock)
+            {
+                this.latestScores = new Dictionary<string, int>(scores);
+            }
             await gameHubContext.Clients.Group(this.GameCode).SendAsync("broadcastScores", scores);
         }
 
         public async Task EndGameAsync(Dictionary<string, int> scores)
         {
+            lock (_lock)
+            {
+                this.currentPhase = GamePhase.GameOver;
+                this.latestScores = new Dictionary<string, int>(scores);
+            }
             await gameHubContext.Clients.Group(this.GameCode).SendAsync("endGame", scores);
         }
 
         public async Task StartFinalJeffpardyAsync(Dictionary<string, int> scores)
         {
+            lock (_lock)
+            {
+                this.currentPhase = GamePhase.FinalJeffpardyWager;
+                this.latestScores = new Dictionary<string, int>(scores);
+            }
             await gameHubContext.Clients.Group(this.GameCode).SendAsync("startFinalJeffpardy", scores);
         }
 
@@ -502,11 +588,19 @@ namespace Jeffpardy
 
         public async Task ShowFinalJeffpardyClueAsync()
         {
+            lock (_lock)
+            {
+                this.currentPhase = GamePhase.FinalJeffpardyClue;
+            }
             await gameHubContext.Clients.Group(this.GameCode).SendAsync("showFinalJeffpardyClue");
         }
 
         public async Task EndFinalJeffpardyAsync()
         {
+            lock (_lock)
+            {
+                this.currentPhase = GamePhase.FinalJeffpardyEnded;
+            }
             await gameHubContext.Clients.Group(this.GameCode).SendAsync("endFinalJeffpardy");
         }
 
