@@ -11,6 +11,7 @@ import { PlayerList } from "../../components/playerList/PlayerList";
 import { ITeam } from "../../Types";
 import { Debug } from "../../utilities/Debug";
 import { SpecialKey } from "../../utilities/Key";
+import { WakeLock } from "../../utilities/WakeLock";
 import { Attribution } from "../../components/attribution/Attribution";
 
 enum PlayerPageState {
@@ -76,6 +77,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     hiddenAt: number = 0;
     toastTimeout: ReturnType<typeof setTimeout> | null = null;
     buzzerLockTimeout: ReturnType<typeof setTimeout> | null = null;
+    wakeLock: WakeLock = new WakeLock();
 
     constructor(props: IPlayerPageProps) {
         super(props);
@@ -149,6 +151,9 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     componentDidMount = () => {
         window.addEventListener("keydown", this.handleKeyDown);
         document.addEventListener("visibilitychange", this.onVisibilityChange);
+
+        // Keep the phone/screen awake while on the buzzer so it doesn't sleep mid-game.
+        void this.wakeLock.enable();
 
         this.buildAndStartConnection(() => {
             if (window.location.hash.length == 7) {
@@ -501,6 +506,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     componentWillUnmount() {
         window.removeEventListener("keydown", this.handleKeyDown);
         document.removeEventListener("visibilitychange", this.onVisibilityChange);
+        void this.wakeLock.disable();
         if (this.toastTimeout) clearTimeout(this.toastTimeout);
         if (this.buzzerLockTimeout) clearTimeout(this.buzzerLockTimeout);
         if (this.state.hubConnection) {
