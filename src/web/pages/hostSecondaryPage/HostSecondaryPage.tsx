@@ -9,6 +9,7 @@ import { Logger } from "../../utilities/Logger";
 import { IClue, IPlayer, IBuzzerAttempt } from "../../Types";
 import { sanitizeHtml } from "../../utilities/sanitize";
 import { Debug } from "../../utilities/Debug";
+import { WakeLock } from "../../utilities/WakeLock";
 
 import { IGameRound } from "../hostPage/Types";
 
@@ -34,6 +35,7 @@ export interface IHostSecondaryPageState {
  * Secondary Host Page
  */
 export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, IHostSecondaryPageState> {
+    wakeLock: WakeLock = new WakeLock();
     constructor(props: IHostSecondaryPageProps) {
         super(props);
 
@@ -53,6 +55,9 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
     }
 
     componentDidMount = () => {
+        // Keep the secondary/TV display awake for the duration of the game.
+        void this.wakeLock.enable();
+
         const hubConnection: signalR.HubConnection = new signalR.HubConnectionBuilder()
             .withUrl("/hub/game")
             .withAutomaticReconnect()
@@ -120,6 +125,7 @@ export class HostSecondaryPage extends React.Component<IHostSecondaryPageProps, 
     };
 
     componentWillUnmount() {
+        void this.wakeLock.disable();
         this.state.hubConnection.stop();
     }
 

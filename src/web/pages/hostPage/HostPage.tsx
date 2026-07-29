@@ -15,6 +15,7 @@ import * as QRCode from "qrcode.react";
 import { IGameData, FinalJeffpardyAnswerDictionary, FinalJeffpardyWagerDictionary } from "./Types";
 import { ICategory, ITeam, TeamDictionary } from "../../Types";
 import { ScreenSizeWarning } from "../../components/screenSizeWarning/ScreenSizeWarning";
+import { WakeLock } from "../../utilities/WakeLock";
 
 export enum HostPageViewMode {
     Start,
@@ -56,6 +57,7 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
     jeffpardyHostController: JeffpardyHostController;
     gameCode: string;
     hostCode: string;
+    wakeLock: WakeLock = new WakeLock();
     constructor(props: IHostPageProps) {
         super(props);
 
@@ -139,6 +141,9 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
     }
 
     public componentDidMount() {
+        // Keep the host display awake for the duration of the game.
+        void this.wakeLock.enable();
+
         if (this.jeffpardyHostController.hasStoredAccessCode()) {
             this.jeffpardyHostController.validateAccessCode(
                 this.jeffpardyHostController.accessCode,
@@ -151,6 +156,10 @@ export class HostPage extends React.Component<IHostPageProps, IHostPageState> {
                 }
             );
         }
+    }
+
+    public componentWillUnmount() {
+        void this.wakeLock.disable();
     }
 
     public startIntro = () => {
