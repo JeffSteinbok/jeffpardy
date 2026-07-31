@@ -1250,19 +1250,26 @@ div#jeffpardyBoard .dailyDoubleView {
     }
 }
 
-div#jeffpardyBoard .dailyDoubleImage {
+div#jeffpardyBoard .dailyDoubleAnimationCanvas {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    top: 50%;
+    left: 50%;
+    width: 120%;
+    height: auto;
+    aspect-ratio: 1;
+    translate: -50% -50%;
     z-index: 2;
     animation: dailyDoublePinwheel 3s cubic-bezier(0.2, 0, 0.2, 1);
     transition: opacity 0.8s ease;
 }
 
-div#jeffpardyBoard .dailyDoubleImage.faded {
+div#jeffpardyBoard .dailyDoubleImage {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+div#jeffpardyBoard .dailyDoubleAnimationCanvas.faded {
     opacity: 0;
     pointer-events: none;
 }
@@ -2321,7 +2328,7 @@ div#scoreboard div#hostControls button {
 }
 
 div#scoreboard div#hostControls button:hover:not(:disabled) {
-    background-color: var(--color-host-control-btn) Hover;
+    background-color: var(--color-host-control-btn-hover);
     transform: translateY(-1px);
 }
 
@@ -2330,10 +2337,16 @@ div#scoreboard div#hostControls button:active:not(:disabled) {
 }
 
 div#scoreboard div#hostControls button:disabled {
-    background-color: var(--color-host-control-btn) Disabled;
+    background-color: var(--color-host-control-btn-disabled);
     border-color: color-mix(in srgb, var(--color-host-control-btn-disabled), black 10%);
     color: rgba(255, 255, 255, 0.35);
-    cursor: not-allowed;
+}
+
+div#scoreboard div#hostControls button.hostQrButton {
+    min-width: 30px;
+    padding: 4px 6px;
+    font-size: 1rem;
+    line-height: 1;
 }
 
 div#scoreboard .scoreEntries {
@@ -2678,6 +2691,19 @@ div.buzzerUserListView .playerScoreTable .winnerCrown {
 
 .gameDialog .MuiButton-colorPrimary:hover {
     background: color-mix(in srgb, var(--color-game-board), black 10%);
+}
+
+.gameDialog .hostWindowQr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+}
+
+.gameDialog .hostWindowQr canvas {
+    max-width: 100%;
+    height: auto !important;
 }
 
 .gameDialog .teamFixupRow {

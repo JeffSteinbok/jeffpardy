@@ -46,7 +46,7 @@ describe("DailyDoubleReveal", () => {
 
         const img = container.querySelector(".dailyDoubleImage");
         expect(img).not.toBeNull();
-        expect(img.getAttribute("src")).toBe("/images/DailyDouble.jpg");
+        expect(img.getAttribute("src")).toBe("/images/DailyDoublePadded.jpg");
     });
 
     it("adds faded class when revealed", () => {
@@ -62,7 +62,7 @@ describe("DailyDoubleReveal", () => {
             />
         );
 
-        expect(container.querySelector(".dailyDoubleImage").classList.contains("faded")).toBe(true);
+        expect(container.querySelector(".dailyDoubleAnimationCanvas").classList.contains("faded")).toBe(true);
     });
 
     it("shows content when revealed", () => {

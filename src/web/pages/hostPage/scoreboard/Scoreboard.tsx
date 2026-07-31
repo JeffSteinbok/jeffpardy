@@ -9,6 +9,7 @@ import { IPlayer, IBuzzerAttempt, TeamDictionary, ITeam } from "../../../Types";
 import { IClue } from "../../../Types";
 import { TeamFixupDialog } from "./TeamFixupDialog";
 import { EndRoundDialog } from "./EndRoundDialog";
+import { HostWindowQrDialog } from "./HostWindowQrDialog";
 import { createKeyboardHandler } from "./useKeyboardShortcuts";
 
 // Tracks the host scoreboard's view of the current game phase.
@@ -46,6 +47,7 @@ export interface IScoreboardState {
     controllingUser: IPlayer;
     isTeamFixupDialogShown: boolean;
     isEndRoundDialogShown: boolean;
+    isHostWindowQrDialogShown: boolean;
     isControlsCollapsed: boolean;
     wrongTeams: string[];
 }
@@ -82,6 +84,7 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
             controllingUser: null,
             isTeamFixupDialogShown: false,
             isEndRoundDialogShown: false,
+            isHostWindowQrDialogShown: false,
             isControlsCollapsed: false,
             wrongTeams: [],
         };
@@ -440,6 +443,14 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                             >
                                 Host Window
                             </button>
+                            <button
+                                className="hostQrButton"
+                                aria-label="Show host window QR code"
+                                title="Show host window QR code"
+                                onClick={() => this.setState({ isHostWindowQrDialogShown: true })}
+                            >
+                                ▦
+                            </button>
                         </div>
                     </div>
                     <button
@@ -540,6 +551,16 @@ export class Scoreboard extends React.Component<IScoreboardProps, IScoreboardSta
                         onConfirm={this.confirmEndRound}
                         onClose={() => {
                             this.setState({ isEndRoundDialogShown: false });
+                            (document.activeElement as HTMLElement)?.blur();
+                        }}
+                    />
+                )}
+
+                {this.state.isHostWindowQrDialogShown && (
+                    <HostWindowQrDialog
+                        hostSecondaryWindowUri={this.props.hostSecondaryWindowUri}
+                        onClose={() => {
+                            this.setState({ isHostWindowQrDialogShown: false });
                             (document.activeElement as HTMLElement)?.blur();
                         }}
                     />

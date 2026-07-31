@@ -259,7 +259,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
 
             // Get the max wager for this team.
             // If negative, then 0
-            const maxWager: number = Math.max(scores[this.state.team], 0);
+            const maxWager: number = Math.max(scores[this.state.team] ?? 0, 0);
 
             this.setState({
                 playerPageState: PlayerPageState.FinalJeffpardy,
@@ -370,21 +370,24 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
             return;
         }
 
-        this.setState({
-            name: this.nameTemp,
-            team: this.teamTemp,
-        });
-
-        this.state.hubConnection
-            .invoke(
-                "connectPlayer",
-                this.state.gameCode,
-                this.teamTemp,
-                this.nameTemp,
-                this.getPlayerId(this.state.gameCode)
-            )
-            .then(() => this.setState({ playerPageState: PlayerPageState.Buzzer }))
-            .catch((err) => console.error(err));
+        this.setState(
+            {
+                name: this.nameTemp,
+                team: this.teamTemp,
+                playerPageState: PlayerPageState.Buzzer,
+            },
+            () => {
+                this.state.hubConnection
+                    .invoke(
+                        "connectPlayer",
+                        this.state.gameCode,
+                        this.teamTemp,
+                        this.nameTemp,
+                        this.getPlayerId(this.state.gameCode)
+                    )
+                    .catch((err) => console.error(err));
+            }
+        );
     };
 
     setGameCode = () => {

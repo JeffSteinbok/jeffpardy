@@ -24,11 +24,9 @@ export class DailyDoubleReveal extends React.Component<IDailyDoubleRevealProps> 
                 <audio autoPlay>
                     <source src="/sounds/dailyDouble.mp3" type="audio/mp3" />
                 </audio>
-                <img
-                    src="/images/DailyDouble.jpg"
-                    className={"dailyDoubleImage" + (dailyDoubleRevealed ? " faded" : "")}
-                    alt="Daily Double"
-                />
+                <div className={"dailyDoubleAnimationCanvas" + (dailyDoubleRevealed ? " faded" : "")}>
+                    <img src="/images/DailyDoublePadded.jpg" className="dailyDoubleImage" alt="Daily Double" />
+                </div>
                 <div className={"dailyDoubleContent" + (dailyDoubleRevealed ? " visible" : "")}>
                     <div className="header">
                         {activeCategory.title} for {activeClue.value}
