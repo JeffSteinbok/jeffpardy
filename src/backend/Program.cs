@@ -3,6 +3,7 @@ using System.IO;
 using Jeffpardy;
 using Jeffpardy.Hubs;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -52,6 +53,28 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
+
+app.MapGet(
+    "/.well-known/apple-app-site-association",
+    () => Results.Text(
+        """
+        {
+          "applinks": {
+            "details": [
+              {
+                "appIDs": ["Y7KVX7666P.net.steinbok.Jeffpardy"],
+                "components": [
+                  {
+                    "/": "/player",
+                    "comment": "Open Jeffpardy player invitation links in the iOS app"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+        """,
+        "application/json"));
 
 app.MapRazorPages();
 app.MapControllers();
