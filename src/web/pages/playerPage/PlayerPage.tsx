@@ -522,7 +522,7 @@ export class PlayerPage extends React.Component<IPlayerPageProps, IPlayerPageSta
     }
 
     public render() {
-        let buzzerButtonText: string = "Buzz";
+        let buzzerButtonText: string = this.state.buzzerActive ? "Buzz" : "Wait";
         let buzzerClassName: string;
         let showBuzzerReactionTime: boolean = false;
 

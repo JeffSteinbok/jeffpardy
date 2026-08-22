@@ -83,6 +83,10 @@ namespace Jeffpardy
         /// </summary>
         Dictionary<string, int> latestScores = new Dictionary<string, int>();
 
+        GameRound latestRound;
+        CategoryClue latestClue;
+        bool isShowingClue = false;
+
         /// <summary>
         /// Team names that are locked in once the game starts. These persist even if all players disconnect.
         /// </summary>
@@ -191,6 +195,7 @@ namespace Jeffpardy
             await this.gameHubContext.Groups.AddToGroupAsync(connectionId, this.hostGroupName);
             await this.AddConnectionToGame(connectionId);
             await this.SendUserListAsync(connectionId);
+            await this.SendHostPhaseSyncAsync(connectionId);
         }
 
         public async Task ConnectPlayerLobbyAsync(string connectionId)
@@ -286,6 +291,29 @@ namespace Jeffpardy
                     // Lobby / Round: the player's existing screen (front page,
                     // lobby, or buzzer) is already correct; nothing to replay.
                     break;
+            }
+        }
+
+        private async Task SendHostPhaseSyncAsync(string connectionId)
+        {
+            GameRound round;
+            CategoryClue clue;
+            bool showingClue;
+            lock (_lock)
+            {
+                round = this.latestRound;
+                clue = this.latestClue;
+                showingClue = this.isShowingClue;
+            }
+
+            var client = gameHubContext.Clients.Client(connectionId);
+            if (showingClue && clue != null)
+            {
+                await client.SendAsync("showClue", clue);
+            }
+            else if (round != null)
+            {
+                await client.SendAsync("startRound", round);
             }
         }
 
@@ -482,6 +510,9 @@ namespace Jeffpardy
                 }
 
                 this.currentPhase = GamePhase.Round;
+                this.latestRound = round;
+                this.latestClue = null;
+                this.isShowingClue = false;
 
                 // Lock in all current teams as permanent
                 foreach (var player in this.players.Values)
@@ -495,6 +526,11 @@ namespace Jeffpardy
 
         public async Task ShowClueAsync(CategoryClue clue)
         {
+            lock (_lock)
+            {
+                this.latestClue = clue;
+                this.isShowingClue = true;
+            }
             await gameHubContext.Clients.Groups(this.hostGroupName).SendAsync("showClue", clue);
         }
 

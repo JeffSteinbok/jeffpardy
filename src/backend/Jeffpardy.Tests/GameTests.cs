@@ -98,6 +98,21 @@ namespace Jeffpardy.Tests
         }
 
         [Fact]
+        public async Task ConnectHostAsync_AfterRoundStarts_ReplaysCurrentRound()
+        {
+            var game = CreateGame();
+            await game.StartRoundAsync(new GameRound());
+            _mockSingleClientProxy.Invocations.Clear();
+
+            await game.ConnectHostAsync("conn1");
+
+            _mockSingleClientProxy.Verify(c => c.SendCoreAsync(
+                "startRound",
+                It.IsAny<object?[]>(),
+                It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
         public async Task ConnectPlayerAsync_AddsPlayer_SendsUserList()
         {
             var game = CreateGame();
