@@ -4,6 +4,7 @@ using Jeffpardy;
 using Jeffpardy.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -48,6 +49,31 @@ else
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
+
+// Redirect www to the apex domain before anything else runs. Player invitation
+// links are built from window.location.origin, so the host must land on the
+// canonical host first: iOS universal links don't follow redirects, and only the
+// apex is listed in the app's associated domains.
+app.Use(async (context, next) =>
+{
+    var host = context.Request.Host;
+    if (host.Host.StartsWith("www.", StringComparison.OrdinalIgnoreCase))
+    {
+        var apexName = host.Host["www.".Length..];
+        var apex = host.Port.HasValue ? new HostString(apexName, host.Port.Value) : new HostString(apexName);
+        context.Response.Redirect(
+            UriHelper.BuildAbsolute(
+                "https",
+                apex,
+                context.Request.PathBase,
+                context.Request.Path,
+                context.Request.QueryString),
+            permanent: true);
+        return;
+    }
+
+    await next();
+});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

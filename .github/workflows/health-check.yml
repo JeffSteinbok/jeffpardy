@@ -13,8 +13,18 @@ permissions: {}
 
 jobs:
   site-availability:
-    name: Site Availability Check
+    name: Site Availability Check (${{ matrix.url }})
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # The apex is what players actually use, so it also covers DNS and TLS
+        # certificate expiry. The default hostname is checked separately so an
+        # outage can be told apart from a DNS or certificate problem.
+        url:
+          - https://jeffpardy.net/
+          - https://jeffpardy.azurewebsites.net/
 
     steps:
       - name: Check deployed site
@@ -23,7 +33,7 @@ jobs:
           RETRY_DELAY=30
           for i in $(seq 1 $MAX_RETRIES); do
             echo "Attempt $i of $MAX_RETRIES..."
-            HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" --max-time 30 https://jeffpardy.azurewebsites.net/) || HTTP_STATUS="000"
+            HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" --max-time 30 ${{ matrix.url }}) || HTTP_STATUS="000"
             echo "HTTP Status: $HTTP_STATUS"
             if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
               echo "Site is up!"
@@ -34,5 +44,5 @@ jobs:
               sleep $RETRY_DELAY
             fi
           done
-          echo "::error::Site still unavailable after $MAX_RETRIES attempts (last HTTP $HTTP_STATUS)"
+          echo "::error::${{ matrix.url }} still unavailable after $MAX_RETRIES attempts (last HTTP $HTTP_STATUS)"
           exit 1
