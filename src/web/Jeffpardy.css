@@ -396,6 +396,177 @@ div#startPage .howToPlayLink:hover,
     text-align: center;
 }
 
+/* iOS App Landing Page */
+/* --------------------------------------------------*/
+div#startPage .iosAppLink {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    opacity: 0.85;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-gold) 40%, transparent);
+    padding-bottom: 2px;
+    transition: opacity 0.2s ease;
+}
+
+div#startPage .iosAppLink:hover {
+    opacity: 1;
+}
+
+#iosPage {
+    position: relative;
+    height: 100%;
+    color: white;
+    background: radial-gradient(
+        ellipse at center,
+        color-mix(in srgb, var(--color-game-board), white 8%) 0%,
+        color-mix(in srgb, var(--color-game-board), black 30%) 100%
+    );
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+#iosPage .iosContent {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    width: 100%;
+}
+
+#iosPage .iosHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+#iosPage .iosLogo {
+    max-height: 90px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 40px rgba(0, 0, 0, 0.6));
+}
+
+#iosPage h1 {
+    font-size: 2.6rem;
+    margin: 0;
+}
+
+#iosPage h2 {
+    font-size: 1.6rem;
+    margin: 0 0 12px 0;
+    color: var(--color-gold);
+}
+
+/* Overrides the uppercase transform from .jeffpardy-label so "iOS" and
+   "TestFlight" keep the casing Apple uses for them. */
+#iosPage h1.iosBetaBadge {
+    font-size: 1.15rem;
+    margin: 0;
+    letter-spacing: 0.06em;
+    text-transform: none;
+    padding: 6px 20px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--color-gold) 45%, transparent);
+    background: rgba(0, 0, 0, 0.25);
+    text-shadow: none;
+}
+
+#iosPage .iosIntro {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    text-align: center;
+    margin: 0 0 32px 0;
+}
+
+#iosPage .iosSection {
+    background: linear-gradient(135deg, #1a2a6c 0%, #0a1540 100%);
+    border: 1px solid color-mix(in srgb, var(--color-gold) 25%, transparent);
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+}
+
+#iosPage .iosSection ul {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin: 0;
+    padding-left: 22px;
+}
+
+#iosPage .iosSection li {
+    margin-bottom: 10px;
+}
+
+#iosPage .iosSectionIntro {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: 0 0 16px 0;
+}
+
+#iosPage .iosNote {
+    margin: 16px 0 0 0;
+    font-size: 1rem;
+    font-style: italic;
+    opacity: 0.9;
+}
+
+#iosPage .iosJoinBlock {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin: 8px 0 28px 0;
+}
+
+#iosPage .iosJoinAction,
+#iosPage .iosJoinQr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    max-width: 260px;
+}
+
+#iosPage .iosJoinAction .startPageButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 40px;
+    border-radius: 16px;
+    text-decoration: none;
+    color: white;
+    font-size: 1.4rem;
+    min-width: 200px;
+    background: linear-gradient(135deg, #1a2a6c 0%, #0a1540 100%);
+    border: 1px solid color-mix(in srgb, var(--color-gold) 30%, transparent);
+    letter-spacing: 0.05em;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#iosPage .iosJoinAction .startPageButton:hover {
+    transform: translateY(-4px) scale(1.05);
+}
+
+#iosPage .iosJoinQr img {
+    display: block;
+    width: 180px;
+    height: 180px;
+    border-radius: 8px;
+    background: white;
+}
+
+#iosPage .iosJoinHint {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    text-align: center;
+    opacity: 0.8;
+}
+
 div#startPage div.linkList {
     padding-top: 100px;
 }

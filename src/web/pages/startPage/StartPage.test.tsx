@@ -44,4 +44,10 @@ describe("StartPage", () => {
         const link = within(container).getByRole("link", { name: /How to Play/i });
         expect(link).toHaveAttribute("href", "/HowToPlay");
     });
+
+    it("has an iOS app link pointing to the /ios landing page", () => {
+        const { container } = render(<StartPage />);
+        const link = within(container).getByRole("link", { name: /iOS App/i });
+        expect(link).toHaveAttribute("href", "/ios");
+    });
 });

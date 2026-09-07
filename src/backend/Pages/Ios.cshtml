@@ -1,0 +1,72 @@
+@page "/ios"
+@model Jeffpardy.Pages.IosModel
+@{
+    Layout = "";
+}
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="~/js/dist/assets/style.css" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <title>Jeffpardy for iOS</title>
+</head>
+
+<body>
+    <div id="iosPage">
+        <div class="iosContent">
+            <div class="iosHeader">
+                <img src="/images/JeffpardyTitle.png" class="iosLogo" alt="Jeffpardy" />
+                <h1 class="iosBetaBadge jeffpardy-label">iOS BETA on TestFlight</h1>
+            </div>
+
+            <p class="iosIntro">
+                A native iPhone and iPad app for playing Jeffpardy. You don't need it &mdash; the whole
+                game works in a browser &mdash; but it makes buzzing in faster and gives the host a
+                second screen.
+            </p>
+
+            <section class="iosSection">
+                <h2 class="jeffpardy-label">What the App Adds</h2>
+                <ul>
+                    <li><strong>Faster buzzer</strong> with proper reconnection logic.</li>
+                    <li>
+                        <strong>A secondary display for hosts.</strong> Use as the host's private window,
+                        showing answers only to you while the shared screen stays on the board.
+                    </li>
+                    <li><strong>Faster joining.</strong> Join via QR code or nearby players.</li>
+                </ul>
+            </section>
+
+            <section class="iosSection">
+                <h2 class="jeffpardy-label">Getting the Beta</h2>
+                <p class="iosSectionIntro">
+                    The app isn't on the App Store yet. It's distributed through <strong>TestFlight</strong>,
+                    Apple's free beta testing app.
+                </p>
+                <p class="iosNote">
+                    Beta builds expire after 90 days. When one does, open TestFlight and update to the
+                    newest build &mdash; you won't need this page again.
+                </p>
+            </section>
+
+            <div class="iosJoinBlock">
+                <div class="iosJoinAction">
+                    <a href="https://testflight.apple.com/join/bakcPktu"
+                       class="startPageButton jeffpardy-label"
+                       target="_blank"
+                       rel="noreferrer">
+                        <span class="buttonLabel">Join the Beta</span>
+                    </a>
+                    <span class="iosJoinHint">Opens TestFlight on an iPhone or iPad</span>
+                </div>
+                <div class="iosJoinQr">
+                    <img src="/images/testflight-qr.svg" alt="QR code linking to the Jeffpardy TestFlight invitation" />
+                    <span class="iosJoinHint">Reading this on a computer? Scan with your phone.</span>
+                </div>
+            </div>
+
+            <a href="/" class="howToPlayBackLink jeffpardy-label">&larr; Back to home</a>
+        </div>
+    </div>
+</body>

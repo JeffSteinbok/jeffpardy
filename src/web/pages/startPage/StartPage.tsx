@@ -5,6 +5,7 @@ import * as React from "react";
 import { createRoot } from "react-dom/client";
 import "../../Jeffpardy.css";
 import { Attribution } from "../../components/attribution/Attribution";
+import { IosAppPath } from "../../utilities/IosApp";
 /**
  * Root page for the application, begins the rendering.
  */
@@ -31,6 +32,9 @@ export class StartPage extends React.Component {
                         </div>
                         <a href="/HowToPlay" className="howToPlayLink jeffpardy-label">
                             New here? How to Play &rarr;
+                        </a>
+                        <a href={IosAppPath} className="iosAppLink jeffpardy-label">
+                            Get the iOS App &rarr;
                         </a>
                     </div>
                 </div>
