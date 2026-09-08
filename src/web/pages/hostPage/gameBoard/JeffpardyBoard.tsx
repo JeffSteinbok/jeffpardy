@@ -430,10 +430,25 @@ export class JeffpardyBoard
         this.props.jeffpardyHostController.broadcastScores();
     };
 
+    /** The highest clue value on this round's board, which is the floor for a Daily Double wager. */
+    private getHighestClueValue = (): number => {
+        let highest: number = 0;
+        (this.props.categories ?? []).forEach((category: ICategory) => {
+            (category.clues ?? []).forEach((clue: IClue) => {
+                if (clue.value > highest) {
+                    highest = clue.value;
+                }
+            });
+        });
+
+        // Fall back to the standard top row value if the board isn't loaded yet.
+        return highest > 0 ? highest : 500 * (this.props.round + 1);
+    };
+
     private getDailyDoubleMaxBet = (): number => {
         if (this.props.controllingTeam != null) {
             const currentTeamScore: number = this.props.controllingTeam.score;
-            return Math.max(currentTeamScore, 2 * (500 * (this.props.round + 1)));
+            return Math.max(currentTeamScore, this.getHighestClueValue());
         }
         return 0;
     };
