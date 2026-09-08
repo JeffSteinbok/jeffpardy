@@ -10,6 +10,8 @@ import { Attribution } from "../../components/attribution/Attribution";
 
 import { SpecialKey } from "../../utilities/Key";
 
+const testFlightUrl = "https://testflight.apple.com/join/bakcPktu";
+
 export interface IHostLobbyProps {
     teams: TeamDictionary;
     gameCode: string;
@@ -67,6 +69,15 @@ export class HostLobby extends React.Component<IHostLobbyProps> {
                 <p />
                 <div style={{ background: "white", padding: "8px", display: "inline-block", borderRadius: "4px" }}>
                     <QRCode.QRCodeCanvas value={playerUri} size={138} includeMargin={false} />
+                </div>
+                <div className="iosAppCallout">
+                    <strong>Try out the iOS Jeffpardy App for a better buzzer experience.</strong>
+                    <a href={testFlightUrl} target="_blank" rel="noreferrer">
+                        Download Jeffpardy for iOS
+                    </a>
+                    <div className="iosAppQrCode">
+                        <QRCode.QRCodeCanvas value={testFlightUrl} size={100} includeMargin={false} />
+                    </div>
                 </div>
                 <div className="playerListBox">
                     <div className="boxTitle">Teams &amp; Players</div>

@@ -394,20 +394,25 @@ export class HostStartScreen extends React.Component<IHostStartScreenProps, IHos
                                         </button>
                                         <span className="lobbyButtonSubtext">Shows answers to the host only</span>
                                         <span className="lobbyButtonSubtext">Do not share this window</span>
-                                        <div
-                                            style={{
-                                                background: "white",
-                                                padding: "4px",
-                                                display: "inline-block",
-                                                borderRadius: "4px",
-                                                marginTop: "8px",
-                                            }}
-                                        >
-                                            <QRCode.QRCodeCanvas
-                                                value={hostSecondaryWindowUri}
-                                                size={80}
-                                                includeMargin={false}
-                                            />
+                                        <div className="hostSecondaryQrRow">
+                                            <div className="hostSecondaryQrCode">
+                                                <QRCode.QRCodeCanvas
+                                                    value={hostSecondaryWindowUri}
+                                                    size={80}
+                                                    includeMargin={false}
+                                                />
+                                            </div>
+                                            <div className="hostSecondaryAppCallout">
+                                                <strong>Use the Jeffpardy iOS app as your secondary window.</strong>
+                                                <span>It also makes it easier for people near you to join.</span>
+                                                <a
+                                                    href="https://testflight.apple.com/join/bakcPktu"
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                >
+                                                    Download Jeffpardy for iOS
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="lobbyButtonGroup">

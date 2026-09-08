@@ -49,6 +49,22 @@ describe("HostLobby", () => {
         expect(link.href).toContain("/player#XYZ789");
     });
 
+    it("promotes the iOS app with a TestFlight link and QR code", () => {
+        const { getByRole, getAllByTestId } = render(
+            <HostLobby teams={makeTeams()} gameCode="CODE" onStartGame={vi.fn()} />
+        );
+
+        expect(getByRole("link", { name: "Download Jeffpardy for iOS" })).toHaveAttribute(
+            "href",
+            "https://testflight.apple.com/join/bakcPktu"
+        );
+        expect(
+            getAllByTestId("qrcode").some(
+                (code) => code.getAttribute("data-value") === "https://testflight.apple.com/join/bakcPktu"
+            )
+        ).toBe(true);
+    });
+
     it("renders a Start Game button", () => {
         const { container } = render(<HostLobby teams={makeTeams()} gameCode="CODE" onStartGame={vi.fn()} />);
         const button = container.querySelector("button:not(.backButton)");
