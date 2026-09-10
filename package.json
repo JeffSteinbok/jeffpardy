@@ -28,7 +28,7 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.57.1",
     "vite": "^8.0.16",
-    "vitest": "^4.1.0"
+    "vitest": "^4.1.11"
   },
   "scripts": {
     "dev": "vite build --mode development --watch",
