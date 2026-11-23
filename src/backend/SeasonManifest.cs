@@ -29,5 +29,8 @@ namespace Jeffpardy
 
         [JsonIgnore]
         public int Season { get; set; }
+
+        [JsonIgnore]
+        public string UniqueKey => $"{Season}/{FileName}/{Index}";
     }
 }

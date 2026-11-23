@@ -81,6 +81,10 @@ namespace Jeffpardy
                 ret = JsonConvert.DeserializeObject<CategoryCollection>(sr.ReadToEnd()).Categories[index];
             }
 
+            ret.Season = season;
+            ret.FileName = fileName;
+            ret.Index = index;
+
             return ret;
         }
     }
